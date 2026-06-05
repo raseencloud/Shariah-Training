@@ -184,8 +184,11 @@ function showQuestion() {
     html += `</div>`;
 
     document.getElementById("quiz").innerHTML = html;
-}
 
+    document.querySelectorAll(".answer").forEach(a => {
+        a.dataset.answered = "false";
+    });
+}
 function checkAnswer(i) {
 
     let q = questions[current];
