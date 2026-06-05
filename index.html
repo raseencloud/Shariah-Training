@@ -143,7 +143,10 @@ async function loadQuestions() {
     questions = await res.json();
 
     let count = parseInt(document.getElementById("questionCount").value);
-    questions = questions.sort(() => Math.random() - 0.5).slice(0, count);
+    questions = questions.slice(0, count);
+
+    document.getElementById("loading").style.display = "none";
+    document.getElementById("quiz").style.display = "block";
 
     showQuestion();
 }
