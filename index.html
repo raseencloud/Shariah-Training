@@ -192,8 +192,16 @@ q.a.forEach((answer, i) => {
 html += `</div>`;
 
 document.getElementById("quiz").innerHTML = html;
-}
 
+// 🔥 مهم جداً: إعادة تهيئة حالة الإجابة لكل سؤال جديد
+setTimeout(() => {
+    document.querySelectorAll(".answer").forEach(a => {
+        a.dataset.answered = "false";
+        a.style.background = "";
+    });
+}, 0);
+
+}
 function checkAnswer(i) {
 
 let q = questions[current];
