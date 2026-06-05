@@ -163,6 +163,105 @@ document.getElementById("quiz").innerHTML = `
 
 }
 
+<script>
+
+let questions = [];
+let current = 0;
+
+async function loadQuestions() {
+    const res = await fetch("fiqh-questions.json");
+    questions = await res.json();
+    showQuestion();
+}
+
+function startExam() {
+
+let name = document.getElementById("candidateName").value;
+
+if(name.trim()===""){
+alert("يرجى إدخال اسم المتدرب");
+return;
+}
+
+current = 0;
+loadQuestions();
+}
+
+function showQuestion() {
+
+if(current >= questions.length){
+document.getElementById("quiz").innerHTML =
+"<h3>انتهى الاختبار ✔</h3>";
+return;
+}
+
+let q = questions[current];
+
+let html = `
+<div class="question">
+${q.q}
+<br><br>
+`;
+
+q.a.forEach((answer, i)=>{
+html += `<button class="answer" onclick="checkAnswer(${i})">${answer}</button>`;
+});
+
+html += `</div>`;
+
+document.getElementById("quiz").innerHTML = html;
+}
+
+function checkAnswer(i){
+
+let q = questions[current];
+
+if(i === q.c){
+alert("إجابة صحيحة ✔");
+} else {
+alert("إجابة خاطئة ❌");
+}
+
+current++;
+
+// إذا انتهت الأسئلة اعرض النتيجة
+if(current >= questions.length){
+
+let score = 0;
+
+for(let j=0; j<questions.length; j++){
+score++;
+}
+
+let percent = Math.round((score / questions.length) * 100);
+
+let level = "";
+
+if(percent >= 90){
+level = "ممتاز";
+} else if(percent >= 75){
+level = "جيد جداً";
+} else if(percent >= 60){
+level = "جيد";
+} else {
+level = "يحتاج تطوير";
+}
+
+document.getElementById("quiz").innerHTML = `
+<div class="question">
+<h2>📊 النتيجة النهائية</h2>
+<br>
+<p>عدد الأسئلة: ${questions.length}</p>
+<p>النسبة: ${percent}%</p>
+<p>التقييم: ${level}</p>
+</div>
+`;
+
+return;
+}
+
+showQuestion();
+}
 </script>
 
 </body>
