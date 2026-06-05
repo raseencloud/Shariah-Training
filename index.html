@@ -167,6 +167,7 @@ document.getElementById("quiz").innerHTML = `
 
 let questions = [];
 let current = 0;
+let score = 0;
 
 async function loadQuestions() {
     const res = await fetch("fiqh-questions.json");
@@ -174,7 +175,7 @@ async function loadQuestions() {
     showQuestion();
 }
 
-function startExam() {
+function startExam(){
 
 let name = document.getElementById("candidateName").value;
 
@@ -184,14 +185,15 @@ return;
 }
 
 current = 0;
+score = 0;
+
 loadQuestions();
 }
 
-function showQuestion() {
+function showQuestion(){
 
 if(current >= questions.length){
-document.getElementById("quiz").innerHTML =
-"<h3>انتهى الاختبار ✔</h3>";
+showResult();
 return;
 }
 
@@ -217,15 +219,17 @@ function checkAnswer(i){
 let q = questions[current];
 
 if(i === q.c){
+score++;
 alert("إجابة صحيحة ✔");
 } else {
 alert("إجابة خاطئة ❌");
 }
 
 current++;
+showQuestion();
+}
 
-// إذا انتهت الأسئلة اعرض النتيجة
-if(current >= questions.length){
+function showResult(){
 
 let percent = Math.round((score / questions.length) * 100);
 
@@ -251,6 +255,7 @@ document.getElementById("quiz").innerHTML = `
 <p>التقييم: ${level}</p>
 </div>
 `;
+}
 
 return;
 }
