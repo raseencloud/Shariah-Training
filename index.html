@@ -194,6 +194,36 @@ document.getElementById("quiz").innerHTML = `
 </div>
 `;
 
+<script>
+
+let questions = [];
+let current = 0;
+let score = 0;
+
+async function loadQuestions() {
+    console.log("تحميل الملف بدأ...");
+
+    const res = await fetch("fiqh-questions.json");
+    questions = await res.json();
+
+    showQuestion();
+}
+
+function startExam() {
+
+let name = document.getElementById("candidateName").value;
+
+if (name.trim() === "") {
+    alert("يرجى إدخال اسم المتدرب");
+    return;
+}
+
+current = 0;
+score = 0;
+
+document.getElementById("quiz").innerHTML =
+`<div class="question">جاري تحميل الأسئلة...</div>`;
+
 loadQuestions();
 }
 
@@ -260,7 +290,6 @@ document.getElementById("quiz").innerHTML = `
 }
 
 </script>
-
 
 return;
 }
