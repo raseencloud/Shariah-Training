@@ -175,26 +175,33 @@ async function loadQuestions() {
     showQuestion();
 }
 
-function startExam(){
+function startExam() {
 
 let name = document.getElementById("candidateName").value;
 
-if(name.trim()===""){
-alert("يرجى إدخال اسم المتدرب");
-return;
+if (name.trim() === "") {
+    alert("يرجى إدخال اسم المتدرب");
+    return;
 }
 
 current = 0;
 score = 0;
 
+document.getElementById("quiz").innerHTML = `
+<div class="question">
+مرحباً ${name} <br><br>
+جاري تحميل الأسئلة...
+</div>
+`;
+
 loadQuestions();
 }
 
-function showQuestion(){
+function showQuestion() {
 
-if(current >= questions.length){
-showResult();
-return;
+if (current >= questions.length) {
+    showResult();
+    return;
 }
 
 let q = questions[current];
@@ -205,8 +212,8 @@ ${q.q}
 <br><br>
 `;
 
-q.a.forEach((answer, i)=>{
-html += `<button class="answer" onclick="checkAnswer(${i})">${answer}</button>`;
+q.a.forEach((answer, i) => {
+    html += `<button class="answer" onclick="checkAnswer(${i})">${answer}</button>`;
 });
 
 html += `</div>`;
@@ -214,48 +221,46 @@ html += `</div>`;
 document.getElementById("quiz").innerHTML = html;
 }
 
-function checkAnswer(i){
+function checkAnswer(i) {
 
 let q = questions[current];
 
-if(i === q.c){
-score++;
-alert("إجابة صحيحة ✔");
+if (i === q.c) {
+    score++;
+    alert("إجابة صحيحة ✔");
 } else {
-alert("إجابة خاطئة ❌");
+    alert("إجابة خاطئة ❌");
 }
 
 current++;
 showQuestion();
 }
 
-function showResult(){
+function showResult() {
 
 let percent = Math.round((score / questions.length) * 100);
 
 let level = "";
 
-if(percent >= 90){
-level = "ممتاز";
-} else if(percent >= 75){
-level = "جيد جداً";
-} else if(percent >= 60){
-level = "جيد";
-} else {
-level = "يحتاج تطوير";
-}
+if (percent >= 90) level = "ممتاز";
+else if (percent >= 75) level = "جيد جداً";
+else if (percent >= 60) level = "جيد";
+else level = "يحتاج تطوير";
 
 document.getElementById("quiz").innerHTML = `
 <div class="question">
 <h2>📊 النتيجة النهائية</h2>
 <br>
 <p>عدد الأسئلة: ${questions.length}</p>
-<p>عدد الإجابات الصحيحة: ${score}</p>
+<p>الإجابات الصحيحة: ${score}</p>
 <p>النسبة: ${percent}%</p>
 <p>التقييم: ${level}</p>
 </div>
 `;
 }
+
+</script>
+
 
 return;
 }
