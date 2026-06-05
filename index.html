@@ -141,16 +141,16 @@ let current = 0;
 let score = 0;
 
 async function loadQuestions() {
-    console.log("تحميل ملف الأسئلة...");
 
-    const res = await fetch("fiqh-questions.json");
-    questions = await res.json();
+const res = await fetch("fiqh-questions.json");
+questions = await res.json();
 
-    let count = parseInt(document.getElementById("questionCount").value);
-    questions = questions.slice(0, count);
+let count = parseInt(document.getElementById("questionCount").value);
+questions = questions.slice(0, count);
 
-    showQuestion();
+showQuestion();
 }
+
 function startExam() {
 
 let name = document.getElementById("candidateName").value;
@@ -163,9 +163,8 @@ if (name.trim() === "") {
 current = 0;
 score = 0;
 
-document.getElementById("quiz").innerHTML = `
-<div class="question">مرحباً ${name} <br><br>جاري تحميل الأسئلة...</div>
-`;
+document.getElementById("quiz").innerHTML =
+`<div class="question">مرحباً ${name} <br><br>جاري تحميل الأسئلة...</div>`;
 
 loadQuestions();
 }
@@ -193,7 +192,6 @@ html += `</div>`;
 
 document.getElementById("quiz").innerHTML = html;
 
-// 🔥 مهم جداً: إعادة تهيئة حالة الإجابة لكل سؤال جديد
 setTimeout(() => {
     document.querySelectorAll(".answer").forEach(a => {
         a.dataset.answered = "false";
@@ -202,34 +200,28 @@ setTimeout(() => {
 }, 0);
 
 }
+
 function checkAnswer(i) {
 
 let q = questions[current];
 let answers = document.querySelectorAll(".answer");
 
-// منع إعادة الاختيار بعد الإجابة
-if (answers[0].dataset.answered === "true") {
-    return;
-}
+if (answers[0].dataset.answered === "true") return;
 
-// تحديد أن السؤال تم الإجابة عليه
 answers.forEach(a => a.dataset.answered = "true");
 
 if (i === q.c) {
     score++;
-
     answers[i].style.background = "#dcfce7";
-
 } else {
-
     answers[i].style.background = "#fee2e2";
-
     answers[q.c].style.background = "#dcfce7";
 }
 
-// ⬅️ هذا هو المكان الصحيح (الانتقال للسؤال التالي)
 current++;
-showQuestion();
+setTimeout(() => {
+    showQuestion();
+}, 800);
 
 }
 
@@ -237,25 +229,20 @@ function showResult() {
 
 let percent = Math.round((score / questions.length) * 100);
 
-let level = "";
+let level = percent >= 90 ? "ممتاز" :
+            percent >= 75 ? "جيد جداً" :
+            percent >= 60 ? "جيد" : "يحتاج تطوير";
 
-if (percent >= 90) level = "ممتاز";
-else if (percent >= 75) level = "جيد جداً";
-else if (percent >= 60) level = "جيد";
-else level = "يحتاج تطوير";
-
-document.getElementById("quiz").innerHTML = `
-<div class="question">
+document.getElementById("quiz").innerHTML =
+`<div class="question">
 <h2>📊 النتيجة النهائية</h2>
 <br>
 <p>عدد الأسئلة: ${questions.length}</p>
 <p>الإجابات الصحيحة: ${score}</p>
 <p>النسبة: ${percent}%</p>
 <p>التقييم: ${level}</p>
-</div>
-`;
+</div>`;
 }
-
 </script>
 
 </body>
