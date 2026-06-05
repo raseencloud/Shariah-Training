@@ -134,114 +134,97 @@ button:hover{
 </div>
 
 <script>
-alert("JS يعمل");
-    
 let questions = [];
 let current = 0;
 let score = 0;
 
 async function loadQuestions() {
+    const res = await fetch("fiqh-questions.json");
+    questions = await res.json();
 
-const res = await fetch("fiqh-questions.json");
-questions = await res.json();
+    let count = parseInt(document.getElementById("questionCount").value);
+    questions = questions.slice(0, count);
 
-let count = parseInt(document.getElementById("questionCount").value);
-questions = questions.slice(0, count);
-
-showQuestion();
+    showQuestion();
 }
 
 function startExam() {
 
-let name = document.getElementById("candidateName").value;
+    let name = document.getElementById("candidateName").value;
 
-if (name.trim() === "") {
-    alert("يرجى إدخال اسم المتدرب");
-    return;
-}
+    if (name.trim() === "") {
+        alert("يرجى إدخال اسم المتدرب");
+        return;
+    }
 
-current = 0;
-score = 0;
+    current = 0;
+    score = 0;
 
-document.getElementById("quiz").innerHTML =
-`<div class="question">مرحباً ${name} <br><br>جاري تحميل الأسئلة...</div>`;
+    document.getElementById("quiz").innerHTML =
+        `<div class="question">مرحباً ${name} <br><br>جاري تحميل الأسئلة...</div>`;
 
-loadQuestions();
+    loadQuestions();
 }
 
 function showQuestion() {
 
-if (current >= questions.length) {
-    showResult();
-    return;
-}
+    if (current >= questions.length) {
+        showResult();
+        return;
+    }
 
-let q = questions[current];
+    let q = questions[current];
 
-let html = `
-<div class="question">
-${q.q}
-<br><br>
-`;
+    let html = `<div class="question">${q.q}<br><br>`;
 
-q.a.forEach((answer, i) => {
-    html += `<button class="answer" onclick="checkAnswer(${i})">${answer}</button>`;
-});
-
-html += `</div>`;
-
-document.getElementById("quiz").innerHTML = html;
-
-setTimeout(() => {
-    document.querySelectorAll(".answer").forEach(a => {
-        a.dataset.answered = "false";
-        a.style.background = "";
+    q.a.forEach((answer, i) => {
+        html += `<button class="answer" onclick="checkAnswer(${i})">${answer}</button>`;
     });
-}, 0);
 
+    html += `</div>`;
+
+    document.getElementById("quiz").innerHTML = html;
 }
 
 function checkAnswer(i) {
 
-let q = questions[current];
-let answers = document.querySelectorAll(".answer");
+    let q = questions[current];
+    let answers = document.querySelectorAll(".answer");
 
-if (answers[0].dataset.answered === "true") return;
+    if (i === q.c) {
+        score++;
+        answers[i].style.background = "#dcfce7";
+    } else {
+        answers[i].style.background = "#fee2e2";
+        answers[q.c].style.background = "#dcfce7";
+    }
 
-answers.forEach(a => a.dataset.answered = "true");
+    current++;
 
-if (i === q.c) {
-    score++;
-    answers[i].style.background = "#dcfce7";
-} else {
-    answers[i].style.background = "#fee2e2";
-    answers[q.c].style.background = "#dcfce7";
-}
-
-current++;
-setTimeout(() => {
-    showQuestion();
-}, 800);
-
+    setTimeout(() => {
+        showQuestion();
+    }, 700);
 }
 
 function showResult() {
 
-let percent = Math.round((score / questions.length) * 100);
+    let percent = Math.round((score / questions.length) * 100);
 
-let level = percent >= 90 ? "ممتاز" :
-            percent >= 75 ? "جيد جداً" :
-            percent >= 60 ? "جيد" : "يحتاج تطوير";
+    let level =
+        percent >= 90 ? "ممتاز" :
+        percent >= 75 ? "جيد جداً" :
+        percent >= 60 ? "جيد" : "يحتاج تطوير";
 
-document.getElementById("quiz").innerHTML =
-`<div class="question">
-<h2>📊 النتيجة النهائية</h2>
-<br>
-<p>عدد الأسئلة: ${questions.length}</p>
-<p>الإجابات الصحيحة: ${score}</p>
-<p>النسبة: ${percent}%</p>
-<p>التقييم: ${level}</p>
-</div>`;
+    document.getElementById("quiz").innerHTML = `
+        <div class="question">
+            <h2>📊 النتيجة النهائية</h2>
+            <br>
+            <p>عدد الأسئلة: ${questions.length}</p>
+            <p>الإجابات الصحيحة: ${score}</p>
+            <p>النسبة: ${percent}%</p>
+            <p>التقييم: ${level}</p>
+        </div>
+    `;
 }
 </script>
 
