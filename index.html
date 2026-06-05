@@ -200,9 +200,14 @@ let q = questions[current];
 
 if (i === q.c) {
     score++;
-    alert("إجابة صحيحة ✔");
+
+    // بدل alert
+    document.querySelectorAll(".answer")[i].style.background = "#dcfce7";
+
 } else {
-    alert("إجابة خاطئة ❌");
+
+    // بدل alert
+    document.querySelectorAll(".answer")[i].style.background = "#fee2e2";
 }
 
 current++;
