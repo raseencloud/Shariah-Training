@@ -227,12 +227,6 @@ current++;
 // إذا انتهت الأسئلة اعرض النتيجة
 if(current >= questions.length){
 
-let score = 0;
-
-for(let j=0; j<questions.length; j++){
-score++;
-}
-
 let percent = Math.round((score / questions.length) * 100);
 
 let level = "";
@@ -252,6 +246,7 @@ document.getElementById("quiz").innerHTML = `
 <h2>📊 النتيجة النهائية</h2>
 <br>
 <p>عدد الأسئلة: ${questions.length}</p>
+<p>عدد الإجابات الصحيحة: ${score}</p>
 <p>النسبة: ${percent}%</p>
 <p>التقييم: ${level}</p>
 </div>
