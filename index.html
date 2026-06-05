@@ -1,22 +1,82 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>منصة التدريب الفقهي</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة التدريب الفقهي</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #d1fae5;
+            text-align: center;
+            font-family: Tahoma, Arial, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: #065f46;
+            font-size: 40px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+        
+        p {
+            font-size: 20px;
+            color: #166534;
+            margin-bottom: 30px;
+        }
+        
+        #quiz {
+            margin: 30px auto;
+            max-width: 600px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        button {
+            background-color: #059669;
+            color: white;
+            font-size: 18px;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-family: Tahoma, Arial, sans-serif;
+        }
+        
+        button:hover {
+            background-color: #047857;
+        }
+        
+        button:active {
+            background-color: #065f46;
+        }
+    </style>
 </head>
 
-<body style="background-color:#d1fae5; text-align:center; font-family:Tahoma;">
-
-<h1 style="color:#065f46;font-size:40px;margin-top:40px;">
-🕌 منصة التدريب الفقهي
-</h1>
-
-<p style="font-size:20px;color:#166534;">
-تعلم واختبر معلوماتك الشرعية بطريقة تفاعلية
-</p>
-
-<div id="quiz"></div>
-<button onclick="loadQuestions()">ابدأ الاختبار</button>
-
+<body>
+    <h1>🕌 منصة التدريب الفقهي</h1>
+    
+    <p>تعلم واختبر معلوماتك الشرعية بطريقة تفاعلية</p>
+    
+    <div id="quiz"></div>
+    
+    <button onclick="loadQuestions()">ابدأ الاختبار</button>
+    
+    <script>
+        function loadQuestions() {
+            // سيتم إضافة كود تحميل الأسئلة هنا
+            console.log("تحميل الأسئلة...");
+        }
+    </script>
 </body>
 </html>
