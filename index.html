@@ -6,7 +6,6 @@
 <title>منصة التدريب الفقهي</title>
 
 <style>
-
 *{
     margin:0;
     padding:0;
@@ -62,16 +61,10 @@ button{
     border-radius:10px;
     font-size:18px;
     cursor:pointer;
-    transition:0.3s;
-    font-family:Tahoma, Arial, sans-serif;
 }
 
 button:hover{
     background:#15803d;
-}
-
-#quiz{
-    margin-top:20px;
 }
 
 .question{
@@ -101,7 +94,6 @@ button:hover{
     color:#6b7280;
     font-size:14px;
 }
-
 </style>
 
 </head>
@@ -110,19 +102,13 @@ button:hover{
 
 <h1>🕌 منصة التدريب الفقهي</h1>
 
-<p class="subtitle">
-تعلم واختبر معلوماتك الشرعية بطريقة تفاعلية
-</p>
+<p class="subtitle">تعلم واختبر معلوماتك الشرعية بطريقة تفاعلية</p>
 
 <div class="main-card">
 
-    <h2 style="color:#065f46;margin-bottom:20px;">
-بيانات الاختبار
-</h2>
-<input
-type="text"
-id="candidateName"
-placeholder="أدخل اسم المتدرب">
+<h2 style="color:#065f46;margin-bottom:20px;">بيانات الاختبار</h2>
+
+<input type="text" id="candidateName" placeholder="أدخل اسم المتدرب">
 
 <select id="questionCount">
 <option value="10">10 أسئلة</option>
@@ -130,38 +116,13 @@ placeholder="أدخل اسم المتدرب">
 <option value="30">30 سؤالاً</option>
 </select>
 
-<button onclick="startExam()">
-ابدأ الاختبار
-</button>
+<button onclick="startExam()">ابدأ الاختبار</button>
 
 <div id="quiz"></div>
 
-<div class="footer">
-منصة تدريب شرعي تجريبية
-</div>
+<div class="footer">منصة تدريب شرعي تجريبية</div>
 
 </div>
-
-<script>
-
-function startExam(){
-
-let name =
-document.getElementById("candidateName").value;
-
-if(name.trim()===""){
-alert("يرجى إدخال اسم المتدرب");
-return;
-}
-
-document.getElementById("quiz").innerHTML = `
-<div class="question">
-مرحباً ${name} <br><br>
-جاهز لبدء الاختبار الفقهي ✅ 
-</div>
-`;
-
-}
 
 <script>
 
@@ -170,38 +131,7 @@ let current = 0;
 let score = 0;
 
 async function loadQuestions() {
-    const res = await fetch("fiqh-questions.json");
-    questions = await res.json();
-    showQuestion();
-}
-
-function startExam() {
-
-let name = document.getElementById("candidateName").value;
-
-if (name.trim() === "") {
-    alert("يرجى إدخال اسم المتدرب");
-    return;
-}
-
-current = 0;
-score = 0;
-
-document.getElementById("quiz").innerHTML = `
-<div class="question">
-مرحباً ${name} <br><br>
-جاري تحميل الأسئلة...
-</div>
-`;
-
-<script>
-
-let questions = [];
-let current = 0;
-let score = 0;
-
-async function loadQuestions() {
-    console.log("تحميل الملف بدأ...");
+    console.log("تحميل ملف الأسئلة...");
 
     const res = await fetch("fiqh-questions.json");
     questions = await res.json();
@@ -221,8 +151,9 @@ if (name.trim() === "") {
 current = 0;
 score = 0;
 
-document.getElementById("quiz").innerHTML =
-`<div class="question">جاري تحميل الأسئلة...</div>`;
+document.getElementById("quiz").innerHTML = `
+<div class="question">مرحباً ${name} <br><br>جاري تحميل الأسئلة...</div>
+`;
 
 loadQuestions();
 }
@@ -289,13 +220,6 @@ document.getElementById("quiz").innerHTML = `
 `;
 }
 
-</script>
-
-return;
-}
-
-showQuestion();
-}
 </script>
 
 </body>
