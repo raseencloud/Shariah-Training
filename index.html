@@ -197,19 +197,31 @@ document.getElementById("quiz").innerHTML = html;
 function checkAnswer(i) {
 
 let q = questions[current];
+let answers = document.querySelectorAll(".answer");
+
+// منع إعادة الاختيار بعد الإجابة
+if (answers[0].dataset.answered === "true") {
+    return;
+}
+
+// تحديد أن السؤال تم الإجابة عليه
+answers.forEach(a => a.dataset.answered = "true");
 
 if (i === q.c) {
     score++;
 
-    // بدل alert
-    document.querySelectorAll(".answer")[i].style.background = "#dcfce7";
+    // الإجابة الصحيحة
+    answers[i].style.background = "#dcfce7";
 
 } else {
 
-    // بدل alert
-    document.querySelectorAll(".answer")[i].style.background = "#fee2e2";
-}
+    // إجابة المستخدم (خطأ)
+    answers[i].style.background = "#fee2e2";
 
+    // إظهار الإجابة الصحيحة
+    answers[q.c].style.background = "#dcfce7";
+}
+}
 current++;
 showQuestion();
 }
