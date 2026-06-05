@@ -1,5 +1,11 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl">.question{
+    font-size:22px;
+    color:#0f172a;
+    font-weight:600;
+    margin-bottom:20px;
+    line-height:1.8;
+}
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -138,9 +144,11 @@ async function loadQuestions() {
     const res = await fetch("fiqh-questions.json");
     questions = await res.json();
 
+    let count = parseInt(document.getElementById("questionCount").value);
+    questions = questions.slice(0, count);
+
     showQuestion();
 }
-
 function startExam() {
 
 let name = document.getElementById("candidateName").value;
