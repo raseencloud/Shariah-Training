@@ -218,20 +218,19 @@ answers.forEach(a => a.dataset.answered = "true");
 if (i === q.c) {
     score++;
 
-    // الإجابة الصحيحة
     answers[i].style.background = "#dcfce7";
 
 } else {
 
-    // إجابة المستخدم (خطأ)
     answers[i].style.background = "#fee2e2";
 
-    // إظهار الإجابة الصحيحة
     answers[q.c].style.background = "#dcfce7";
 }
-}
+
+// ⬅️ هذا هو المكان الصحيح (الانتقال للسؤال التالي)
 current++;
 showQuestion();
+
 }
 
 function showResult() {
