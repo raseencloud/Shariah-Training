@@ -255,15 +255,15 @@ async function loadQuestions() {
 
         questions = await res.json();
 
-      questions = await res.json();
-
-showQuestion();
+        showQuestion();
 
     } catch (err) {
-        document.getElementById("loading").innerHTML =
-            "تعذر تحميل الأسئلة، يرجى تحديث الصفحة";
+        document.getElementById("quiz").innerHTML =
+            "<div class='question'>تعذر تحميل الأسئلة، يرجى تحديث الصفحة</div>";
+
         console.error(err);
     }
+}
     
 function startExam() {
 
