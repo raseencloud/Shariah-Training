@@ -140,19 +140,6 @@ async function loadAllQuestions() {
         if (!res.ok) throw new Error("File not found");
 
         allQuestions = await res.json();
-        
-function selectRandomQuestions() {
-    let shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
-    questions = shuffled.slice(0, selectedCount);
-}
-
-async function loadAllQuestions() {
-    try {
-        const res = await fetch("fiqh-questions.json");
-
-        if (!res.ok) throw new Error("File not found");
-
-        allQuestions = await res.json();
 
         selectRandomQuestions();
         showQuestion();
@@ -163,10 +150,10 @@ async function loadAllQuestions() {
         console.error(err);
     }
 }
-        
+
 function selectRandomQuestions() {
     // خلط الأسئلة عشوائياً
-    let shuffled = allQuestions.sort(() => 0.5 - Math.random());
+    let shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
     
     // اختيار عدد الأسئلة المطلوب
     questions = shuffled.slice(0, selectedCount);
@@ -216,14 +203,9 @@ function showQuestion() {
 function checkAnswer(i) {
 
     let q = questions[current];
-    let answers = document.querySelectorAll(".answer");
 
     if (i === q.c) {
         score++;
-        answers[i].style.background = "#dcfce7";
-    } else {
-        answers[i].style.background = "#fee2e2";
-        answers[q.c].style.background = "#dcfce7";
     }
 
     current++;
@@ -250,7 +232,7 @@ function showResult() {
 
     document.getElementById("quiz").innerHTML = html;
 }
-    </script>
+</script>
 
 </body>
 </html>
