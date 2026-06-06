@@ -215,34 +215,20 @@ function checkAnswer(i) {
     lockClick = true;
 
     let q = questions[current];
-    let correct = Number(q.c);
+    let answers = document.querySelectorAll(".answer");
 
-    let isCorrect = (i === correct);
-
-    if (isCorrect) score++;
-
-    answersHistory.push({
-        question: q.q,
-        chosen: i,
-        correct: correct,
-        isCorrect: isCorrect
-    });
-
-    let buttons = document.querySelectorAll(".answer");
-
-    buttons.forEach((btn, idx) => {
-        if (idx === correct) {
-            btn.style.background = "#dcfce7";
-        } else if (idx === i && !isCorrect) {
-            btn.style.background = "#fee2e2";
-        }
-    });
+    if (i === q.c) {
+        score++;
+        answers[i].style.background = "#dcfce7";
+    } else {
+        answers[i].style.background = "#fee2e2";
+        answers[q.c].style.background = "#dcfce7";
+    }
 
     current++;
 
-    setTimeout(() => showQuestion(), 500);
+    setTimeout(() => showQuestion(), 600);
 }
-
 function showResult() {
 
     let percent = Math.round((score / questions.length) * 100);
