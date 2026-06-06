@@ -218,7 +218,17 @@ q.c = answers.findIndex(x => x.correct);
 
 function checkAnswer(i) {
 
-    let q = questions[current];
+    let q = JSON.parse(JSON.stringify(questions[current]));
+
+let answers = q.a.map((text, i) => ({
+    text,
+    correct: i === q.c
+}));
+
+answers = shuffleArray(answers);
+
+q.a = answers.map(x => x.text);
+q.c = answers.findIndex(x => x.correct);
     let answers = document.querySelectorAll(".answer");
 
     if (i === q.c) {
