@@ -1,11 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">.question{
-    font-size:22px;
-    color:#0f172a;
-    font-weight:600;
-    margin-bottom:20px;
-    line-height:1.8;
-}
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -77,7 +71,10 @@ button:hover{
     font-size:22px;
     color:#111827;
     font-weight:700;
+    margin-bottom:20px;
+    line-height:1.8;
 }
+
 .answer{
     width:100%;
     margin:8px 0;
@@ -87,15 +84,12 @@ button:hover{
     border-radius:10px;
     cursor:pointer;
     font-size:16px;
-
-    color:#000000 !important;
+    color:#000;
     font-weight:800;
-    opacity:1;
 }
 
 .answer:hover{
     background:#dcfce7;
-    color:#000000 !important;
 }
 
 .footer{
@@ -110,7 +104,6 @@ button:hover{
 <body>
 
 <h1>🕌 منصة التدريب الفقهي</h1>
-
 <p class="subtitle">تعلم واختبر معلوماتك الشرعية بطريقة تفاعلية</p>
 
 <div class="main-card">
@@ -142,9 +135,7 @@ async function loadQuestions() {
     try {
         const res = await fetch("fiqh-questions.json");
 
-        if (!res.ok) {
-            throw new Error("File not found");
-        }
+        if (!res.ok) throw new Error("File not found");
 
         questions = await res.json();
 
@@ -153,7 +144,6 @@ async function loadQuestions() {
     } catch (err) {
         document.getElementById("quiz").innerHTML =
             "<div class='question'>تعذر تحميل الأسئلة، يرجى تحديث الصفحة</div>";
-
         console.error(err);
     }
 }
@@ -194,10 +184,6 @@ function showQuestion() {
     html += `</div>`;
 
     document.getElementById("quiz").innerHTML = html;
-
-    document.querySelectorAll(".answer").forEach(a => {
-        a.dataset.answered = "false";
-    });
 }
 
 function checkAnswer(i) {
@@ -215,9 +201,7 @@ function checkAnswer(i) {
 
     current++;
 
-    setTimeout(() => {
-        showQuestion();
-    }, 700);
+    setTimeout(() => showQuestion(), 700);
 }
 
 function showResult() {
@@ -232,113 +216,6 @@ function showResult() {
     document.getElementById("quiz").innerHTML = `
         <div class="question">
             <h2>📊 النتيجة النهائية</h2>
-            <br>
-            <p>عدد الأسئلة: ${questions.length}</p>
-            <p>الإجابات الصحيحة: ${score}</p>
-            <p>النسبة: ${percent}%</p>
-            <p>التقييم: ${level}</p>
-        </div>
-    `;
-}
-</script>
-let questions = [];
-let current = 0;
-let score = 0;
-
-async function loadQuestions() {
-    try {
-        const res = await fetch("fiqh-questions.json");
-
-        if (!res.ok) {
-            throw new Error("File not found");
-        }
-
-        questions = await res.json();
-
-        showQuestion();
-
-    } catch (err) {
-        document.getElementById("quiz").innerHTML =
-            "<div class='question'>تعذر تحميل الأسئلة، يرجى تحديث الصفحة</div>";
-
-        console.error(err);
-    }
-}
-    
-function startExam() {
-
-    let name = document.getElementById("candidateName").value;
-
-    if (name.trim() === "") {
-        alert("يرجى إدخال اسم المتدرب");
-        return;
-    }
-
-    current = 0;
-    score = 0;
-
-    document.getElementById("quiz").innerHTML =
-        `<div class="question">مرحباً ${name} <br><br>جاري تحميل الأسئلة...</div>`;
-
-    loadQuestions();
-}
-
-function showQuestion() {
-
-    if (current >= questions.length) {
-        showResult();
-        return;
-    }
-
-    let q = questions[current];
-
-    let html = `<div class="question">${q.q}<br><br>`;
-
-    q.a.forEach((answer, i) => {
-        html += `<button class="answer" onclick="checkAnswer(${i})">${answer}</button>`;
-    });
-
-    html += `</div>`;
-
-    document.getElementById("quiz").innerHTML = html;
-
-    document.querySelectorAll(".answer").forEach(a => {
-        a.dataset.answered = "false";
-    });
-}
-function checkAnswer(i) {
-
-    let q = questions[current];
-    let answers = document.querySelectorAll(".answer");
-
-    if (i === q.c) {
-        score++;
-        answers[i].style.background = "#dcfce7";
-    } else {
-        answers[i].style.background = "#fee2e2";
-        answers[q.c].style.background = "#dcfce7";
-    }
-
-    current++;
-
-    setTimeout(() => {
-        showQuestion();
-    }, 700);
-}
-
-function showResult() {
-
-    let percent = Math.round((score / questions.length) * 100);
-
-    let level =
-        percent >= 90 ? "ممتاز" :
-        percent >= 75 ? "جيد جداً" :
-        percent >= 60 ? "جيد" : "يحتاج تطوير";
-
-    document.getElementById("quiz").innerHTML = `
-        <div class="question">
-            <h2>📊 النتيجة النهائية</h2>
-            <br>
             <p>عدد الأسئلة: ${questions.length}</p>
             <p>الإجابات الصحيحة: ${score}</p>
             <p>النسبة: ${percent}%</p>
