@@ -127,7 +127,8 @@ button:hover{
 </div>
 
 <script>
-    let candidateName = "";
+
+let candidateName = "";
 let allQuestions = [];
 let questions = [];
 let current = 0;
@@ -139,45 +140,84 @@ let lockClick = false;
 let answersHistory = [];
 
 async function loadAllQuestions() {
+
     try {
+
         const res = await fetch("fiqh-questions.json");
 
-        if (!res.ok) throw new Error("File not found");
+        if (!res.ok) {
+            throw new Error("File not found");
+        }
 
         allQuestions = await res.json();
+
+        allQuestions = allQuestions.filter(q => {
+
+            return (
+                q &&
+                typeof q.q === "string" &&
+                Array.isArray(q.a) &&
+                q.a.length === 4 &&
+                Number.isInteger(q.c) &&
+                q.c >= 0 &&
+                q.c <= 3
+            );
+
+        });
+
+        allQuestions.forEach(Object.freeze);
+        Object.freeze(allQuestions);
 
         selectRandomQuestions();
         showQuestion();
 
     } catch (err) {
+
         document.getElementById("quiz").innerHTML =
             "<div class='question'>تعذر تحميل الأسئلة</div>";
+
         console.error(err);
     }
 }
 
 function selectRandomQuestions() {
-    let shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
+
+    let shuffled = [...allQuestions];
+
+    for (let i = shuffled.length - 1; i > 0; i--) {
+
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [shuffled[i], shuffled[j]] =
+        [shuffled[j], shuffled[i]];
+    }
+
     questions = shuffled.slice(0, selectedCount);
 }
 
 function startExam() {
 
-    candidateName = document.getElementById("candidateName").value;
+    candidateName =
+        document.getElementById("candidateName").value;
 
     if (!candidateName.trim()) {
+
         alert("يرجى إدخال الاسم");
         return;
     }
 
-    selectedCount = parseInt(document.getElementById("questionCount").value);
+    selectedCount = parseInt(
+        document.getElementById("questionCount").value
+    );
 
     current = 0;
     score = 0;
     answersHistory = [];
 
     document.getElementById("quiz").innerHTML =
-        `<div class="question">مرحباً ${candidateName}... جاري التحميل</div>`;
+        `<div class="question">
+            مرحباً ${candidateName}... جاري التحميل
+        </div>`;
 
     loadAllQuestions();
 }
@@ -188,71 +228,109 @@ function showQuestion() {
     lockClick = false;
 
     if (current >= questions.length) {
+
         showResult();
         return;
     }
 
-    let q = questions[current];
+    const q = questions[current];
 
-        window.correctAnswer = q.c;
+    if (!q) {
 
-    let html = `<div class="question">${q.q}<br><br>`;
+        showResult();
+        return;
+    }
+
+    let html =
+        `<div class="question">
+            ${q.q}
+            <br><br>`;
 
     q.a.forEach((answer, i) => {
-        html += `<button class="answer" onclick="checkAnswer(${i})">${answer}</button>`;
+
+        html +=
+        `<button class="answer"
+            onclick="checkAnswer(${i})">
+            ${answer}
+        </button>`;
     });
 
     html += `</div>`;
 
     document.getElementById("quiz").innerHTML = html;
 }
-function checkAnswer(i) {
+
+function checkAnswer(selectedIndex) {
 
     if (answered || lockClick) return;
 
     answered = true;
     lockClick = true;
 
-    let answers = document.querySelectorAll(".answer");
+    const q = questions[current];
 
-    if (i === window.correctAnswer) {
+    const correctIndex = Number(q.c);
+
+    const answers =
+        document.querySelectorAll(".answer");
+
+    if (selectedIndex === correctIndex) {
+
         score++;
-        answers[i].style.background = "#dcfce7";
+
+        answers[selectedIndex].style.background =
+            "#dcfce7";
+
     } else {
-        answers[i].style.background = "#fee2e2";
-        answers[window.correctAnswer].style.background = "#dcfce7";
+
+        answers[selectedIndex].style.background =
+            "#fee2e2";
+
+        answers[correctIndex].style.background =
+            "#dcfce7";
     }
 
     current++;
 
-    setTimeout(() => showQuestion(), 600);
+    setTimeout(showQuestion, 600);
 }
+
 function showResult() {
 
-    let percent = Math.round((score / questions.length) * 100);
+    let percent =
+        Math.round((score / questions.length) * 100);
 
     let level =
         percent >= 90 ? "ممتاز" :
         percent >= 75 ? "جيد جداً" :
-        percent >= 60 ? "جيد" : "يحتاج تطوير";
+        percent >= 60 ? "جيد" :
+        "يحتاج تطوير";
 
-    let wrongCount = questions.length - score;
+    let wrongCount =
+        questions.length - score;
 
     let html = `
+
     <div class="question">
 
         <h2>📊 تقرير الأداء</h2>
 
         <p>المتدرب: ${candidateName}</p>
+
         <p>عدد الأسئلة: ${questions.length}</p>
+
         <p>الإجابات الصحيحة: ${score}</p>
+
         <p>الإجابات الخاطئة: ${wrongCount}</p>
+
         <p>النسبة: ${percent}%</p>
+
         <p>التقييم: ${level}</p>
 
         <hr>
 
-        <button onclick="showCertificate()" style="
+        <button onclick="showCertificate()"
+        style="
             background:#065f46;
             color:white;
             padding:12px;
@@ -260,16 +338,17 @@ function showResult() {
             border-radius:10px;
             width:100%;
         ">
-        🎓 إصدار شهادة
+            🎓 إصدار شهادة
         </button>
 
     </div>
     `;
 
-    document.getElementById("quiz").innerHTML = html;
+    document.getElementById("quiz").innerHTML =
+        html;
 }
 
-function showCertificate() {
+    function showCertificate() {
 
     let percent = Math.round((score / questions.length) * 100);
 
