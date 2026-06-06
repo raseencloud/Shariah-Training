@@ -137,7 +137,6 @@ let selectedCount = 10;
 
 let answered = false;
 let lockClick = false;
-let answersHistory = [];
 
 async function loadAllQuestions() {
 
@@ -151,22 +150,15 @@ async function loadAllQuestions() {
 
         allQuestions = await res.json();
 
-        allQuestions = allQuestions.filter(q => {
-
-            return (
-                q &&
-                typeof q.q === "string" &&
-                Array.isArray(q.a) &&
-                q.a.length === 4 &&
-                Number.isInteger(q.c) &&
-                q.c >= 0 &&
-                q.c <= 3
-            );
-
-        });
-
-        allQuestions.forEach(Object.freeze);
-        Object.freeze(allQuestions);
+        allQuestions = allQuestions.filter(q => (
+            q &&
+            typeof q.q === "string" &&
+            Array.isArray(q.a) &&
+            q.a.length === 4 &&
+            Number.isInteger(q.c) &&
+            q.c >= 0 &&
+            q.c <= 3
+        ));
 
         selectRandomQuestions();
         showQuestion();
@@ -174,7 +166,7 @@ async function loadAllQuestions() {
     } catch (err) {
 
         document.getElementById("quiz").innerHTML =
-            "<div class='question'>تعذر تحميل الأسئلة</div>";
+            "<div class='question'>تعذر تحميل ملف الأسئلة</div>";
 
         console.error(err);
     }
@@ -201,7 +193,6 @@ function startExam() {
         document.getElementById("candidateName").value;
 
     if (!candidateName.trim()) {
-
         alert("يرجى إدخال الاسم");
         return;
     }
@@ -212,12 +203,9 @@ function startExam() {
 
     current = 0;
     score = 0;
-    answersHistory = [];
 
     document.getElementById("quiz").innerHTML =
-        `<div class="question">
-            مرحباً ${candidateName}... جاري التحميل
-        </div>`;
+        `<div class="question">جاري تحميل الاختبار...</div>`;
 
     loadAllQuestions();
 }
@@ -228,31 +216,16 @@ function showQuestion() {
     lockClick = false;
 
     if (current >= questions.length) {
-
         showResult();
         return;
     }
 
     const q = questions[current];
 
-    if (!q) {
-
-        showResult();
-        return;
-    }
-
-    let html =
-        `<div class="question">
-            ${q.q}
-            <br><br>`;
+    let html = `<div class="question">${q.q}<br><br>`;
 
     q.a.forEach((answer, i) => {
-
-        html +=
-        `<button class="answer"
-            onclick="checkAnswer(${i})">
-            ${answer}
-        </button>`;
+        html += `<button class="answer" onclick="checkAnswer(${i})">${answer}</button>`;
     });
 
     html += `</div>`;
@@ -268,26 +241,19 @@ function checkAnswer(selectedIndex) {
     lockClick = true;
 
     const q = questions[current];
-
     const correctIndex = Number(q.c);
 
-    const answers =
-        document.querySelectorAll(".answer");
+    const answers = document.querySelectorAll(".answer");
 
     if (selectedIndex === correctIndex) {
 
         score++;
-
-        answers[selectedIndex].style.background =
-            "#dcfce7";
+        answers[selectedIndex].style.background = "#dcfce7";
 
     } else {
 
-        answers[selectedIndex].style.background =
-            "#fee2e2";
-
-        answers[correctIndex].style.background =
-            "#dcfce7";
+        answers[selectedIndex].style.background = "#fee2e2";
+        answers[correctIndex].style.background = "#dcfce7";
     }
 
     current++;
@@ -297,8 +263,7 @@ function checkAnswer(selectedIndex) {
 
 function showResult() {
 
-    let percent =
-        Math.round((score / questions.length) * 100);
+    let percent = Math.round((score / questions.length) * 100);
 
     let level =
         percent >= 90 ? "ممتاز" :
@@ -306,90 +271,30 @@ function showResult() {
         percent >= 60 ? "جيد" :
         "يحتاج تطوير";
 
-    let wrongCount =
-        questions.length - score;
+    let wrong = questions.length - score;
 
-    let html = `
-
+    document.getElementById("quiz").innerHTML = `
     <div class="question">
 
         <h2>📊 تقرير الأداء</h2>
 
         <p>المتدرب: ${candidateName}</p>
-
         <p>عدد الأسئلة: ${questions.length}</p>
-
         <p>الإجابات الصحيحة: ${score}</p>
-
-        <p>الإجابات الخاطئة: ${wrongCount}</p>
-
+        <p>الإجابات الخاطئة: ${wrong}</p>
         <p>النسبة: ${percent}%</p>
-
         <p>التقييم: ${level}</p>
 
         <hr>
 
         <button onclick="showCertificate()"
-        style="
-            background:#065f46;
-            color:white;
-            padding:12px;
-            border:none;
-            border-radius:10px;
-            width:100%;
-        ">
+            style="background:#065f46;color:white;padding:12px;border:none;border-radius:10px;width:100%;">
             🎓 إصدار شهادة
         </button>
 
-    </div>
-    `;
-
-    document.getElementById("quiz").innerHTML =
-        html;
+    </div>`;
 }
 
-    function showCertificate() {
-
-    let percent = Math.round((score / questions.length) * 100);
-
-    document.getElementById("quiz").innerHTML = `
-    <div class="question">
-
-        <h2>🎓 شهادة إتمام التدريب</h2>
-
-        <p style="line-height:2;font-size:18px">
-
-        تشهد منصة التدريب الفقهي بأن<br><br>
-
-        <b>${candidateName}</b><br><br>
-
-        اجتاز الاختبار بنتيجة<br>
-
-        <b>${score} / ${questions.length}</b><br>
-        بمعدل <b>${percent}%</b><br><br>
-
-        نسأل الله له التوفيق والسداد.
-
-        </p>
-
-        <button onclick="showResult()" style="
-            margin-top:10px;
-            background:#16a34a;
-            color:white;
-            padding:10px;
-            border:none;
-            border-radius:10px;
-            width:100%;
-        ">
-        العودة للتقرير
-        </button>
-
-    </div>
-    `;
-}
-    document.getElementById("quiz").innerHTML = html;
-}
-    
 function showCertificate() {
 
     let percent = Math.round((score / questions.length) * 100);
@@ -400,42 +305,24 @@ function showCertificate() {
         <h2>🎓 شهادة إتمام التدريب</h2>
 
         <p style="font-size:18px;line-height:2;">
-        تشهد منصة التدريب الفقهي بأن المتدرب<br><br>
+            تشهد منصة التدريب الفقهي بأن<br><br>
 
-        <b>${candidateName}</b><br><br>
+            <b>${candidateName}</b><br><br>
 
-        قد اجتاز الاختبار بنتيجة<br>
+            حصل على نتيجة:<br>
 
-        <b>${score} / ${questions.length}</b><br>
-        بمعدل <b>${percent}%</b><br><br>
-
-        نسأل الله أن ينفعه بما تعلم، وأن يزيده علماً وعملاً صالحاً.
+            <b>${score} / ${questions.length}</b><br>
+            بنسبة <b>${percent}%</b><br><br>
         </p>
 
-        <button onclick="showResult()" style="
-            margin-top:15px;
-            background:#16a34a;
-            color:white;
-            padding:12px;
-            border:none;
-            border-radius:10px;
-            cursor:pointer;
-            width:100%;
-        ">
-        العودة
+        <button onclick="showResult()"
+            style="background:#16a34a;color:white;padding:12px;border:none;border-radius:10px;width:100%;">
+            العودة للتقرير
         </button>
 
     </div>`;
 }
-    document.getElementById("quiz").innerHTML = html;
-}
-    document.addEventListener("click", function(e) {
-    if (e.target && e.target.id === "certBtn") {
-        showCertificate();
-    }
-});
-    
-</script>
 
+</script>
 </body>
 </html>
