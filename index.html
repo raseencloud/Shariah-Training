@@ -140,12 +140,21 @@ async function loadAllQuestions() {
         if (!res.ok) throw new Error("File not found");
 
         allQuestions = await res.json();
-
-        function selectRandomQuestions() {
+        
+function selectRandomQuestions() {
     let shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
     questions = shuffled.slice(0, selectedCount);
 }
-        
+
+async function loadAllQuestions() {
+    try {
+        const res = await fetch("fiqh-questions.json");
+
+        if (!res.ok) throw new Error("File not found");
+
+        allQuestions = await res.json();
+
+        selectRandomQuestions();
         showQuestion();
 
     } catch (err) {
@@ -154,7 +163,7 @@ async function loadAllQuestions() {
         console.error(err);
     }
 }
-
+        
 function selectRandomQuestions() {
     // خلط الأسئلة عشوائياً
     let shuffled = allQuestions.sort(() => 0.5 - Math.random());
