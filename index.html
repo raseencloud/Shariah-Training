@@ -231,7 +231,6 @@ function showQuestion() {
 
     setTimeout(() => showQuestion(), 600);
 }
-
 function showResult() {
 
     let percent = Math.round((score / questions.length) * 100);
@@ -271,11 +270,12 @@ function showResult() {
 
     document.getElementById("quiz").innerHTML = html;
 }
-    function showCertificate() {
+    
+function showCertificate() {
 
     let percent = Math.round((score / questions.length) * 100);
 
-    let html = `
+    document.getElementById("quiz").innerHTML = `
     <div class="question">
 
         <h2>🎓 شهادة إتمام التدريب</h2>
@@ -285,13 +285,12 @@ function showResult() {
 
         <b>${candidateName}</b><br><br>
 
-        قد اجتاز الاختبار الفقهي بنتيجة<br>
+        قد اجتاز الاختبار بنتيجة<br>
 
         <b>${score} / ${questions.length}</b><br>
         بمعدل <b>${percent}%</b><br><br>
 
-        نسأل الله أن ينفعه بما تعلم، وأن يزيده علماً وعملاً صالحاً،
-        وأن يعينه على طلب العلم والعمل به.
+        نسأل الله أن ينفعه بما تعلم، وأن يزيده علماً وعملاً صالحاً.
         </p>
 
         <button onclick="showResult()" style="
@@ -304,12 +303,11 @@ function showResult() {
             cursor:pointer;
             width:100%;
         ">
-        🔙 العودة للنتيجة
+        العودة
         </button>
 
-    </div>
-    `;
-
+    </div>`;
+}
     document.getElementById("quiz").innerHTML = html;
 }
 </script>
