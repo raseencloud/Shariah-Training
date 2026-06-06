@@ -166,11 +166,17 @@ function selectRandomQuestions() {
 }
 
 function startExam() {
-
-    candidateName = document.getElementById("candidateName").value;
     
-    let name = document.getElementById("candidateName").value;
+candidateName = document.getElementById("candidateName").value;
 
+let name = document.getElementById("candidateName").value;candidateName = document.getElementById("candidateName").value;
+
+if (candidateName.trim() === "") {
+    alert("يرجى إدخال اسم المتدرب");
+    return;
+}
+    
+    
     if (name.trim() === "") {
         alert("يرجى إدخال اسم المتدرب");
         return;
