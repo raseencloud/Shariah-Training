@@ -255,10 +255,9 @@ async function loadQuestions() {
 
         questions = await res.json();
 
-        document.getElementById("loading").style.display = "none";
-        document.getElementById("quiz").style.display = "block";
+      questions = await res.json();
 
-        showQuestion();
+showQuestion();
 
     } catch (err) {
         document.getElementById("loading").innerHTML =
