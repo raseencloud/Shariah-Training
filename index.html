@@ -206,7 +206,7 @@ function showQuestion() {
 
     document.getElementById("quiz").innerHTML = html;
 }
-function checkAnswer(i) {
+ function checkAnswer(i) {
 
     if (answered || lockClick) return;
 
@@ -214,14 +214,17 @@ function checkAnswer(i) {
     lockClick = true;
 
     let q = questions[current];
+
+    let correctIndex = Number(q.c);
+
     let answers = document.querySelectorAll(".answer");
 
-    if (i === q.c) {
+    if (i === correctIndex) {
         score++;
         answers[i].style.background = "#dcfce7";
     } else {
         answers[i].style.background = "#fee2e2";
-        answers[q.c].style.background = "#dcfce7";
+        answers[correctIndex].style.background = "#dcfce7";
     }
 
     current++;
