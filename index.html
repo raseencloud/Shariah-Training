@@ -164,32 +164,22 @@ function selectRandomQuestions() {
     // اختيار عدد الأسئلة المطلوب
     questions = shuffled.slice(0, selectedCount);
 }
-
 function startExam() {
-    
-candidateName = document.getElementById("candidateName").value;
 
-let name = document.getElementById("candidateName").value;candidateName = document.getElementById("candidateName").value;
+    candidateName = document.getElementById("candidateName").value;
 
-if (candidateName.trim() === "") {
-    alert("يرجى إدخال اسم المتدرب");
-    return;
-}
-    
-    
-    if (name.trim() === "") {
+    if (candidateName.trim() === "") {
         alert("يرجى إدخال اسم المتدرب");
         return;
     }
 
-    // الحصول على عدد الأسئلة المختارة
     selectedCount = parseInt(document.getElementById("questionCount").value);
 
     current = 0;
     score = 0;
 
     document.getElementById("quiz").innerHTML =
-        `<div class="question">مرحباً ${name}<br><br>جاري تحميل الأسئلة...</div>`;
+        `<div class="question">مرحباً ${candidateName}<br><br>جاري تحميل الأسئلة...</div>`;
 
     loadAllQuestions();
 }
