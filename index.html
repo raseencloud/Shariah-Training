@@ -310,6 +310,12 @@ function showCertificate() {
 }
     document.getElementById("quiz").innerHTML = html;
 }
+    document.addEventListener("click", function(e) {
+    if (e.target && e.target.id === "certBtn") {
+        showCertificate();
+    }
+});
+    
 </script>
 
 </body>
