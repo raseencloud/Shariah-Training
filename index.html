@@ -144,12 +144,11 @@ async function loadAllQuestions() {
 
         const res = await fetch("fiqh-questions.json");
 
-        if (!res.ok) {
-            throw new Error("File not found");
-        }
+        if (!res.ok) throw new Error("File not found");
 
         allQuestions = await res.json();
 
+        // فلترة حماية البيانات
         allQuestions = allQuestions.filter(q => (
             q &&
             typeof q.q === "string" &&
@@ -197,9 +196,8 @@ function startExam() {
         return;
     }
 
-    selectedCount = parseInt(
-        document.getElementById("questionCount").value
-    );
+    selectedCount =
+        parseInt(document.getElementById("questionCount").value);
 
     current = 0;
     score = 0;
@@ -221,6 +219,11 @@ function showQuestion() {
     }
 
     const q = questions[current];
+
+    if (!q) {
+        showResult();
+        return;
+    }
 
     let html = `<div class="question">${q.q}<br><br>`;
 
@@ -263,7 +266,8 @@ function checkAnswer(selectedIndex) {
 
 function showResult() {
 
-    let percent = Math.round((score / questions.length) * 100);
+    let percent =
+        Math.round((score / questions.length) * 100);
 
     let level =
         percent >= 90 ? "ممتاز" :
@@ -297,7 +301,8 @@ function showResult() {
 
 function showCertificate() {
 
-    let percent = Math.round((score / questions.length) * 100);
+    let percent =
+        Math.round((score / questions.length) * 100);
 
     document.getElementById("quiz").innerHTML = `
     <div class="question">
@@ -305,18 +310,22 @@ function showCertificate() {
         <h2>🎓 شهادة إتمام التدريب</h2>
 
         <p style="font-size:18px;line-height:2;">
+
             تشهد منصة التدريب الفقهي بأن<br><br>
 
             <b>${candidateName}</b><br><br>
 
-            حصل على نتيجة:<br>
+            حصل على نتيجة<br>
 
             <b>${score} / ${questions.length}</b><br>
             بنسبة <b>${percent}%</b><br><br>
+
+            نسأل الله له التوفيق والسداد.
+
         </p>
 
         <button onclick="showResult()"
-            style="background:#16a34a;color:white;padding:12px;border:none;border-radius:10px;width:100%;">
+            style="margin-top:10px;background:#16a34a;color:white;padding:10px;border:none;border-radius:10px;width:100%;">
             العودة للتقرير
         </button>
 
