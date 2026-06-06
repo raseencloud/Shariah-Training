@@ -127,6 +127,7 @@ button:hover{
 </div>
 
 <script>
+     let candidateName = "";
 let allQuestions = [];
 let questions = [];
 let current = 0;
@@ -136,6 +137,8 @@ let selectedCount = 10;
 let answered = false;
 let lockClick = false;
 
+   
+    
 async function loadAllQuestions() {
     try {
         const res = await fetch("fiqh-questions.json");
@@ -164,6 +167,8 @@ function selectRandomQuestions() {
 
 function startExam() {
 
+    candidateName = document.getElementById("candidateName").value;
+    
     let name = document.getElementById("candidateName").value;
 
     if (name.trim() === "") {
@@ -237,13 +242,33 @@ function showResult() {
         percent >= 75 ? "جيد جداً" :
         percent >= 60 ? "جيد" : "يحتاج تطوير";
 
-    let html = "<div class='question'>";
-    html += "<h2>📊 النتيجة النهائية</h2>";
-    html += "<p>عدد الأسئلة: " + questions.length + "</p>";
-    html += "<p>الإجابات الصحيحة: " + score + "</p>";
-    html += "<p>النسبة: " + percent + "%</p>";
-    html += "<p>التقييم: " + level + "</p>";
-    html += "</div>";
+    let html = `
+    <div class="question">
+
+        <h2>📊 النتيجة النهائية</h2>
+
+        <p>عدد الأسئلة: ${questions.length}</p>
+        <p>الإجابات الصحيحة: ${score}</p>
+        <p>النسبة: ${percent}%</p>
+        <p>التقييم: ${level}</p>
+
+        <hr style="margin:15px 0;">
+
+        <button onclick="showCertificate()" style="
+            background:#065f46;
+            color:white;
+            padding:12px;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+            font-size:16px;
+            width:100%;
+        ">
+        🎓 إصدار شهادة إتمام التدريب
+        </button>
+
+    </div>
+    `;
 
     document.getElementById("quiz").innerHTML = html;
 }
