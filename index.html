@@ -272,6 +272,47 @@ function showResult() {
 
     document.getElementById("quiz").innerHTML = html;
 }
+    function showCertificate() {
+
+    let percent = Math.round((score / questions.length) * 100);
+
+    let html = `
+    <div class="question">
+
+        <h2>🎓 شهادة إتمام التدريب</h2>
+
+        <p style="font-size:18px;line-height:2;">
+        تشهد منصة التدريب الفقهي بأن المتدرب<br><br>
+
+        <b>${candidateName}</b><br><br>
+
+        قد اجتاز الاختبار الفقهي بنتيجة<br>
+
+        <b>${score} / ${questions.length}</b><br>
+        بمعدل <b>${percent}%</b><br><br>
+
+        نسأل الله أن ينفعه بما تعلم، وأن يزيده علماً وعملاً صالحاً،
+        وأن يعينه على طلب العلم والعمل به.
+        </p>
+
+        <button onclick="showResult()" style="
+            margin-top:15px;
+            background:#16a34a;
+            color:white;
+            padding:12px;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+            width:100%;
+        ">
+        🔙 العودة للنتيجة
+        </button>
+
+    </div>
+    `;
+
+    document.getElementById("quiz").innerHTML = html;
+}
 </script>
 
 </body>
