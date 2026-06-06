@@ -133,6 +133,9 @@ let current = 0;
 let score = 0;
 let selectedCount = 10;
 
+let answered = false;
+let lockClick = false;
+
 async function loadAllQuestions() {
     try {
         const res = await fetch("fiqh-questions.json");
@@ -179,8 +182,11 @@ function startExam() {
 
     loadAllQuestions();
 }
-
+    
 function showQuestion() {
+
+    answered = false;
+    lockClick = false;
 
     if (current >= questions.length) {
         showResult();
@@ -199,18 +205,27 @@ function showQuestion() {
 
     document.getElementById("quiz").innerHTML = html;
 }
-
 function checkAnswer(i) {
 
+    if (answered || lockClick) return;
+
+    answered = true;
+    lockClick = true;
+
     let q = questions[current];
+    let answers = document.querySelectorAll(".answer");
 
     if (i === q.c) {
         score++;
+        answers[i].style.background = "#dcfce7";
+    } else {
+        answers[i].style.background = "#fee2e2";
+        answers[q.c].style.background = "#dcfce7";
     }
 
     current++;
 
-    setTimeout(() => showQuestion(), 700);
+    setTimeout(() => showQuestion(), 600);
 }
 
 function showResult() {
