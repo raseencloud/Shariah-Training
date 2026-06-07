@@ -25,9 +25,7 @@ body{
     border-top:6px solid #16a34a;
 }
 
-h1{
-    color:#065f46;
-}
+h1{color:#065f46;}
 
 input,select,button{
     width:100%;
@@ -46,9 +44,7 @@ button{
     font-weight:bold;
 }
 
-button:hover{
-    background:#15803d;
-}
+button:hover{background:#15803d;}
 
 .question{
     font-size:22px;
@@ -69,9 +65,7 @@ button:hover{
     color:#000;
 }
 
-.answer:hover{
-    background:#dcfce7;
-}
+.answer:hover{background:#dcfce7;}
 
 .meta{
     font-size:13px;
@@ -134,11 +128,18 @@ let answered = false;
 async function loadQuestions(){
     try{
         const res = await fetch("fiqh-questions.json", { cache:"no-store" });
+        if(!res.ok) return false;
+
         const raw = await res.json();
-        allQuestions = Array.isArray(raw) ? raw.map(normalize).filter(Boolean) : [];
-        return true;
+
+        if(!Array.isArray(raw)) return false;
+
+        allQuestions = raw.map(normalize).filter(Boolean);
+
+        return allQuestions.length > 0;
+
     }catch(e){
-        document.getElementById("quiz").innerHTML = "<div>فشل التحميل</div>";
+        document.getElementById("quiz").innerHTML = "فشل تحميل الملف";
         return false;
     }
 }
@@ -148,7 +149,9 @@ function normalize(item){
 
     const q = String(item.q ?? item.question ?? "").trim();
 
-    const a = Array.isArray(item.a) ? item.a : (Array.isArray(item.options) ? item.options : []);
+    const a = Array.isArray(item.a)
+        ? item.a
+        : (Array.isArray(item.options) ? item.options : []);
 
     const c = Number(item.c ?? item.correct);
 
@@ -159,7 +162,6 @@ function normalize(item){
     return {
         category: item.category || "غير مصنف",
         level: item.level || "غير محدد",
-        source: item.source || "غير محدد",
         q,
         a,
         c
@@ -186,10 +188,13 @@ async function startExam(){
 
     selectedCount = parseInt(document.getElementById("questionCount").value,10);
 
-    document.getElementById("quiz").innerHTML = "جاري التحميل";
+    document.getElementById("quiz").innerHTML = "جاري التحميل...";
 
     const ok = await loadQuestions();
-    if(!ok) return;
+    if(!ok){
+        document.getElementById("quiz").innerHTML = "لا توجد أسئلة";
+        return;
+    }
 
     const cat = document.getElementById("categoryFilter").value;
     const lvl = document.getElementById("levelFilter").value;
@@ -198,6 +203,12 @@ async function startExam(){
         (cat === "all" || q.category === cat) &&
         (lvl === "all" || q.level === lvl)
     );
+
+    if(pool.length === 0){
+        document.getElementById("quiz").innerHTML =
+            "لا توجد أسئلة مطابقة للفلاتر";
+        return;
+    }
 
     questions = shuffle(pool).slice(0, selectedCount);
 
@@ -218,15 +229,13 @@ function showQuestion(){
 
     const q = questions[current];
 
-    let html = "";
-
-    html += "<div class='question'>";
+    let html = "<div class='question'>";
     html += "<div class='meta'>سؤال " + (current+1) + " من " + questions.length + "</div>";
     html += "<div>" + q.q + "</div>";
 
-    for(let i=0;i<q.a.length;i++){
-        html += "<div class='answer' onclick='answer(" + i + ")'>" + q.a[i] + "</div>";
-    }
+    q.a.forEach((ans,i)=>{
+        html += "<div class='answer' onclick='answer(" + i + ")'>" + ans + "</div>";
+    });
 
     html += "</div>";
 
@@ -255,7 +264,15 @@ function answer(i){
 
 function showResult(){
 
-    const percent = Math.round((score/questions.length)*100);
+    const percent = questions.length
+        ? Math.round((score/questions.length)*100)
+        : 0;
+
+    const level =
+        percent >= 90 ? "ممتاز" :
+        percent >= 75 ? "جيد جداً" :
+        percent >= 60 ? "جيد" :
+        "يحتاج تطوير";
 
     document.getElementById("quiz").innerHTML =
         "<div class='question'>" +
@@ -264,7 +281,8 @@ function showResult(){
         "<p>الصحيح: " + score + "</p>" +
         "<p>الخطأ: " + (questions.length - score) + "</p>" +
         "<p>النسبة: " + percent + "%</p>" +
-        "<button onclick='generatePDF()'>تحميل الشهادة PDF</button>" +
+        "<p>التقييم: " + level + "</p>" +
+        "<button onclick='generatePDF()'>شهادة PDF</button>" +
         "<button onclick='location.reload()'>إعادة</button>" +
         "</div>";
 }
@@ -275,7 +293,7 @@ function generatePDF(){
     const doc = new jsPDF();
 
     const total = questions.length;
-    const percent = Math.round((score / total) * 100);
+    const percent = total ? Math.round((score / total) * 100) : 0;
 
     doc.setFontSize(16);
     doc.text("شهادة إتمام اختبار", 60, 30);
@@ -284,7 +302,6 @@ function generatePDF(){
     doc.text("الاسم: " + candidateName, 20, 60);
     doc.text("النتيجة: " + score + " / " + total, 20, 75);
     doc.text("النسبة: " + percent + "%", 20, 90);
-    doc.text("تم اجتياز الاختبار عبر منصة التدريب الفقهي", 20, 110);
 
     doc.save("certificate.pdf");
 }
