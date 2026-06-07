@@ -293,14 +293,15 @@ function showResult() {
     quiz.innerHTML = "";
     quiz.insertAdjacentHTML("beforeend", resultHTML);
 }
-function printCertificate(){
+    
+function printCertificate() {
 
-    const certId = "FIQH-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*100000);
+    const certId = "FIQH-" + new Date().getFullYear() + "-" + Math.floor(Math.random() * 100000);
     const verifyUrl = "https://example.com/verify.html?id=" + certId;
 
     const qrContainer = document.getElementById("qr");
 
-    if(qrContainer && window.QRCode){
+    if (qrContainer && window.QRCode) {
         qrContainer.innerHTML = "";
 
         new QRCode(qrContainer, {
@@ -310,18 +311,16 @@ function printCertificate(){
         });
     }
 
-   
     const idElement = document.getElementById("id");
-    if(idElement){
+    if (idElement) {
         idElement.innerText = certId;
     }
 
-   
     setTimeout(() => {
         window.print();
-    }, 500);
-
+    }, 800);
 }
+
 </script>
 
 </body>
