@@ -298,7 +298,10 @@ function generatePDF(){
         ? Math.round((score / total) * 100)
         : 0;
 
-    // نستخدم إنجليزي مؤقت + أرقام فقط (حل مضمون 100%)
+    const subject = questions[0]?.category || "غير محدد";
+    const certId = "FIQH-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*100000);
+    const verifyUrl = "https://example.com/verify.html?id=" + certId;
+
     doc.setFontSize(16);
     doc.text("Completion Certificate", 60, 30);
 
@@ -306,11 +309,30 @@ function generatePDF(){
     doc.text("Name: " + candidateName, 20, 60);
     doc.text("Score: " + score + " / " + total, 20, 75);
     doc.text("Percentage: " + percent + "%", 20, 90);
-    doc.text("Platform: Fiqh Training System", 20, 110);
 
-    doc.save("certificate.pdf");
+    doc.text("Subject: " + subject, 20, 110);
+    doc.text("Certificate ID: " + certId, 20, 125);
+
+    const qr = document.createElement("div");
+
+    new QRCode(qr, {
+        text: verifyUrl,
+        width: 100,
+        height: 100
+    });
+
+    setTimeout(() => {
+
+        const img = qr.querySelector("img");
+
+        if(img){
+            doc.addImage(img.src, "PNG", 140, 70, 40, 40);
+        }
+
+        doc.save("certificate.pdf");
+
+    }, 500);
 }
-
 </script>
 
 </body>
