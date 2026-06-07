@@ -136,6 +136,8 @@ async function loadQuestions(){
 
         allQuestions = raw.map(normalize).filter(Boolean);
 
+        questions = allQuestions.slice(0, selectedCount);
+
         return allQuestions.length > 0;
 
     }catch(e){
