@@ -138,38 +138,47 @@ let selectedCount = 10;
 let answered = false;
 let lockClick = false;
 
-async function loadAllQuestions() {
+async function loadQuestions(){
+    try{
+        const res = await fetch("fiqh-questions.json", { cache:"no-store" });
 
-    try {
+        if(!res.ok){
+            console.log("JSON not found");
+            return false;
+        }
 
-        const res = await fetch("fiqh-questions.json", {
-    cache: "no-store"
-});
+        const text = await res.text();
 
-        if (!res.ok) throw new Error("File not found");
+        let raw;
+        try{
+            raw = JSON.parse(text);
+        }catch(e){
+            console.log("JSON INVALID");
+            document.getElementById("quiz").innerHTML =
+                "ملف الأسئلة يحتوي خطأ";
+            return false;
+        }
 
-        allQuestions = await res.json();
+        if(!Array.isArray(raw)){
+            console.log("NOT ARRAY");
+            return false;
+        }
 
-        // فلترة حماية البيانات
-        allQuestions = allQuestions.filter(q => (
-            q &&
-            typeof q.q === "string" &&
-            Array.isArray(q.a) &&
-            q.a.length === 4 &&
-            Number.isInteger(q.c) &&
-            q.c >= 0 &&
-            q.c <= 3
-        ));
+        allQuestions = raw.map(normalize).filter(Boolean);
 
-        selectRandomQuestions();
-        showQuestion();
+        if(allQuestions.length === 0){
+            document.getElementById("quiz").innerHTML =
+                "لا توجد أسئلة صالحة";
+            return false;
+        }
 
-    } catch (err) {
+        return true;
 
+    }catch(e){
+        console.log(e);
         document.getElementById("quiz").innerHTML =
-            "<div class='question'>تعذر تحميل ملف الأسئلة</div>";
-
-        console.error(err);
+            "فشل تحميل الملف";
+        return false;
     }
 }
 
