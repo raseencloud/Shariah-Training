@@ -292,20 +292,19 @@ function printCertificate(){
     const total = questions.length;
     const percent = total ? Math.round((score / total) * 100) : 0;
 
-    const subject = questions[0]?.category || "غير محدد";
     const certId = "FIQH-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*100000);
     const verifyUrl = "https://example.com/verify.html?id=" + certId;
 
     document.getElementById("quiz").innerHTML +=
-"<div class='result'>رقم الشهادة: " + certId + "</div>";
+        "<div class='result'>رقم الشهادة: " + certId + "</div>";
 
-    const qrEl = document.getElementById("qr");
+    const qrContainer = document.getElementById("qr");
 
-    if(qrEl && window.QRious){
-        new QRious({
-            element: qrEl,
-            value: verifyUrl,
-            size: 110
+    if(qrContainer && window.QRCode){
+        new QRCode(qrContainer, {
+            text: verifyUrl,
+            width: 110,
+            height: 110
         });
     }
 
