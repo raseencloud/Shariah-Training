@@ -289,9 +289,6 @@ function showResult(){
 
 function printCertificate(){
 
-    const total = questions.length;
-    const percent = total ? Math.round((score / total) * 100) : 0;
-
     const certId = "FIQH-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*100000);
     const verifyUrl = "https://example.com/verify.html?id=" + certId;
 
@@ -307,15 +304,16 @@ function printCertificate(){
         });
     }
 
-    const quiz = document.getElementById("quiz");
-
-    if(quiz){
-        quiz.innerHTML += "<div class='result'>رقم الشهادة: " + certId + "</div>";
+   
+    const idElement = document.getElementById("id");
+    if(idElement){
+        idElement.innerText = certId;
     }
 
+   
     setTimeout(() => {
         window.print();
-    }, 300);
+    }, 500);
 
 }
 </script>
