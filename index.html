@@ -295,17 +295,21 @@ function printCertificate(){
     const certId = "FIQH-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*100000);
     const verifyUrl = "https://example.com/verify.html?id=" + certId;
 
-    document.getElementById("quiz").innerHTML +=
-        "<div class='result'>رقم الشهادة: " + certId + "</div>";
-
     const qrContainer = document.getElementById("qr");
 
     if(qrContainer && window.QRCode){
+        qrContainer.innerHTML = "";
         new QRCode(qrContainer, {
             text: verifyUrl,
             width: 110,
             height: 110
         });
+    }
+
+    const quiz = document.getElementById("quiz");
+
+    if(quiz){
+        quiz.innerHTML += "<div class='result'>رقم الشهادة: " + certId + "</div>";
     }
 
     window.print();
