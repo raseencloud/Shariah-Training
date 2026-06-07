@@ -3,39 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>إضافة سؤال احترافي</title>
-<style>
-*{
-    box-sizing:border-box;
-}
+<title>إضافة سؤال</title>
 
+<style>
 body{
-    font-family:Tahoma, Arial, sans-serif;
+    font-family:Tahoma, Arial;
     background:#f0fdf4;
-    padding:20px;
-    max-width:860px;
+    max-width:850px;
     margin:auto;
+    padding:20px;
 }
 
 .card{
     background:#fff;
+    padding:22px;
+    border-radius:16px;
     border:1px solid #d1fae5;
-    border-radius:18px;
-    padding:24px;
-    box-shadow:0 8px 24px rgba(0,0,0,.08);
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
 
-h2{
-    margin:0 0 12px;
-    color:#14532d;
-}
-
-.note{
-    margin:0 0 18px;
-    color:#4b5563;
-    font-size:14px;
-    line-height:1.7;
-}
+h2{ color:#14532d; }
 
 input, select, button{
     width:100%;
@@ -44,37 +31,32 @@ input, select, button{
     border-radius:10px;
     border:1px solid #d1d5db;
     font-size:15px;
-    font-family:Tahoma, Arial, sans-serif;
 }
 
 button{
-    border:none;
-    cursor:pointer;
     background:#16a34a;
     color:#fff;
-    font-weight:700;
+    border:none;
+    cursor:pointer;
+    font-weight:bold;
 }
 
 button.secondary{
     background:#6b7280;
 }
 
-button:hover{
-    filter:brightness(.96);
-}
-
 .counter{
     margin-top:10px;
-    font-weight:700;
+    font-weight:bold;
     color:#065f46;
 }
 </style>
 </head>
+
 <body>
 
 <div class="card">
-    <h2>إضافة سؤال</h2>
-    <p class="note">يتم تحميل بنك الأسئلة الحالي أولًا، ثم إضافة السؤال الجديد فوقه، ثم تنزيل الملف كاملًا دفعة واحدة.</p>
+    <h2>إضافة سؤال جديد</h2>
 
     <select id="category">
         <option value="">اختر التصنيف</option>
@@ -105,102 +87,87 @@ button:hover{
 
     <input id="c" type="number" min="0" max="3" placeholder="رقم الإجابة الصحيحة (0-3)">
 
-    <button onclick="addQ()">إضافة السؤال</button>
-    <button onclick="download()">تحميل JSON</button>
-    <button class="secondary" onclick="clearForm()" type="button">مسح الحقول</button>
+    <button onclick="addQuestion()">إضافة السؤال</button>
+    <button onclick="downloadJSON()">تحميل JSON</button>
+    <button class="secondary" onclick="clearForm()">مسح</button>
 
-    <div id="counter" class="counter">جارٍ تحميل بنك الأسئلة...</div>
+    <div id="counter" class="counter">جارٍ التحميل...</div>
 </div>
 
 <script>
 let data = [];
 let nextId = 1;
-let dataLoaded = false;
+let loaded = false;
 
-document.addEventListener("DOMContentLoaded", loadExistingQuestions);
+/* =========================
+   تحميل البيانات الحالية
+========================= */
+document.addEventListener("DOMContentLoaded", loadData);
 
-function normalizeQuestion(item) {
-    if (!item || typeof item !== "object") return null;
+async function loadData(){
+    try{
+        const res = await fetch("fiqh-questions.json", { cache:"no-store" });
+        const raw = await res.json();
 
-    const question = String(item.q ?? item.question ?? "").trim();
+        data = Array.isArray(raw) ? raw.map(normalize).filter(Boolean) : [];
 
-    const rawAnswers = Array.isArray(item.a)
+        nextId = data.length
+            ? Math.max(...data.map(x => Number(x.id) || 0)) + 1
+            : 1;
+
+        loaded = true;
+        updateCounter();
+    }catch(e){
+        console.error(e);
+        data = [];
+        loaded = true;
+        updateCounter();
+    }
+}
+
+/* =========================
+   توحيد شكل البيانات (CRITICAL)
+========================= */
+function normalize(item){
+    if(!item) return null;
+
+    const q = String(item.q ?? item.question ?? "").trim();
+
+    const aRaw = Array.isArray(item.a)
         ? item.a
         : (Array.isArray(item.options) ? item.options : []);
 
-    const answers = rawAnswers.map(v => String(v ?? "").trim());
+    const a = aRaw.map(x => String(x ?? "").trim());
 
-    const correctValue = Number(item.c ?? item.correct);
-    const correct = Number.isInteger(correctValue) ? correctValue : NaN;
+    const c = Number(item.c ?? item.correct);
 
-    const idValue = Number(item.id);
-    const id = Number.isFinite(idValue) && idValue > 0 ? idValue : nextId++;
-
-    const category = String(item.category ?? "غير مصنف").trim() || "غير مصنف";
-    const level = String(item.level ?? "غير محدد").trim() || "غير محدد";
-    const source = String(item.source ?? "غير محدد").trim() || "غير محدد";
-
-    if (
-        !question ||
-        answers.length !== 4 ||
-        answers.some(a => !a) ||
-        !Number.isInteger(correct) ||
-        correct < 0 ||
-        correct > 3
-    ) {
+    if(
+        !q ||
+        a.length !== 4 ||
+        a.some(x => !x) ||
+        !Number.isInteger(c) ||
+        c < 0 || c > 3
+    ){
         return null;
     }
 
     return {
-        id,
-        category,
-        level,
-        source,
-        q: question,
-        a: answers,
-        c: correct
+        id: Number(item.id) || 0,
+        category: item.category || "غير مصنف",
+        level: item.level || "غير محدد",
+        source: item.source || "غير محدد",
+        q,
+        a,
+        c
     };
 }
 
-async function loadExistingQuestions() {
-    dataLoaded = false;
-
-    try {
-        const res = await fetch("fiqh-questions.json", { cache: "no-store" });
-        if (!res.ok) throw new Error("تعذر تحميل ملف الأسئلة");
-
-        const raw = await res.json();
-        data = Array.isArray(raw) ? raw.map(normalizeQuestion).filter(Boolean) : [];
-    } catch (err) {
-        console.error(err);
-        data = [];
-    }
-
-    nextId = data.length ? Math.max(...data.map(item => Number(item.id) || 0)) + 1 : 1;
-    dataLoaded = true;
-    updateCounter();
-}
-
-function updateCounter() {
-    document.getElementById("counter").textContent = `إجمالي الأسئلة: ${data.length}`;
-}
-
-function clearForm() {
-    document.getElementById("category").value = "";
-    document.getElementById("level").value = "";
-    document.getElementById("source").value = "";
-    document.getElementById("q").value = "";
-    document.getElementById("a1").value = "";
-    document.getElementById("a2").value = "";
-    document.getElementById("a3").value = "";
-    document.getElementById("a4").value = "";
-    document.getElementById("c").value = "";
-    document.getElementById("q").focus();
-}
-
-function addQ() {
-    if (!dataLoaded) {
-        alert("جارٍ تحميل بنك الأسئلة، انتظر لحظة ثم أعد المحاولة");
+/* =========================
+   إضافة سؤال
+========================= */
+function addQuestion(){
+    if(!loaded){
+        alert("جارٍ تحميل البيانات...");
         return;
     }
 
@@ -213,25 +180,26 @@ function addQ() {
     const a2 = document.getElementById("a2").value.trim();
     const a3 = document.getElementById("a3").value.trim();
     const a4 = document.getElementById("a4").value.trim();
-    const c = parseInt(document.getElementById("c").value, 10);
+    const c = parseInt(document.getElementById("c").value,10);
 
-    if (!category || !level || !q || !a1 || !a2 || !a3 || !a4 || isNaN(c)) {
-        alert("يرجى إكمال جميع البيانات");
+    if(!category || !level || !q || !a1 || !a2 || !a3 || !a4 || isNaN(c)){
+        alert("أكمل البيانات");
         return;
     }
 
-    if (c < 0 || c > 3) {
-        alert("رقم الإجابة الصحيحة يجب أن يكون بين 0 و 3");
+    if(c < 0 || c > 3){
+        alert("الإجابة الصحيحة بين 0 و 3");
         return;
     }
 
-    const normalizedQuestion = q.toLowerCase().replace(/\s+/g, " ").trim();
-    const duplicate = data.some(item =>
-        String(item.q).toLowerCase().replace(/\s+/g, " ").trim() === normalizedQuestion
+    const normalizedQ = q.toLowerCase().replace(/\s+/g," ").trim();
+
+    const duplicate = data.some(x =>
+        String(x.q).toLowerCase().replace(/\s+/g," ").trim() === normalizedQ
     );
 
-    if (duplicate) {
-        alert("هذا السؤال موجود بالفعل");
+    if(duplicate){
+        alert("السؤال موجود مسبقاً");
         return;
     }
 
@@ -241,37 +209,49 @@ function addQ() {
         level,
         source,
         q,
-        a: [a1, a2, a3, a4],
+        a:[a1,a2,a3,a4],
         c
     });
 
     updateCounter();
     clearForm();
-    alert("تمت إضافة السؤال");
+    alert("تمت الإضافة بنجاح");
 }
 
-function download() {
-    if (data.length === 0) {
+/* =========================
+   تحميل JSON
+========================= */
+function downloadJSON(){
+    if(!data.length){
         alert("لا توجد بيانات");
         return;
     }
 
-    const exportData = [...data].sort((a, b) => Number(a.id) - Number(b.id));
-
     const blob = new Blob(
-        [JSON.stringify(exportData, null, 2)],
-        { type: "application/json;charset=utf-8" }
+        [JSON.stringify(data, null, 2)],
+        {type:"application/json"}
     );
 
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "fiqh-questions.json";
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "fiqh-questions.json";
+    a.click();
 
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    URL.revokeObjectURL(url);
+}
+
+/* =========================
+   أدوات مساعدة
+========================= */
+function clearForm(){
+    document.querySelectorAll("input").forEach(i => i.value = "");
+    document.querySelectorAll("select").forEach(s => s.value = "");
+}
+
+function updateCounter(){
+    document.getElementById("counter").textContent =
+        "إجمالي الأسئلة: " + data.length;
 }
 </script>
 
