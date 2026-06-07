@@ -262,10 +262,10 @@ function answer(i){
     setTimeout(showQuestion,500);
 }
 
-function showResult(){
+function showResult() {
 
     const percent = questions.length
-        ? Math.round((score/questions.length)*100)
+        ? Math.round((score / questions.length) * 100)
         : 0;
 
     const level =
@@ -274,19 +274,25 @@ function showResult(){
         percent >= 60 ? "جيد" :
         "يحتاج تطوير";
 
-    document.getElementById("quiz").innerHTML =
-        "<div class='question'>" +
-        "<h2>النتيجة</h2>" +
-        "<p>الاسم: " + candidateName + "</p>" +
-        "<p>الصحيح: " + score + "</p>" +
-        "<p>الخطأ: " + (questions.length - score) + "</p>" +
-        "<p>النسبة: " + percent + "%</p>" +
-        "<p>التقييم: " + level + "</p>" +
-        "<button onclick='printCertificate()'>طباعة الشهادة</button>" +
-        "<button onclick='location.reload()'>إعادة</button>" +
-        "</div>";
-}
+    const resultHTML = `
+        <div id="resultBox" class="result-container">
+            <h2>النتيجة</h2>
+            <p>الاسم: ${candidateName}</p>
+            <p>الصحيح: ${score}</p>
+            <p>الخطأ: ${questions.length - score}</p>
+            <p>النسبة: ${percent}%</p>
+            <p>التقييم: ${level}</p>
+            <div class="buttons">
+                <button onclick="printCertificate()">طباعة الشهادة</button>
+                <button onclick="location.reload()">إعادة</button>
+            </div>
+        </div>
+    `;
 
+    const quiz = document.getElementById("quiz");
+    quiz.innerHTML = "";
+    quiz.insertAdjacentHTML("beforeend", resultHTML);
+}
 function printCertificate(){
 
     const certId = "FIQH-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*100000);
