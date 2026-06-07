@@ -3,64 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>منصة التدريب الفقهي V</title>
+<title>منصة التدريب الفقهي</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+body{
+    background:#d1fae5;
+    font-family:Tahoma, Arial;
+    text-align:center;
+    padding:20px;
 }
 
-body{
-    background-color:#d1fae5;
-    text-align:center;
-    font-family:Tahoma, Arial, sans-serif;
-    min-height:100vh;
-    padding:20px;
+.main-card{
+    max-width:780px;
+    margin:auto;
+    background:#fff;
+    padding:25px;
+    border-radius:18px;
+    box-shadow:0 6px 18px rgba(0,0,0,.12);
+    border-top:6px solid #16a34a;
 }
 
 h1{
     color:#065f46;
-    font-size:40px;
-    margin-top:40px;
-    margin-bottom:15px;
-}
-
-.subtitle{
-    font-size:20px;
-    color:#166534;
-    margin-bottom:30px;
-}
-
-.main-card{
-    max-width:760px;
-    margin:40px auto;
-    background:white;
-    padding:30px;
-    border-radius:20px;
-    border-top:6px solid #16a34a;
-    box-shadow:0 4px 15px rgba(0,0,0,0.15);
 }
 
 input,select,button{
     width:100%;
-    padding:14px;
+    padding:12px;
     margin:10px 0;
-    border:1px solid #d1d5db;
     border-radius:10px;
-    font-size:16px;
-    font-family:Tahoma, Arial, sans-serif;
+    border:1px solid #d1d5db;
+    font-size:15px;
 }
 
 button{
     background:#16a34a;
-    color:white;
-    padding:15px 30px;
+    color:#fff;
     border:none;
-    border-radius:10px;
-    font-size:18px;
     cursor:pointer;
+    font-weight:bold;
 }
 
 button:hover{
@@ -69,23 +50,21 @@ button:hover{
 
 .question{
     font-size:22px;
-    color:#111827;
     font-weight:700;
-    margin-bottom:20px;
+    color:#111827;
+    margin:20px 0;
     line-height:1.8;
 }
 
 .answer{
-    width:100%;
-    margin:8px 0;
-    padding:14px;
     background:#f3f4f6;
-    border:1px solid #d1d5db;
+    padding:14px;
+    margin:8px 0;
     border-radius:10px;
     cursor:pointer;
-    font-size:16px;
+    border:1px solid #d1d5db;
+    font-weight:700;
     color:#000;
-    font-weight:800;
 }
 
 .answer:hover{
@@ -93,305 +72,203 @@ button:hover{
 }
 
 .meta{
-    font-size:14px;
+    font-size:13px;
     color:#166534;
-    margin-bottom:10px;
     font-weight:700;
-}
-
-.footer{
-    margin-top:25px;
-    color:#6b7280;
-    font-size:14px;
+    margin-bottom:8px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🕌 منصة التدريب الفقهي</h1>
-<p class="subtitle">تعلم واختبر معلوماتك الشرعية بطريقة تفاعلية</p>
+<h1>منصة التدريب الفقهي</h1>
 
 <div class="main-card">
 
-    <h2 style="color:#065f46;margin-bottom:20px;">بيانات الاختبار</h2>
+<input id="candidateName" placeholder="اسم المتدرب">
 
-    <input type="text" id="candidateName" placeholder="أدخل اسم المتدرب">
+<select id="categoryFilter">
+<option value="all">كل التصنيفات</option>
+<option value="فقه">فقه</option>
+<option value="عقيدة">عقيدة</option>
+<option value="توحيد">توحيد</option>
+<option value="تفسير">تفسير</option>
+<option value="حديث">حديث</option>
+<option value="أصول فقه">أصول فقه</option>
+<option value="لغة عربية">لغة عربية</option>
+<option value="سيرة">سيرة</option>
+</select>
 
-    <select id="categoryFilter">
-        <option value="all">كل التصنيفات</option>
-        <option value="فقه">فقه</option>
-        <option value="عقيدة">عقيدة</option>
-        <option value="توحيد">توحيد</option>
-        <option value="تفسير">تفسير</option>
-        <option value="حديث">حديث</option>
-        <option value="أصول فقه">أصول فقه</option>
-        <option value="لغة عربية">لغة عربية</option>
-        <option value="سيرة">سيرة</option>
-    </select>
+<select id="levelFilter">
+<option value="all">كل المستويات</option>
+<option value="سهل">سهل</option>
+<option value="متوسط">متوسط</option>
+<option value="صعب">صعب</option>
+</select>
 
-    <select id="levelFilter">
-        <option value="all">كل المستويات</option>
-        <option value="سهل">سهل</option>
-        <option value="متوسط">متوسط</option>
-        <option value="صعب">صعب</option>
-    </select>
+<select id="questionCount">
+<option value="10">10</option>
+<option value="20">20</option>
+<option value="30">30</option>
+</select>
 
-    <select id="questionCount">
-        <option value="10">10 أسئلة</option>
-        <option value="20">20 سؤالاً</option>
-        <option value="30">30 سؤالاً</option>
-    </select>
+<button onclick="startExam()">ابدأ الاختبار</button>
 
-    <button onclick="startExam()">ابدأ الاختبار</button>
+<div id="quiz"></div>
 
-    <div id="quiz"></div>
-
-    <div class="footer">منصة تدريب شرعي تجريبية</div>
 </div>
 
 <script>
-let candidateName = "";
+
 let allQuestions = [];
 let questions = [];
 let current = 0;
 let score = 0;
+let candidateName = "";
 let selectedCount = 10;
 let answered = false;
-let lockClick = false;
 
-function escapeHtml(value) {
-    return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#39;");
-}
-
-function normalizeQuestion(item) {
-    if (!item || typeof item !== "object") return null;
-
-    const question = String(item.q ?? item.question ?? "").trim();
-
-    const rawAnswers = Array.isArray(item.a)
-        ? item.a
-        : (Array.isArray(item.options) ? item.options : []);
-
-    const answers = rawAnswers.map(v => String(v ?? "").trim());
-
-    const correctValue = Number(item.c ?? item.correct);
-    const correct = Number.isInteger(correctValue) ? correctValue : NaN;
-
-    const category = String(item.category ?? "غير مصنف").trim() || "غير مصنف";
-    const level = String(item.level ?? "غير محدد").trim() || "غير محدد";
-    const source = String(item.source ?? "غير محدد").trim() || "غير محدد";
-
-    if (
-        !question ||
-        answers.length !== 4 ||
-        answers.some(a => !a) ||
-        !Number.isInteger(correct) ||
-        correct < 0 ||
-        correct > 3
-    ) {
-        return null;
-    }
-
-    return {
-        category,
-        level,
-        source,
-        q: question,
-        a: answers,
-        c: correct
-    };
-}
-
-function shuffleArray(sourceArray) {
-    const arr = [...sourceArray];
-
-    for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-
-    return arr;
-}
-
-async function loadAllQuestions() {
-    try {
-        const res = await fetch("fiqh-questions.json", { cache: "no-store" });
-        if (!res.ok) throw new Error("File not found");
-
+async function loadQuestions(){
+    try{
+        const res = await fetch("fiqh-questions.json", { cache:"no-store" });
         const raw = await res.json();
-        allQuestions = Array.isArray(raw) ? raw.map(normalizeQuestion).filter(Boolean) : [];
+
+        allQuestions = Array.isArray(raw) ? raw.map(normalize).filter(Boolean) : [];
         return true;
-    } catch (err) {
-        console.error(err);
-        document.getElementById("quiz").innerHTML =
-            "<div class='question'>تعذر تحميل ملف الأسئلة</div>";
+    }catch(e){
+        document.getElementById("quiz").innerHTML = "<div class='question'>فشل تحميل الأسئلة</div>";
         return false;
     }
 }
 
-function buildExamQuestions() {
-    const selectedCategory = document.getElementById("categoryFilter").value;
-    const selectedLevel = document.getElementById("levelFilter").value;
+function normalize(item){
+    if(!item) return null;
 
-    let pool = allQuestions.filter(q => {
-        return (selectedCategory === "all" || q.category === selectedCategory) &&
-               (selectedLevel === "all" || q.level === selectedLevel);
-    });
+    const q = String(item.q ?? item.question ?? "").trim();
 
-    pool = shuffleArray(pool);
-    questions = pool.slice(0, Math.min(selectedCount, pool.length));
+    const a = Array.isArray(item.a) ? item.a :
+              Array.isArray(item.options) ? item.options : [];
+
+    const c = Number(item.c ?? item.correct);
+
+    if(!q || a.length !== 4 || a.some(x => !x) || !Number.isInteger(c) || c < 0 || c > 3){
+        return null;
+    }
+
+    return {
+        category: item.category || "غير مصنف",
+        level: item.level || "غير محدد",
+        source: item.source || "غير محدد",
+        q,
+        a,
+        c
+    };
 }
 
-async function startExam() {
+function shuffle(arr){
+    const a = [...arr];
+    for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+}
+
+async function startExam(){
+
     candidateName = document.getElementById("candidateName").value.trim();
 
-    if (!candidateName) {
-        alert("يرجى إدخال الاسم");
+    if(!candidateName){
+        alert("أدخل الاسم");
         return;
     }
 
-    selectedCount = parseInt(document.getElementById("questionCount").value, 10);
+    selectedCount = parseInt(document.getElementById("questionCount").value,10);
 
-    document.getElementById("quiz").innerHTML =
-        `<div class="question">جاري تحميل الاختبار...</div>`;
+    document.getElementById("quiz").innerHTML = "جاري التحميل";
 
-    const ok = await loadAllQuestions();
-    if (!ok) return;
+    const ok = await loadQuestions();
+    if(!ok) return;
 
-    buildExamQuestions();
+    const cat = document.getElementById("categoryFilter").value;
+    const lvl = document.getElementById("levelFilter").value;
 
-    if (questions.length === 0) {
-        document.getElementById("quiz").innerHTML =
-            `<div class="question">لا توجد أسئلة مطابقة للفلاتر المختارة</div>`;
-        return;
-    }
+    let pool = allQuestions.filter(q =>
+        (cat === "all" || q.category === cat) &&
+        (lvl === "all" || q.level === lvl)
+    );
+
+    questions = shuffle(pool).slice(0, selectedCount);
 
     current = 0;
     score = 0;
-    answered = false;
-    lockClick = false;
 
     showQuestion();
 }
 
-function showQuestion() {
-    answered = false;
-    lockClick = false;
+function showQuestion(){
 
-    if (current >= questions.length) {
+    answered = false;
+
+    if(current >= questions.length){
         showResult();
         return;
     }
 
     const q = questions[current];
-    if (!q) {
-        showResult();
-        return;
+
+    let html = "";
+
+    html += "<div class='question'>";
+    html += "<div class='meta'>سؤال " + (current+1) + " من " + questions.length + "</div>";
+    html += "<div>" + q.q + "</div>";
+
+    for(let i=0;i<q.a.length;i++){
+        html += "<div class='answer' onclick='answer(" + i + ")'>" + q.a[i] + "</div>";
     }
 
-    const metaParts = [q.category, q.level];
-    if (q.source && q.source !== "غير محدد") {
-        metaParts.push(q.source);
-    }
-
-    let html = `
-        <div class="question">
-            <div class="meta">السؤال ${current + 1} من ${questions.length}</div>
-            <div class="meta">${escapeHtml(metaParts.join(" • "))}</div>
-            <div>${escapeHtml(q.q)}</div>
-            <br>
-    `;
-
-    q.a.forEach((answer, i) => {
-        html += `<button class="answer" onclick="checkAnswer(${i})">${escapeHtml(answer)}</button>`;
-    });
-
-    html += `</div>`;
+    html += "</div>";
 
     document.getElementById("quiz").innerHTML = html;
 }
 
-function checkAnswer(selectedIndex) {
-    if (answered || lockClick) return;
+function answer(i){
 
+    if(answered) return;
     answered = true;
-    lockClick = true;
 
     const q = questions[current];
-    const correctIndex = Number(q.c);
-    const answers = document.querySelectorAll(".answer");
+    const boxes = document.querySelectorAll(".answer");
 
-    if (selectedIndex === correctIndex) {
+    if(i === q.c){
         score++;
-        answers[selectedIndex].style.background = "#dcfce7";
-    } else {
-        answers[selectedIndex].style.background = "#fee2e2";
-        if (answers[correctIndex]) {
-            answers[correctIndex].style.background = "#dcfce7";
-        }
+        boxes[i].style.background = "#dcfce7";
+    }else{
+        boxes[i].style.background = "#fee2e2";
+        if(boxes[q.c]) boxes[q.c].style.background = "#dcfce7";
     }
 
     current++;
-    setTimeout(showQuestion, 600);
+    setTimeout(showQuestion,600);
 }
 
-function showResult() {
+function showResult(){
+
     const percent = Math.round((score / questions.length) * 100);
 
-    let levelText =
-        percent >= 90 ? "ممتاز" :
-        percent >= 75 ? "جيد جداً" :
-        percent >= 60 ? "جيد" :
-        "يحتاج تطوير";
+    document.getElementById("quiz").innerHTML =
 
-    const wrong = questions.length - score;
-
-    document.getElementById("quiz").innerHTML = `
-        <div class="question">
-            <h2>📊 تقرير الأداء</h2>
-
-            <p>المتدرب: ${escapeHtml(candidateName)}</p>
-            <p>عدد الأسئلة: ${questions.length}</p>
-            <p>الإجابات الصحيحة: ${score}</p>
-            <p>الإجابات الخاطئة: ${wrong}</p>
-            <p>النسبة: ${percent}%</p>
-            <p>التقييم: ${levelText}</p>
-
-            <hr style="margin:18px 0;border:none;border-top:1px solid #d1d5db;">
-
-            <button onclick="showCertificate()">🎓 إصدار شهادة</button>
-            <button style="background:#6b7280;margin-top:10px;" onclick="location.reload()">اختبار جديد</button>
-        </div>
-    `;
+        "<div class='question'>" +
+        "<h2>النتيجة</h2>" +
+        "<p>الاسم: " + candidateName + "</p>" +
+        "<p>النتيجة: " + score + " / " + questions.length + "</p>" +
+        "<p>النسبة: " + percent + "%</p>" +
+        "<button onclick='location.reload()'>إعادة</button>" +
+        "</div>";
 }
 
-function showCertificate() {
-    const percent = Math.round((score / questions.length) * 100);
-
-    document.getElementById("quiz").innerHTML = `
-        <div class="question">
-            <h2>🎓 شهادة إتمام التدريب</h2>
-
-            <p style="font-size:18px;line-height:2;">
-                تشهد منصة التدريب الفقهي بأن<br><br>
-                <b>${escapeHtml(candidateName)}</b><br><br>
-                حصل على نتيجة<br>
-                <b>${score} / ${questions.length}</b><br>
-                بنسبة <b>${percent}%</b><br><br>
-                نسأل الله له التوفيق والسداد.
-            </p>
-
-            <button onclick="showResult()">العودة للتقرير</button>
-            <button style="background:#6b7280;margin-top:10px;" onclick="location.reload()">اختبار جديد</button>
-        </div>
-    `;
-}
 </script>
+
 </body>
 </html>
