@@ -296,7 +296,8 @@ function printCertificate(){
     const certId = "FIQH-" + new Date().getFullYear() + "-" + Math.floor(Math.random()*100000);
     const verifyUrl = "https://example.com/verify.html?id=" + certId;
 
-    document.getElementById("id").innerText = certId;
+    document.getElementById("quiz").innerHTML +=
+"<div class='result'>رقم الشهادة: " + certId + "</div>";
 
     const qrEl = document.getElementById("qr");
 
