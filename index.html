@@ -299,15 +299,18 @@ function printCertificate(){
 
     document.getElementById("id").innerText = certId;
 
-    new QRious({
-        element: document.getElementById("qr"),
-        value: verifyUrl,
-        size: 110
-    });
+    const qrEl = document.getElementById("qr");
+
+    if(qrEl && window.QRious){
+        new QRious({
+            element: qrEl,
+            value: verifyUrl,
+            size: 110
+        });
+    }
 
     window.print();
 }
-
 </script>
 
 </body>
