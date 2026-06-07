@@ -317,11 +317,13 @@ function printCertificate() {
     const certId = "FIQH-" + new Date().getFullYear() + "-" + Math.floor(Math.random() * 100000);
     const verifyUrl = "https://example.com/verify.html?id=" + certId;
 
+    document.getElementById("certificate").style.display = "block";
+    document.getElementById("quiz").style.display = "none";
+
     const qrContainer = document.getElementById("qr");
+    qrContainer.innerHTML = "";
 
-    if (qrContainer && window.QRCode) {
-        qrContainer.innerHTML = "";
-
+    if (window.QRCode) {
         new QRCode(qrContainer, {
             text: verifyUrl,
             width: 110,
@@ -329,16 +331,12 @@ function printCertificate() {
         });
     }
 
-    const idElement = document.getElementById("id");
-    if (idElement) {
-        idElement.innerText = certId;
-    }
+    document.getElementById("id").innerText = certId;
 
     setTimeout(() => {
         window.print();
     }, 800);
 }
-
 </script>
 
 </body>
