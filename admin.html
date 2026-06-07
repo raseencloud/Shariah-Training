@@ -99,9 +99,6 @@ let data = [];
 let nextId = 1;
 let loaded = false;
 
-/* =========================
-   تحميل البيانات الحالية
-========================= */
 document.addEventListener("DOMContentLoaded", loadData);
 
 async function loadData(){
@@ -125,9 +122,6 @@ async function loadData(){
     }
 }
 
-/* =========================
-   توحيد شكل البيانات (CRITICAL)
-========================= */
 function normalize(item){
     if(!item) return null;
 
@@ -162,9 +156,6 @@ function normalize(item){
     };
 }
 
-/* =========================
-   إضافة سؤال
-========================= */
 function addQuestion(){
     if(!loaded){
         alert("جارٍ تحميل البيانات...");
@@ -218,9 +209,6 @@ function addQuestion(){
     alert("تمت الإضافة بنجاح");
 }
 
-/* =========================
-   تحميل JSON
-========================= */
 function downloadJSON(){
     if(!data.length){
         alert("لا توجد بيانات");
@@ -241,9 +229,6 @@ function downloadJSON(){
     URL.revokeObjectURL(url);
 }
 
-/* =========================
-   أدوات مساعدة
-========================= */
 function clearForm(){
     document.querySelectorAll("input").forEach(i => i.value = "");
     document.querySelectorAll("select").forEach(s => s.value = "");
