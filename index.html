@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>منصة التدريب الفقهي V</title>
-  
+
 <style>
 *{
     margin:0;
@@ -34,7 +34,7 @@ h1{
 }
 
 .main-card{
-    max-width:700px;
+    max-width:760px;
     margin:40px auto;
     background:white;
     padding:30px;
@@ -92,13 +92,19 @@ button:hover{
     background:#dcfce7;
 }
 
+.meta{
+    font-size:14px;
+    color:#166534;
+    margin-bottom:10px;
+    font-weight:700;
+}
+
 .footer{
     margin-top:25px;
     color:#6b7280;
     font-size:14px;
 }
 </style>
-
 </head>
 
 <body>
@@ -108,110 +114,173 @@ button:hover{
 
 <div class="main-card">
 
-<h2 style="color:#065f46;margin-bottom:20px;">بيانات الاختبار</h2>
+    <h2 style="color:#065f46;margin-bottom:20px;">بيانات الاختبار</h2>
 
-<input type="text" id="candidateName" placeholder="أدخل اسم المتدرب">
+    <input type="text" id="candidateName" placeholder="أدخل اسم المتدرب">
 
-<select id="questionCount">
-<option value="10">10 أسئلة</option>
-<option value="20">20 سؤالاً</option>
-<option value="30">30 سؤالاً</option>
-</select>
+    <select id="categoryFilter">
+        <option value="all">كل التصنيفات</option>
+        <option value="فقه">فقه</option>
+        <option value="عقيدة">عقيدة</option>
+        <option value="توحيد">توحيد</option>
+        <option value="تفسير">تفسير</option>
+        <option value="حديث">حديث</option>
+        <option value="أصول فقه">أصول فقه</option>
+        <option value="لغة عربية">لغة عربية</option>
+        <option value="سيرة">سيرة</option>
+    </select>
 
-<button onclick="startExam()">ابدأ الاختبار</button>
+    <select id="levelFilter">
+        <option value="all">كل المستويات</option>
+        <option value="سهل">سهل</option>
+        <option value="متوسط">متوسط</option>
+        <option value="صعب">صعب</option>
+    </select>
 
-<div id="quiz"></div>
+    <select id="questionCount">
+        <option value="10">10 أسئلة</option>
+        <option value="20">20 سؤالاً</option>
+        <option value="30">30 سؤالاً</option>
+    </select>
 
-<div class="footer">منصة تدريب شرعي تجريبية</div>
+    <button onclick="startExam()">ابدأ الاختبار</button>
 
+    <div id="quiz"></div>
+
+    <div class="footer">منصة تدريب شرعي تجريبية</div>
 </div>
 
 <script>
-
 let candidateName = "";
 let allQuestions = [];
 let questions = [];
 let current = 0;
 let score = 0;
 let selectedCount = 10;
-
 let answered = false;
 let lockClick = false;
 
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+function normalizeQuestion(item) {
+    if (!item || typeof item !== "object") return null;
+
+    const question = String(item.q ?? item.question ?? "").trim();
+
+    const rawAnswers = Array.isArray(item.a)
+        ? item.a
+        : (Array.isArray(item.options) ? item.options : []);
+
+    const answers = rawAnswers.map(v => String(v ?? "").trim());
+
+    const correctValue = Number(item.c ?? item.correct);
+    const correct = Number.isInteger(correctValue) ? correctValue : NaN;
+
+    const category = String(item.category ?? "غير مصنف").trim() || "غير مصنف";
+    const level = String(item.level ?? "غير محدد").trim() || "غير محدد";
+    const source = String(item.source ?? "غير محدد").trim() || "غير محدد";
+
+    if (
+        !question ||
+        answers.length !== 4 ||
+        answers.some(a => !a) ||
+        !Number.isInteger(correct) ||
+        correct < 0 ||
+        correct > 3
+    ) {
+        return null;
+    }
+
+    return {
+        category,
+        level,
+        source,
+        q: question,
+        a: answers,
+        c: correct
+    };
+}
+
+function shuffleArray(sourceArray) {
+    const arr = [...sourceArray];
+
+    for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+
+    return arr;
+}
+
 async function loadAllQuestions() {
-
     try {
-
-        const res = await fetch("fiqh-questions.json", {
-    cache: "no-store"
-});
-
+        const res = await fetch("fiqh-questions.json", { cache: "no-store" });
         if (!res.ok) throw new Error("File not found");
 
-        allQuestions = await res.json();
-
-        // فلترة حماية البيانات
-        allQuestions = allQuestions.filter(q => (
-            q &&
-            typeof q.q === "string" &&
-            Array.isArray(q.a) &&
-            q.a.length === 4 &&
-            Number.isInteger(q.c) &&
-            q.c >= 0 &&
-            q.c <= 3
-        ));
-
-        selectRandomQuestions();
-        showQuestion();
-
+        const raw = await res.json();
+        allQuestions = Array.isArray(raw) ? raw.map(normalizeQuestion).filter(Boolean) : [];
+        return true;
     } catch (err) {
-
+        console.error(err);
         document.getElementById("quiz").innerHTML =
             "<div class='question'>تعذر تحميل ملف الأسئلة</div>";
-
-        console.error(err);
+        return false;
     }
 }
 
-function selectRandomQuestions() {
+function buildExamQuestions() {
+    const selectedCategory = document.getElementById("categoryFilter").value;
+    const selectedLevel = document.getElementById("levelFilter").value;
 
-    let shuffled = [...allQuestions];
+    let pool = allQuestions.filter(q => {
+        return (selectedCategory === "all" || q.category === selectedCategory) &&
+               (selectedLevel === "all" || q.level === selectedLevel);
+    });
 
-    for (let i = shuffled.length - 1; i > 0; i--) {
-
-        const j = Math.floor(Math.random() * (i + 1));
-
-        [shuffled[i], shuffled[j]] =
-        [shuffled[j], shuffled[i]];
-    }
-
-    questions = shuffled.slice(0, selectedCount);
+    pool = shuffleArray(pool);
+    questions = pool.slice(0, Math.min(selectedCount, pool.length));
 }
 
-function startExam() {
+async function startExam() {
+    candidateName = document.getElementById("candidateName").value.trim();
 
-    candidateName =
-        document.getElementById("candidateName").value;
-
-    if (!candidateName.trim()) {
+    if (!candidateName) {
         alert("يرجى إدخال الاسم");
         return;
     }
 
-    selectedCount =
-        parseInt(document.getElementById("questionCount").value);
-
-    current = 0;
-    score = 0;
+    selectedCount = parseInt(document.getElementById("questionCount").value, 10);
 
     document.getElementById("quiz").innerHTML =
         `<div class="question">جاري تحميل الاختبار...</div>`;
 
-    loadAllQuestions();
+    const ok = await loadAllQuestions();
+    if (!ok) return;
+
+    buildExamQuestions();
+
+    if (questions.length === 0) {
+        document.getElementById("quiz").innerHTML =
+            `<div class="question">لا توجد أسئلة مطابقة للفلاتر المختارة</div>`;
+        return;
+    }
+
+    current = 0;
+    score = 0;
+    answered = false;
+    lockClick = false;
+
+    showQuestion();
 }
 
 function showQuestion() {
-
     answered = false;
     lockClick = false;
 
@@ -221,16 +290,26 @@ function showQuestion() {
     }
 
     const q = questions[current];
-
     if (!q) {
         showResult();
         return;
     }
 
-    let html = `<div class="question">${q.q}<br><br>`;
+    const metaParts = [q.category, q.level];
+    if (q.source && q.source !== "غير محدد") {
+        metaParts.push(q.source);
+    }
+
+    let html = `
+        <div class="question">
+            <div class="meta">السؤال ${current + 1} من ${questions.length}</div>
+            <div class="meta">${escapeHtml(metaParts.join(" • "))}</div>
+            <div>${escapeHtml(q.q)}</div>
+            <br>
+    `;
 
     q.a.forEach((answer, i) => {
-        html += `<button class="answer" onclick="checkAnswer(${i})">${answer}</button>`;
+        html += `<button class="answer" onclick="checkAnswer(${i})">${escapeHtml(answer)}</button>`;
     });
 
     html += `</div>`;
@@ -239,7 +318,6 @@ function showQuestion() {
 }
 
 function checkAnswer(selectedIndex) {
-
     if (answered || lockClick) return;
 
     answered = true;
@@ -247,93 +325,73 @@ function checkAnswer(selectedIndex) {
 
     const q = questions[current];
     const correctIndex = Number(q.c);
-
     const answers = document.querySelectorAll(".answer");
 
     if (selectedIndex === correctIndex) {
-
         score++;
         answers[selectedIndex].style.background = "#dcfce7";
-
     } else {
-
         answers[selectedIndex].style.background = "#fee2e2";
-        answers[correctIndex].style.background = "#dcfce7";
+        if (answers[correctIndex]) {
+            answers[correctIndex].style.background = "#dcfce7";
+        }
     }
 
     current++;
-
     setTimeout(showQuestion, 600);
 }
 
 function showResult() {
+    const percent = Math.round((score / questions.length) * 100);
 
-    let percent =
-        Math.round((score / questions.length) * 100);
-
-    let level =
+    let levelText =
         percent >= 90 ? "ممتاز" :
         percent >= 75 ? "جيد جداً" :
         percent >= 60 ? "جيد" :
         "يحتاج تطوير";
 
-    let wrong = questions.length - score;
+    const wrong = questions.length - score;
 
     document.getElementById("quiz").innerHTML = `
-    <div class="question">
+        <div class="question">
+            <h2>📊 تقرير الأداء</h2>
 
-        <h2>📊 تقرير الأداء</h2>
+            <p>المتدرب: ${escapeHtml(candidateName)}</p>
+            <p>عدد الأسئلة: ${questions.length}</p>
+            <p>الإجابات الصحيحة: ${score}</p>
+            <p>الإجابات الخاطئة: ${wrong}</p>
+            <p>النسبة: ${percent}%</p>
+            <p>التقييم: ${levelText}</p>
 
-        <p>المتدرب: ${candidateName}</p>
-        <p>عدد الأسئلة: ${questions.length}</p>
-        <p>الإجابات الصحيحة: ${score}</p>
-        <p>الإجابات الخاطئة: ${wrong}</p>
-        <p>النسبة: ${percent}%</p>
-        <p>التقييم: ${level}</p>
+            <hr style="margin:18px 0;border:none;border-top:1px solid #d1d5db;">
 
-        <hr>
-
-        <button onclick="showCertificate()"
-            style="background:#065f46;color:white;padding:12px;border:none;border-radius:10px;width:100%;">
-            🎓 إصدار شهادة
-        </button>
-
-    </div>`;
+            <button onclick="showCertificate()">🎓 إصدار شهادة</button>
+            <button style="background:#6b7280;margin-top:10px;" onclick="location.reload()">اختبار جديد</button>
+        </div>
+    `;
 }
 
 function showCertificate() {
-
-    let percent =
-        Math.round((score / questions.length) * 100);
+    const percent = Math.round((score / questions.length) * 100);
 
     document.getElementById("quiz").innerHTML = `
-    <div class="question">
+        <div class="question">
+            <h2>🎓 شهادة إتمام التدريب</h2>
 
-        <h2>🎓 شهادة إتمام التدريب</h2>
+            <p style="font-size:18px;line-height:2;">
+                تشهد منصة التدريب الفقهي بأن<br><br>
+                <b>${escapeHtml(candidateName)}</b><br><br>
+                حصل على نتيجة<br>
+                <b>${score} / ${questions.length}</b><br>
+                بنسبة <b>${percent}%</b><br><br>
+                نسأل الله له التوفيق والسداد.
+            </p>
 
-        <p style="font-size:18px;line-height:2;">
-
-            تشهد منصة التدريب الفقهي بأن<br><br>
-
-            <b>${candidateName}</b><br><br>
-
-            حصل على نتيجة<br>
-
-            <b>${score} / ${questions.length}</b><br>
-            بنسبة <b>${percent}%</b><br><br>
-
-            نسأل الله له التوفيق والسداد.
-
-        </p>
-
-        <button onclick="showResult()"
-            style="margin-top:10px;background:#16a34a;color:white;padding:10px;border:none;border-radius:10px;width:100%;">
-            العودة للتقرير
-        </button>
-
-    </div>`;
+            <button onclick="showResult()">العودة للتقرير</button>
+            <button style="background:#6b7280;margin-top:10px;" onclick="location.reload()">اختبار جديد</button>
+        </div>
+    `;
 }
-
 </script>
 </body>
 </html>
