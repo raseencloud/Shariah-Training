@@ -2,16 +2,56 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>إضافة سؤال</title>
+<title>إضافة سؤال احترافي</title>
+
 <style>
-body{font-family:Tahoma;background:#f0fdf4;padding:20px}
-input,button{width:100%;padding:10px;margin:5px 0}
-button{background:#16a34a;color:#fff;border:0}
+body{
+    font-family:Tahoma;
+    background:#f0fdf4;
+    padding:20px;
+    max-width:800px;
+    margin:auto;
+}
+
+input,select,button{
+    width:100%;
+    padding:10px;
+    margin:5px 0;
+    font-size:15px;
+    box-sizing:border-box;
+}
+
+button{
+    background:#16a34a;
+    color:white;
+    border:0;
+    cursor:pointer;
+}
 </style>
 </head>
+
 <body>
 
 <h2>إضافة سؤال</h2>
+
+<!-- التصنيف -->
+<select id="category">
+    <option value="">اختر التصنيف</option>
+    <option>فقه</option>
+    <option>عقيدة</option>
+    <option>توحيد</option>
+    <option>تفسير</option>
+    <option>حديث</option>
+    <option>لغة عربية</option>
+</select>
+
+<!-- مستوى الصعوبة -->
+<select id="level">
+    <option value="">اختر المستوى</option>
+    <option>سهل</option>
+    <option>متوسط</option>
+    <option>صعب</option>
+</select>
 
 <input id="q" placeholder="السؤال">
 
@@ -20,36 +60,71 @@ button{background:#16a34a;color:#fff;border:0}
 <input id="a3" placeholder="الخيار 3">
 <input id="a4" placeholder="الخيار 4">
 
-<input id="c" placeholder="رقم الإجابة الصحيحة (0-3)">
+<input id="c" type="number" min="0" max="3"
+placeholder="رقم الإجابة الصحيحة (0-3)">
 
-<button onclick="addQ()">إضافة</button>
+<button onclick="addQ()">إضافة السؤال</button>
 <button onclick="download()">تحميل JSON</button>
 
 <script>
+
 let data = [];
 
 function addQ(){
-    data.push({
-        q: document.getElementById("q").value,
-        a: [
-            document.getElementById("a1").value,
-            document.getElementById("a2").value,
-            document.getElementById("a3").value,
-            document.getElementById("a4").value
-        ],
-        c: parseInt(document.getElementById("c").value)
-    });
 
-    alert("تمت الإضافة");
+let category = document.getElementById("category").value;
+let level = document.getElementById("level").value;
+
+let q = document.getElementById("q").value;
+let a1 = document.getElementById("a1").value;
+let a2 = document.getElementById("a2").value;
+let a3 = document.getElementById("a3").value;
+let a4 = document.getElementById("a4").value;
+let c = parseInt(document.getElementById("c").value);
+
+if(!category || !level || !q || !a1 || !a2 || !a3 || !a4 || isNaN(c)){
+    alert("يرجى إكمال جميع البيانات");
+    return;
+}
+
+data.push({
+    category: category,
+    level: level,
+    q: q,
+    a: [a1, a2, a3, a4],
+    c: c
+});
+
+alert("تمت إضافة السؤال");
+
+document.getElementById("q").value="";
+document.getElementById("a1").value="";
+document.getElementById("a2").value="";
+document.getElementById("a3").value="";
+document.getElementById("a4").value="";
+document.getElementById("c").value="";
+
 }
 
 function download(){
-    let blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
-    let a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "fiqh-questions.json";
-    a.click();
+
+if(data.length === 0){
+alert("لا توجد بيانات");
+return;
 }
+
+let blob = new Blob(
+[JSON.stringify(data, null, 2)],
+{type:"application/json"}
+);
+
+let a = document.createElement("a");
+a.href = URL.createObjectURL(blob);
+a.download = "fiqh-questions.json";
+a.click();
+
+}
+
 </script>
 
 </body>
