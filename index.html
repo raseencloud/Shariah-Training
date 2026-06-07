@@ -73,6 +73,29 @@ button:hover{background:#15803d;}
     font-weight:700;
     margin-bottom:8px;
 }
+    @media print {
+
+    body * {
+        visibility: hidden !important;
+    }
+
+    #certificate,
+    #certificate * {
+        visibility: visible !important;
+    }
+
+    #certificate {
+        position: absolute !important;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    #quiz {
+        display: none !important;
+    }
+}
+    
 </style>
 </head>
 
@@ -323,6 +346,9 @@ function printCertificate() {
     quiz.style.display = "none";
     certificate.style.display = "block";
 
+    document.getElementById("id").innerText = certId;
+    document.getElementById("certName").innerText = candidateName;
+
     const qrContainer = document.getElementById("qr");
     qrContainer.innerHTML = "";
 
@@ -334,14 +360,20 @@ function printCertificate() {
         });
     }
 
-    document.getElementById("id").innerText = certId;
-    document.getElementById("certName").innerText = candidateName;
+  setTimeout(() => {
 
-    setTimeout(() => {
-        window.print();
-    }, 1200);
+    console.log(document.getElementById("certificate").style.display);
+
+    requestAnimationFrame(() => {
+
+        requestAnimationFrame(() => {
+            window.print();
+        });
+
+    });
+
+}, 2000);
 }
-
 </script>
 
 </body>
