@@ -5,196 +5,176 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>منصة التدريب الفقهي</title>
 
-<style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
+<style>
 body{
-    background-color:#d1fae5;
+    background:#d1fae5;
+    font-family:Tahoma, Arial;
     text-align:center;
-    font-family:Tahoma, Arial, sans-serif;
-    min-height:100vh;
     padding:20px;
 }
 
-h1{
-    color:#065f46;
-    font-size:40px;
-    margin-top:40px;
-    margin-bottom:15px;
-}
-
-.subtitle{
-    font-size:20px;
-    color:#166534;
-    margin-bottom:30px;
-}
-
 .main-card{
-    max-width:700px;
-    margin:40px auto;
-    background:white;
-    padding:30px;
-    border-radius:20px;
+    max-width:780px;
+    margin:auto;
+    background:#fff;
+    padding:25px;
+    border-radius:18px;
+    box-shadow:0 6px 18px rgba(0,0,0,.12);
     border-top:6px solid #16a34a;
-    box-shadow:0 4px 15px rgba(0,0,0,0.15);
 }
+
+h1{color:#065f46;}
 
 input,select,button{
     width:100%;
-    padding:14px;
+    padding:12px;
     margin:10px 0;
-    border:1px solid #d1d5db;
     border-radius:10px;
-    font-size:16px;
-    font-family:Tahoma, Arial, sans-serif;
+    border:1px solid #d1d5db;
+    font-size:15px;
 }
 
 button{
     background:#16a34a;
-    color:white;
-    padding:15px 30px;
+    color:#fff;
     border:none;
-    border-radius:10px;
-    font-size:18px;
     cursor:pointer;
+    font-weight:bold;
 }
 
-button:hover{
-    background:#15803d;
-}
+button:hover{background:#15803d;}
 
 .question{
     font-size:22px;
-    color:#111827;
     font-weight:700;
-    margin-bottom:20px;
+    color:#111827;
+    margin:20px 0;
     line-height:1.8;
 }
 
 .answer{
-    width:100%;
-    margin:8px 0;
-    padding:14px;
     background:#f3f4f6;
-    border:1px solid #d1d5db;
+    padding:14px;
+    margin:8px 0;
     border-radius:10px;
     cursor:pointer;
-    font-size:16px;
+    border:1px solid #d1d5db;
+    font-weight:700;
     color:#000;
-    font-weight:800;
 }
 
-.answer:hover{
-    background:#dcfce7;
-}
+.answer:hover{background:#dcfce7;}
 
-.footer{
-    margin-top:25px;
-    color:#6b7280;
-    font-size:14px;
+.meta{
+    font-size:13px;
+    color:#166534;
+    font-weight:700;
+    margin-bottom:8px;
 }
 </style>
-
 </head>
 
 <body>
 
-<h1>🕌 منصة التدريب الفقهي</h1>
-<p class="subtitle">تعلم واختبر معلوماتك الشرعية بطريقة تفاعلية</p>
+<h1>منصة التدريب الفقهي</h1>
 
 <div class="main-card">
 
-<h2 style="color:#065f46;margin-bottom:20px;">بيانات الاختبار</h2>
+<input id="candidateName" placeholder="اسم المتدرب">
 
-<input type="text" id="candidateName" placeholder="أدخل اسم المتدرب">
+<select id="categoryFilter">
+<option value="all">كل التصنيفات</option>
+<option value="فقه">فقه</option>
+<option value="عقيدة">عقيدة</option>
+<option value="توحيد">توحيد</option>
+<option value="تفسير">تفسير</option>
+<option value="حديث">حديث</option>
+<option value="أصول فقه">أصول فقه</option>
+<option value="لغة عربية">لغة عربية</option>
+<option value="سيرة">سيرة</option>
+</select>
+
+<select id="levelFilter">
+<option value="all">كل المستويات</option>
+<option value="سهل">سهل</option>
+<option value="متوسط">متوسط</option>
+<option value="صعب">صعب</option>
+</select>
 
 <select id="questionCount">
-<option value="10">10 أسئلة</option>
-<option value="20">20 سؤالاً</option>
-<option value="30">30 سؤالاً</option>
+<option value="10">10</option>
+<option value="20">20</option>
+<option value="30">30</option>
 </select>
 
 <button onclick="startExam()">ابدأ الاختبار</button>
 
 <div id="quiz"></div>
 
-<div class="footer">منصة تدريب شرعي تجريبية</div>
-
 </div>
 
 <script>
 
-let candidateName = "";
 let allQuestions = [];
 let questions = [];
 let current = 0;
 let score = 0;
+let candidateName = "";
 let selectedCount = 10;
-
 let answered = false;
-let lockClick = false;
 
 async function loadQuestions(){
     try{
         const res = await fetch("fiqh-questions.json", { cache:"no-store" });
+        if(!res.ok) return false;
 
-        if(!res.ok){
-            console.log("JSON not found");
-            return false;
-        }
+        const raw = await res.json();
 
-        const text = await res.text();
-
-        let raw;
-        try{
-            raw = JSON.parse(text);
-        }catch(e){
-            console.log("JSON INVALID");
-            document.getElementById("quiz").innerHTML =
-                "ملف الأسئلة يحتوي خطأ";
-            return false;
-        }
-
-        if(!Array.isArray(raw)){
-            console.log("NOT ARRAY");
-            return false;
-        }
+        if(!Array.isArray(raw)) return false;
 
         allQuestions = raw.map(normalize).filter(Boolean);
 
-        if(allQuestions.length === 0){
-            document.getElementById("quiz").innerHTML =
-                "لا توجد أسئلة صالحة";
-            return false;
-        }
-
-        return true;
+        return allQuestions.length > 0;
 
     }catch(e){
-        console.log(e);
-        document.getElementById("quiz").innerHTML =
-            "فشل تحميل الملف";
+        document.getElementById("quiz").innerHTML = "فشل تحميل الملف";
         return false;
     }
 }
 
-function selectRandomQuestions() {
+function normalize(item){
+    if(!item) return null;
 
-    let shuffled = [...allQuestions];
+    const q = String(item.q ?? item.question ?? "").trim();
 
-    for (let i = shuffled.length - 1; i > 0; i--) {
+    const a = Array.isArray(item.a)
+        ? item.a
+        : (Array.isArray(item.options) ? item.options : []);
 
-        const j = Math.floor(Math.random() * (i + 1));
+    const c = Number(item.c ?? item.correct);
 
-        [shuffled[i], shuffled[j]] =
-        [shuffled[j], shuffled[i]];
+    if(!q || a.length !== 4 || a.some(x => !x) || !Number.isInteger(c) || c < 0 || c > 3){
+        return null;
     }
 
-    questions = shuffled.slice(0, selectedCount);
+    return {
+        category: item.category || "غير مصنف",
+        level: item.level || "غير محدد",
+        q,
+        a,
+        c
+    };
+}
+
+function shuffle(arr){
+    const a = [...arr];
+    for(let i=a.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
 }
 
 async function startExam(){
@@ -202,156 +182,131 @@ async function startExam(){
     candidateName = document.getElementById("candidateName").value.trim();
 
     if(!candidateName){
-        alert("يرجى إدخال الاسم");
+        alert("أدخل الاسم");
         return;
     }
 
     selectedCount = parseInt(document.getElementById("questionCount").value,10);
 
-    document.getElementById("quiz").innerHTML =
-        "<div class='question'>جاري تحميل الاختبار...</div>";
+    document.getElementById("quiz").innerHTML = "جاري التحميل...";
 
-    const ok = await loadAllQuestions();
-    if(!ok) return;
-
-    buildExamQuestions();
-
-    if(questions.length === 0){
-        document.getElementById("quiz").innerHTML =
-            "<div class='question'>لا توجد أسئلة مطابقة</div>";
+    const ok = await loadQuestions();
+    if(!ok){
+        document.getElementById("quiz").innerHTML = "لا توجد أسئلة";
         return;
     }
+
+    const cat = document.getElementById("categoryFilter").value;
+    const lvl = document.getElementById("levelFilter").value;
+
+    let pool = allQuestions.filter(q =>
+        (cat === "all" || q.category === cat) &&
+        (lvl === "all" || q.level === lvl)
+    );
+
+    if(pool.length === 0){
+        document.getElementById("quiz").innerHTML =
+            "لا توجد أسئلة مطابقة للفلاتر";
+        return;
+    }
+
+    questions = shuffle(pool).slice(0, selectedCount);
 
     current = 0;
     score = 0;
 
     showQuestion();
 }
-    
-function showQuestion() {
+
+function showQuestion(){
 
     answered = false;
-    lockClick = false;
 
-    if (current >= questions.length) {
+    if(current >= questions.length){
         showResult();
         return;
     }
 
     const q = questions[current];
 
-    if (!q) {
-        showResult();
-        return;
-    }
+    let html = "<div class='question'>";
+    html += "<div class='meta'>سؤال " + (current+1) + " من " + questions.length + "</div>";
+    html += "<div>" + q.q + "</div>";
 
-    let html = `<div class="question">${q.q}<br><br>`;
-
-    q.a.forEach((answer, i) => {
-        html += `<button class="answer" onclick="checkAnswer(${i})">${answer}</button>`;
+    q.a.forEach((ans,i)=>{
+        html += "<div class='answer' onclick='answer(" + i + ")'>" + ans + "</div>";
     });
 
-    html += `</div>`;
+    html += "</div>";
 
     document.getElementById("quiz").innerHTML = html;
 }
 
-function checkAnswer(selectedIndex) {
+function answer(i){
 
-    if (answered || lockClick) return;
-
+    if(answered) return;
     answered = true;
-    lockClick = true;
 
     const q = questions[current];
-    const correctIndex = Number(q.c);
+    const boxes = document.querySelectorAll(".answer");
 
-    const answers = document.querySelectorAll(".answer");
-
-    if (selectedIndex === correctIndex) {
-
+    if(i === q.c){
         score++;
-        answers[selectedIndex].style.background = "#dcfce7";
-
-    } else {
-
-        answers[selectedIndex].style.background = "#fee2e2";
-        answers[correctIndex].style.background = "#dcfce7";
+        if(boxes[i]) boxes[i].style.background = "#dcfce7";
+    }else{
+        if(boxes[i]) boxes[i].style.background = "#fee2e2";
+        if(boxes[q.c]) boxes[q.c].style.background = "#dcfce7";
     }
 
     current++;
-
-    setTimeout(showQuestion, 600);
+    setTimeout(showQuestion,500);
 }
 
-function showResult() {
+function showResult(){
 
-    let percent =
-        Math.round((score / questions.length) * 100);
+    const percent = questions.length
+        ? Math.round((score/questions.length)*100)
+        : 0;
 
-    let level =
+    const level =
         percent >= 90 ? "ممتاز" :
         percent >= 75 ? "جيد جداً" :
         percent >= 60 ? "جيد" :
         "يحتاج تطوير";
 
-    let wrong = questions.length - score;
-
-    document.getElementById("quiz").innerHTML = `
-    <div class="question">
-
-        <h2>📊 تقرير الأداء</h2>
-
-        <p>المتدرب: ${candidateName}</p>
-        <p>عدد الأسئلة: ${questions.length}</p>
-        <p>الإجابات الصحيحة: ${score}</p>
-        <p>الإجابات الخاطئة: ${wrong}</p>
-        <p>النسبة: ${percent}%</p>
-        <p>التقييم: ${level}</p>
-
-        <hr>
-
-        <button onclick="showCertificate()"
-            style="background:#065f46;color:white;padding:12px;border:none;border-radius:10px;width:100%;">
-            🎓 إصدار شهادة
-        </button>
-
-    </div>`;
+    document.getElementById("quiz").innerHTML =
+        "<div class='question'>" +
+        "<h2>النتيجة</h2>" +
+        "<p>الاسم: " + candidateName + "</p>" +
+        "<p>الصحيح: " + score + "</p>" +
+        "<p>الخطأ: " + (questions.length - score) + "</p>" +
+        "<p>النسبة: " + percent + "%</p>" +
+        "<p>التقييم: " + level + "</p>" +
+        "<button onclick='generatePDF()'>شهادة PDF</button>" +
+        "<button onclick='location.reload()'>إعادة</button>" +
+        "</div>";
 }
 
-function showCertificate() {
+function generatePDF(){
 
-    let percent =
-        Math.round((score / questions.length) * 100);
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
 
-    document.getElementById("quiz").innerHTML = `
-    <div class="question">
+    const total = questions.length;
+    const percent = total ? Math.round((score / total) * 100) : 0;
 
-        <h2>🎓 شهادة إتمام التدريب</h2>
+    doc.setFontSize(16);
+    doc.text("شهادة إتمام اختبار", 60, 30);
 
-        <p style="font-size:18px;line-height:2;">
+    doc.setFontSize(12);
+    doc.text("الاسم: " + candidateName, 20, 60);
+    doc.text("النتيجة: " + score + " / " + total, 20, 75);
+    doc.text("النسبة: " + percent + "%", 20, 90);
 
-            تشهد منصة التدريب الفقهي بأن<br><br>
-
-            <b>${candidateName}</b><br><br>
-
-            حصل على نتيجة<br>
-
-            <b>${score} / ${questions.length}</b><br>
-            بنسبة <b>${percent}%</b><br><br>
-
-            نسأل الله له التوفيق والسداد.
-
-        </p>
-
-        <button onclick="showResult()"
-            style="margin-top:10px;background:#16a34a;color:white;padding:10px;border:none;border-radius:10px;width:100%;">
-            العودة للتقرير
-        </button>
-
-    </div>`;
+    doc.save("certificate.pdf");
 }
 
 </script>
+
 </body>
 </html>
