@@ -299,6 +299,7 @@ function printCertificate(){
 
     if(qrContainer && window.QRCode){
         qrContainer.innerHTML = "";
+
         new QRCode(qrContainer, {
             text: verifyUrl,
             width: 110,
@@ -312,7 +313,10 @@ function printCertificate(){
         quiz.innerHTML += "<div class='result'>رقم الشهادة: " + certId + "</div>";
     }
 
-    window.print();
+    setTimeout(() => {
+        window.print();
+    }, 300);
+
 }
 </script>
 
