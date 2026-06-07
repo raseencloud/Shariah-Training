@@ -317,8 +317,11 @@ function printCertificate() {
     const certId = "FIQH-" + new Date().getFullYear() + "-" + Math.floor(Math.random() * 100000);
     const verifyUrl = "https://example.com/verify.html?id=" + certId;
 
-    document.getElementById("certificate").style.display = "block";
-    document.getElementById("quiz").style.display = "none";
+    const quiz = document.getElementById("quiz");
+    const certificate = document.getElementById("certificate");
+
+    quiz.style.display = "none";
+    certificate.style.display = "block";
 
     const qrContainer = document.getElementById("qr");
     qrContainer.innerHTML = "";
@@ -332,11 +335,13 @@ function printCertificate() {
     }
 
     document.getElementById("id").innerText = certId;
+    document.getElementById("certName").innerText = candidateName;
 
     setTimeout(() => {
         window.print();
-    }, 800);
+    }, 1200);
 }
+
 </script>
 
 </body>
