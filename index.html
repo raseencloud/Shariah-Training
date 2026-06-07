@@ -307,6 +307,9 @@ function showResult() {
     const quiz = document.getElementById("quiz");
     quiz.innerHTML = "";
     quiz.insertAdjacentHTML("beforeend", resultHTML);
+
+    document.getElementById("certName").innerText = candidateName;
+    document.getElementById("certificate").style.display = "none";
 }
     
 function printCertificate() {
