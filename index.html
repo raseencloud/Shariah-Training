@@ -197,28 +197,37 @@ function selectRandomQuestions() {
     questions = shuffled.slice(0, selectedCount);
 }
 
-function startExam() {
+async function startExam(){
 
-    candidateName =
-        document.getElementById("candidateName").value;
+    candidateName = document.getElementById("candidateName").value.trim();
 
-    if (!candidateName.trim()) {
+    if(!candidateName){
         alert("يرجى إدخال الاسم");
         return;
     }
 
-    selectedCount =
-        parseInt(document.getElementById("questionCount").value);
+    selectedCount = parseInt(document.getElementById("questionCount").value,10);
+
+    document.getElementById("quiz").innerHTML =
+        "<div class='question'>جاري تحميل الاختبار...</div>";
+
+    const ok = await loadAllQuestions();
+    if(!ok) return;
+
+    buildExamQuestions();
+
+    if(questions.length === 0){
+        document.getElementById("quiz").innerHTML =
+            "<div class='question'>لا توجد أسئلة مطابقة</div>";
+        return;
+    }
 
     current = 0;
     score = 0;
 
-    document.getElementById("quiz").innerHTML =
-        `<div class="question">جاري تحميل الاختبار...</div>`;
-
-    loadAllQuestions();
+    showQuestion();
 }
-
+    
 function showQuestion() {
 
     answered = false;
