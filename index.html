@@ -293,15 +293,19 @@ function generatePDF(){
     const doc = new jsPDF();
 
     const total = questions.length;
-    const percent = total ? Math.round((score / total) * 100) : 0;
+    const percent = total
+        ? Math.round((score / total) * 100)
+        : 0;
 
+    // نستخدم إنجليزي مؤقت + أرقام فقط (حل مضمون 100%)
     doc.setFontSize(16);
-    doc.text("شهادة إتمام اختبار", 60, 30);
+    doc.text("Completion Certificate", 60, 30);
 
     doc.setFontSize(12);
-    doc.text("الاسم: " + candidateName, 20, 60);
-    doc.text("النتيجة: " + score + " / " + total, 20, 75);
-    doc.text("النسبة: " + percent + "%", 20, 90);
+    doc.text("Name: " + candidateName, 20, 60);
+    doc.text("Score: " + score + " / " + total, 20, 75);
+    doc.text("Percentage: " + percent + "%", 20, 90);
+    doc.text("Platform: Fiqh Training System", 20, 110);
 
     doc.save("certificate.pdf");
 }
