@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>شهادة إتمام</title>
+<title>شهادة ذكية</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
 
@@ -10,16 +10,12 @@
 
 <style>
 
-/* الخلفية */
 body{
     margin:0;
-    background:
-        linear-gradient(135deg, #fffdf7, #fbf3d3, #f6e7b8),
-        radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
-    background-size: cover, 18px 18px;
     font-family:"Cairo","Montserrat",sans-serif;
+    transition: background 0.8s ease;
 }
-    
+
 /* الصفحة */
 .page{
     display:flex;
@@ -65,20 +61,16 @@ body{
     margin-bottom:20px;
 }
 
-/* عربي */
 .header-right{
     font-weight:800;
-    font-family:"Cairo", sans-serif;
     color:#166534;
     font-size:18px;
 }
 
-/* إنجليزي */
 .header-left{
     font-weight:600;
-    font-family:"Montserrat", sans-serif;
-    font-size:14px;
     color:#555;
+    font-size:14px;
 }
 
 /* اللوجو */
@@ -93,9 +85,8 @@ body{
 /* العنوان */
 .title{
     font-size:34px;
-    color:#166534;
     font-weight:800;
-    font-family:"Cairo", sans-serif;
+    color:#166534;
     margin-top:10px;
 }
 
@@ -103,12 +94,25 @@ body{
 .block{
     margin:18px 0;
     font-size:20px;
-    font-family:"Cairo", sans-serif;
 }
 
 .label{
-    color:#166534;
     font-weight:700;
+    color:#166534;
+}
+
+/* نتيجة ذكية */
+.result-box{
+    font-size:22px;
+    font-weight:800;
+    margin-top:10px;
+}
+
+/* رسالة ذكية */
+.message{
+    margin-top:15px;
+    font-size:18px;
+    color:#444;
 }
 
 /* QR */
@@ -127,8 +131,6 @@ body{
 /* التوقيع */
 .signature{
     text-align:center;
-    font-family:"Cairo", sans-serif;
-    color:#000;
 }
 
 /* الختم */
@@ -136,16 +138,13 @@ body{
     width:140px;
     height:140px;
     border-radius:50%;
-    background: radial-gradient(circle at 30% 30%, #fff8dc, #e6c875 40%, #c8a951);
     display:flex;
     align-items:center;
     justify-content:center;
-
-    box-shadow:
-    0 10px 20px rgba(0,0,0,0.25),
-    inset 0 4px 10px rgba(255,255,255,0.6),
-    inset 0 -6px 10px rgba(0,0,0,0.15);
-
+    background: radial-gradient(circle at 30% 30%, #fff8dc, #e6c875 40%, #c8a951);
+    box-shadow:0 10px 20px rgba(0,0,0,0.25),
+               inset 0 4px 10px rgba(255,255,255,0.6),
+               inset 0 -6px 10px rgba(0,0,0,0.15);
     transform: rotate(-2deg);
 }
 
@@ -154,22 +153,19 @@ body{
     height:115px;
     border-radius:50%;
     border:2px dashed #166534;
-
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-
-    text-align:center;
     font-size:10px;
     font-weight:bold;
     color:#166534;
     background:rgba(255,255,255,0.7);
 }
 
-/* الطباعة */
+/* طباعة */
 @media print{
-    body{ background:white; }
+    body{ background:white !important; }
     .certificate{ box-shadow:none; }
 }
 
@@ -182,7 +178,6 @@ body{
 
 <div class="certificate">
 
-<!-- الهيدر -->
 <div class="header">
 
     <div class="header-right">
@@ -191,18 +186,11 @@ body{
 
     <div class="logo">
 
+        <!-- شعار ذهبي -->
         <svg width="90" height="90" viewBox="0 0 100 100">
-
-            <circle cx="50" cy="50" r="46"
-                fill="url(#gold)"
-                stroke="#166534"
-                stroke-width="2"/>
-
-            <path d="M25 55 Q50 35 75 55 L75 75 Q50 60 25 75 Z"
-                fill="#166534"/>
-
-            <line x1="50" y1="40" x2="50" y2="75"
-                stroke="white" stroke-width="2"/>
+            <circle cx="50" cy="50" r="46" fill="url(#gold)" stroke="#166534"/>
+            <path d="M25 55 Q50 35 75 55 L75 75 Q50 60 25 75 Z" fill="#166534"/>
+            <line x1="50" y1="40" x2="50" y2="75" stroke="white" stroke-width="2"/>
 
             <defs>
                 <radialGradient id="gold">
@@ -211,7 +199,6 @@ body{
                     <stop offset="100%" stop-color="#c8a951"/>
                 </radialGradient>
             </defs>
-
         </svg>
 
     </div>
@@ -222,14 +209,8 @@ body{
 
 </div>
 
-<!-- العنوان -->
 <div class="title">شهادة إتمام الاختبار</div>
 
-<div style="color:#666;margin-bottom:25px;">
-منصة تعليمية متخصصة في الففقه الإسلامي
-</div>
-
-<!-- البيانات -->
 <div class="block">
     <span class="label">اسم المتدرب:</span>
     <span id="name"></span>
@@ -240,37 +221,24 @@ body{
     <span id="score"></span> / <span id="total"></span>
 </div>
 
-<div class="block">
-    <span class="label">نسبة النجاح:</span>
-    <span id="percent"></span>%
-</div>
+<div class="result-box" id="resultText"></div>
 
-<div class="block" style="color:#444;">
-نسأل الله لك التوفيق والسداد
-</div>
+<div class="message" id="message"></div>
 
-<!-- QR -->
 <div class="qr" id="qr"></div>
 
-<!-- footer -->
 <div class="footer">
 
     <div class="signature">
-
-        <div style="font-weight:800;">
-            المدير التنفيذي
-        </div>
-
-        <div style="font-weight:800; font-size:18px; margin-top:5px;">
+        <div style="font-weight:800;">المدير التنفيذي</div>
+        <div style="font-weight:800;font-size:18px;">
             إبراهيم السيد شحاته الشرقاوي
         </div>
-
     </div>
 
     <div class="stamp">
         <div class="stamp-inner">
             أكاديمية الفقه والتفقه الإسلامي<br>
-            Islamic Fiqh Academy<br>
             ختم رسمي
         </div>
     </div>
@@ -292,11 +260,45 @@ const id = params.get("id") || "";
 
 const percent = Math.round((score / total) * 100);
 
+/* عرض */
 document.getElementById("name").innerText = name;
-document.getElementById("score").innerText = score;
-document.getElementById("total").innerText = total;
-document.getElementById("percent").innerText = percent;
 
+/* نتيجة ذكية */
+let level = "";
+let message = "";
+let bg = "";
+
+if (percent >= 90) {
+    level = "ممتاز";
+    message = "أداء رائع يدل على إتقان علمي متميز، نسأل الله لك المزيد من التوفيق.";
+    bg = "linear-gradient(135deg,#fffdf7,#f7e7b1,#e6c875)";
+}
+else if (percent >= 75) {
+    level = "جيد جداً";
+    message = "أداء مميز، مع إمكانية الوصول إلى الإتقان الكامل بالمراجعة.";
+    bg = "linear-gradient(135deg,#fffdf7,#fbf3d3,#f6e7b8)";
+}
+else if (percent >= 60) {
+    level = "جيد";
+    message = "أداء مقبول يحتاج إلى مزيد من التحسين والمراجعة.";
+    bg = "linear-gradient(135deg,#f7f7f7,#e8e8e8,#dcdcdc)";
+}
+else {
+    level = "يحتاج تطوير";
+    message = "ننصح بإعادة المذاكرة والتركيز على الأساسيات.";
+    bg = "linear-gradient(135deg,#ffecec,#ffd6d6,#f5bcbc)";
+}
+
+/* الخلفية الذكية */
+document.body.style.background = bg;
+
+/* عرض النصوص */
+document.getElementById("resultText").innerText =
+level + " (" + percent + "%)";
+
+document.getElementById("message").innerText = message;
+
+/* QR */
 const verifyUrl =
 "https://ieashehata1965-netizen.github.io/Shariah-Training/verify.html?id="
 + id;
