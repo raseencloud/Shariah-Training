@@ -346,56 +346,17 @@ function showResult() {
     
 function printCertificate() {
 
-    const certId = "FIQH-" + new Date().getFullYear() + "-" + Math.floor(Math.random() * 100000);
-    const verifyUrl = "https://example.com/verify.html?id=" + certId;
+    const certId = "FIQH-" + Date.now();
 
-    const quiz = document.getElementById("quiz");
-    const certificate = document.getElementById("certificate");
+    const url =
+        "certificate.html?name=" + encodeURIComponent(candidateName) +
+        "&score=" + score +
+        "&total=" + questions.length +
+        "&id=" + certId;
 
-    quiz.style.display = "none";
-    certificate.style.display = "block";
-
-    document.getElementById("id").innerText = certId;
-    document.getElementById("certName").innerText = candidateName;
-
-    const total = questions.length;
-    const percent = total ? Math.round((score / total) * 100) : 0;
-
-    console.log(score, total, percent);
-
-    try {
-
-        const qrContainer = document.getElementById("qr");
-        qrContainer.innerHTML = "";
-
-        if (window.QRCode) {
-            new QRCode(qrContainer, {
-                text: verifyUrl,
-                width: 110,
-                height: 110
-            });
-        }
-
-        document.getElementById("score").innerText = score;
-        document.getElementById("total").innerText = total;
-        document.getElementById("percent").innerText = percent;
-
-    } catch (e) {
-        console.log(e);
-    }
-
-    setTimeout(() => {
-
-        requestAnimationFrame(() => {
-
-            requestAnimationFrame(() => {
-                window.print();
-            });
-
-        });
-
-    }, 2000);
+    window.location.href = url;
 }
+
 </script>
 
 </body>
