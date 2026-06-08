@@ -2,80 +2,145 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>شهادة إتمام الاختبار</title>
-
-<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+<title>شهادة إتمام</title>
 
 <style>
+
 body{
-    font-family: Arial;
-    background:#f5f5f5;
-    padding:30px;
-    text-align:center;
+    margin:0;
+    background:#f5f7fa;
+    font-family: "Arial";
+}
+
+.page{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    padding:20px;
 }
 
 .certificate{
+    width:900px;
     background:white;
-    border:10px double #166534;
-    padding:30px;
-    max-width:800px;
-    margin:auto;
+    padding:60px;
+    text-align:center;
+    border:2px solid #166534;
+    box-shadow:0 10px 30px rgba(0,0,0,0.1);
 }
 
-h1{
+.logo{
+    margin-bottom:20px;
+}
+
+.title{
+    font-size:28px;
     color:#166534;
-}
-
-.box{
-    margin:10px 0;
-    font-size:18px;
-}
-
-.qr{
-    margin-top:20px;
-}
-
-.signature{
-    margin-top:40px;
-}
-
-.stamp{
-    margin-top:20px;
     font-weight:bold;
-    color:#166534;
 }
+
+.subtitle{
+    font-size:16px;
+    color:#666;
+    margin-bottom:40px;
+}
+
+.block{
+    margin:20px 0;
+    font-size:20px;
+}
+
+.label{
+    color:#166534;
+    font-weight:bold;
+}
+
+.footer{
+    margin-top:60px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.signature, .stamp{
+    width:200px;
+    text-align:center;
+}
+
+.stamp-box{
+    width:120px;
+    height:120px;
+    border:2px solid #166534;
+    border-radius:50%;
+    margin:auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#166534;
+    font-weight:bold;
+}
+
 </style>
 </head>
 
 <body>
 
+<div class="page">
+
 <div class="certificate">
 
-    <h1>شهادة إتمام الاختبار</h1>
+    <div class="logo">
+        <img src="logo.svg" width="110">
+    </div>
 
-    <div class="box">اسم المتدرب: <span id="name"></span></div>
+    <div class="title">شهادة إتمام الاختبار</div>
 
-    <div class="box">النتيجة: <span id="score"></span> / <span id="total"></span></div>
+    <div class="subtitle">منصة التدريب الفقهي والتقييم العلمي</div>
 
-    <div class="box">نسبة النجاح: <span id="percent"></span>%</div>
+    <div class="block">
+        <span class="label">اسم المتدرب:</span>
+        <span id="name"></span>
+    </div>
 
-    <div class="box">نسأل الله لك التوفيق والسداد</div>
+    <div class="block">
+        <span class="label">النتيجة:</span>
+        <span id="score"></span> / <span id="total"></span>
+    </div>
 
-    <div id="qr" class="qr"></div>
+    <div class="block">
+        <span class="label">نسبة النجاح:</span>
+        <span id="percent"></span>%
+    </div>
 
-    <div class="stamp">ختم منصة التدريب الفقهي</div>
+    <div class="block" style="margin-top:30px;color:#444;">
+        نسأل الله لك التوفيق والسداد
+    </div>
 
-    <div class="signature">المدير التنفيذي: ____________________</div>
+    <div class="footer">
+
+        <div class="signature">
+            المدير التنفيذي<br>
+            __________________
+        </div>
+
+        <div class="stamp">
+            <div class="stamp-box">
+                ختم رسمي
+            </div>
+        </div>
+
+    </div>
+
+</div>
 
 </div>
 
 <script>
+
 const params = new URLSearchParams(window.location.search);
 
 const name = params.get("name") || "";
 const score = parseInt(params.get("score") || "0");
 const total = parseInt(params.get("total") || "1");
-const id = params.get("id") || "";
 
 const percent = Math.round((score / total) * 100);
 
@@ -84,13 +149,6 @@ document.getElementById("score").innerText = score;
 document.getElementById("total").innerText = total;
 document.getElementById("percent").innerText = percent;
 
-const verifyUrl = "https://ieashehata1965-netizen.github.io/Shariah-Training/?id=" + id;
-
-new QRCode(document.getElementById("qr"), {
-    text: verifyUrl,
-    width: 120,
-    height: 120
-});
 </script>
 
 </body>
