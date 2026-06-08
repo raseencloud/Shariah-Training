@@ -357,43 +357,44 @@ function printCertificate() {
 
     document.getElementById("id").innerText = certId;
     document.getElementById("certName").innerText = candidateName;
-        const percent = Math.round((score / questions.length) * 100);
 
-    const qrContainer = document.getElementById("qr");
-    qrContainer.innerHTML = "";
+    const total = questions.length;
+    const percent = total ? Math.round((score / total) * 100) : 0;
 
-   try {
-    if (window.QRCode) {
+    console.log(score, total, percent);
+
+    try {
+
         const qrContainer = document.getElementById("qr");
         qrContainer.innerHTML = "";
 
-        new QRCode(qrContainer, {
-            text: verifyUrl,
-            width: 110,
-            height: 110
-        });
+        if (window.QRCode) {
+            new QRCode(qrContainer, {
+                text: verifyUrl,
+                width: 110,
+                height: 110
+            });
+        }
+
+        document.getElementById("score").innerText = score;
+        document.getElementById("total").innerText = total;
+        document.getElementById("percent").innerText = percent;
+
+    } catch (e) {
+        console.log(e);
     }
 
-    document.getElementById("score").innerText = score;
-    document.getElementById("total").innerText = questions.length;
-    document.getElementById("percent").innerText = percent;
-
-} catch (e) {
-    console.log("Certificate error:", e);
-}
-  setTimeout(() => {
-
-    console.log(document.getElementById("certificate").style.display);
-
-    requestAnimationFrame(() => {
+    setTimeout(() => {
 
         requestAnimationFrame(() => {
-            window.print();
+
+            requestAnimationFrame(() => {
+                window.print();
+            });
+
         });
 
-    });
-
-}, 2000);
+    }, 2000);
 }
 </script>
 
