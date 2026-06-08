@@ -146,6 +146,9 @@ button:hover{background:#15803d;}
     <h2 style="color:#166534; margin-bottom:20px;">شهادة إتمام الاختبار</h2>
 
     <p>اسم المتدرب: <span id="certName"></span></p>
+        <p>النتيجة: <span id="score"></span> / <span id="total"></span></p>
+        <p>نسبة النجاح: <span id="percent"></span>%</p>
+        
 
     <p>رقم الشهادة: <span id="id"></span></p>
 
@@ -316,6 +319,8 @@ function showResult() {
         percent >= 60 ? "جيد" :
         "يحتاج تطوير";
 
+        document.getElementById("total").textContent = questions.length;
+
     const resultHTML = `
         <div id="resultBox" class="result-container">
             <h2>النتيجة</h2>
@@ -356,7 +361,11 @@ function printCertificate() {
     const qrContainer = document.getElementById("qr");
     qrContainer.innerHTML = "";
 
+   try {
     if (window.QRCode) {
+        const qrContainer = document.getElementById("qr");
+        qrContainer.innerHTML = "";
+
         new QRCode(qrContainer, {
             text: verifyUrl,
             width: 110,
@@ -364,6 +373,13 @@ function printCertificate() {
         });
     }
 
+    document.getElementById("score").innerText = score;
+    document.getElementById("total").innerText = questions.length;
+    document.getElementById("percent").innerText = percent;
+
+} catch (e) {
+    console.log("Certificate error:", e);
+}
   setTimeout(() => {
 
     console.log(document.getElementById("certificate").style.display);
