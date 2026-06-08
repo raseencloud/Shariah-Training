@@ -4,14 +4,23 @@
 <meta charset="UTF-8">
 <title>شهادة إتمام</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs/qrcode.min.js"></script>
+
 <style>
 
+/* الخلفية */
 body{
     margin:0;
-    background:#f5f7fa;
-    font-family: "Arial";
+    background:
+        linear-gradient(135deg, #fdf6e3, #f7e7b1, #e9d08a),
+        radial-gradient(rgba(0,0,0,0.03) 1px, transparent 1px);
+    background-size: cover, 18px 18px;
+    font-family:"Cairo","Montserrat",sans-serif;
 }
 
+/* الصفحة */
 .page{
     display:flex;
     justify-content:center;
@@ -20,63 +29,148 @@ body{
     padding:20px;
 }
 
+/* الشهادة */
 .certificate{
     width:900px;
     background:white;
-    padding:60px;
+    padding:50px;
     text-align:center;
-    border:2px solid #166534;
-    box-shadow:0 10px 30px rgba(0,0,0,0.1);
+
+    border:8px solid #C8A951;
+    box-shadow:0 0 0 6px #166534, 0 20px 50px rgba(0,0,0,0.25);
+
+    position:relative;
+    overflow:hidden;
 }
 
-.logo{
+/* watermark */
+.certificate::before{
+    content:"";
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    background:url("logo.svg") no-repeat center;
+    background-size:320px;
+    opacity:0.05;
+    width:100%;
+    height:100%;
+}
+
+/* الهيدر */
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
     margin-bottom:20px;
 }
 
-.title{
-    font-size:28px;
+/* عربي */
+.header-right{
+    font-weight:800;
+    font-family:"Cairo", sans-serif;
     color:#166534;
-    font-weight:bold;
+    font-size:18px;
 }
 
-.subtitle{
-    font-size:16px;
-    color:#666;
-    margin-bottom:40px;
+/* إنجليزي */
+.header-left{
+    font-weight:600;
+    font-family:"Montserrat", sans-serif;
+    font-size:14px;
+    color:#555;
 }
 
+/* اللوجو */
+.logo{
+    width:110px;
+    height:110px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+/* العنوان */
+.title{
+    font-size:34px;
+    color:#166534;
+    font-weight:800;
+    font-family:"Cairo", sans-serif;
+    margin-top:10px;
+}
+
+/* البيانات */
 .block{
-    margin:20px 0;
+    margin:18px 0;
     font-size:20px;
+    font-family:"Cairo", sans-serif;
 }
 
 .label{
     color:#166534;
-    font-weight:bold;
+    font-weight:700;
 }
 
+/* QR */
+.qr{
+    margin-top:25px;
+}
+
+/* footer */
 .footer{
-    margin-top:60px;
+    margin-top:50px;
     display:flex;
     justify-content:space-between;
+    align-items:center;
 }
 
-.signature, .stamp{
-    width:200px;
+/* التوقيع */
+.signature{
     text-align:center;
+    font-family:"Cairo", sans-serif;
+    color:#000;
 }
 
-.stamp-box{
-    width:120px;
-    height:120px;
-    border:2px solid #166534;
+/* الختم */
+.stamp{
+    width:140px;
+    height:140px;
     border-radius:50%;
-    margin:auto;
+    background: radial-gradient(circle at 30% 30%, #fff8dc, #e6c875 40%, #c8a951);
     display:flex;
     align-items:center;
     justify-content:center;
-    color:#166534;
+
+    box-shadow:
+    0 10px 20px rgba(0,0,0,0.25),
+    inset 0 4px 10px rgba(255,255,255,0.6),
+    inset 0 -6px 10px rgba(0,0,0,0.15);
+
+    transform: rotate(-2deg);
+}
+
+.stamp-inner{
+    width:115px;
+    height:115px;
+    border-radius:50%;
+    border:2px dashed #166534;
+
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+    font-size:10px;
     font-weight:bold;
+    color:#166534;
+    background:rgba(255,255,255,0.7);
+}
+
+/* الطباعة */
+@media print{
+    body{ background:white; }
+    .certificate{ box-shadow:none; }
 }
 
 </style>
@@ -88,47 +182,100 @@ body{
 
 <div class="certificate">
 
+<!-- الهيدر -->
+<div class="header">
+
+    <div class="header-right">
+        أكاديمية الفقه والتفقه الإسلامي
+    </div>
+
     <div class="logo">
-        <img src="logo.svg" width="110">
+
+        <svg width="90" height="90" viewBox="0 0 100 100">
+
+            <circle cx="50" cy="50" r="46"
+                fill="url(#gold)"
+                stroke="#166534"
+                stroke-width="2"/>
+
+            <path d="M25 55 Q50 35 75 55 L75 75 Q50 60 25 75 Z"
+                fill="#166534"/>
+
+            <line x1="50" y1="40" x2="50" y2="75"
+                stroke="white" stroke-width="2"/>
+
+            <defs>
+                <radialGradient id="gold">
+                    <stop offset="0%" stop-color="#fff8dc"/>
+                    <stop offset="60%" stop-color="#e6c875"/>
+                    <stop offset="100%" stop-color="#c8a951"/>
+                </radialGradient>
+            </defs>
+
+        </svg>
+
     </div>
 
-    <div class="title">شهادة إتمام الاختبار</div>
-
-    <div class="subtitle">منصة التدريب الفقهي والتقييم العلمي</div>
-
-    <div class="block">
-        <span class="label">اسم المتدرب:</span>
-        <span id="name"></span>
+    <div class="header-left">
+        Islamic Fiqh Academy
     </div>
 
-    <div class="block">
-        <span class="label">النتيجة:</span>
-        <span id="score"></span> / <span id="total"></span>
-    </div>
+</div>
 
-    <div class="block">
-        <span class="label">نسبة النجاح:</span>
-        <span id="percent"></span>%
-    </div>
+<!-- العنوان -->
+<div class="title">شهادة إتمام الاختبار</div>
 
-    <div class="block" style="margin-top:30px;color:#444;">
-        نسأل الله لك التوفيق والسداد
-    </div>
+<div style="color:#666;margin-bottom:25px;">
+منصة تعليمية متخصصة في الففقه الإسلامي
+</div>
 
-    <div class="footer">
+<!-- البيانات -->
+<div class="block">
+    <span class="label">اسم المتدرب:</span>
+    <span id="name"></span>
+</div>
 
-        <div class="signature">
-            المدير التنفيذي<br>
-            __________________
+<div class="block">
+    <span class="label">النتيجة:</span>
+    <span id="score"></span> / <span id="total"></span>
+</div>
+
+<div class="block">
+    <span class="label">نسبة النجاح:</span>
+    <span id="percent"></span>%
+</div>
+
+<div class="block" style="color:#444;">
+نسأل الله لك التوفيق والسداد
+</div>
+
+<!-- QR -->
+<div class="qr" id="qr"></div>
+
+<!-- footer -->
+<div class="footer">
+
+    <div class="signature">
+
+        <div style="font-weight:800;">
+            المدير التنفيذي
         </div>
 
-        <div class="stamp">
-            <div class="stamp-box">
-                ختم رسمي
-            </div>
+        <div style="font-weight:800; font-size:18px; margin-top:5px;">
+            إبراهيم السيد شحاته الشرقاوي
         </div>
 
     </div>
+
+    <div class="stamp">
+        <div class="stamp-inner">
+            أكاديمية الفقه والتفقه الإسلامي<br>
+            Islamic Fiqh Academy<br>
+            ختم رسمي
+        </div>
+    </div>
+
+</div>
 
 </div>
 
@@ -141,6 +288,7 @@ const params = new URLSearchParams(window.location.search);
 const name = params.get("name") || "";
 const score = parseInt(params.get("score") || "0");
 const total = parseInt(params.get("total") || "1");
+const id = params.get("id") || "";
 
 const percent = Math.round((score / total) * 100);
 
@@ -148,6 +296,16 @@ document.getElementById("name").innerText = name;
 document.getElementById("score").innerText = score;
 document.getElementById("total").innerText = total;
 document.getElementById("percent").innerText = percent;
+
+const verifyUrl =
+"https://ieashehata1965-netizen.github.io/Shariah-Training/verify.html?id="
++ id;
+
+new QRCode(document.getElementById("qr"), {
+    text: verifyUrl,
+    width: 140,
+    height: 140
+});
 
 </script>
 
