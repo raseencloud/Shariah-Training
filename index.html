@@ -307,12 +307,19 @@ function answer(i){
     }else{
         if(boxes[i]) boxes[i].style.background = "#fee2e2";
         if(boxes[q.c]) boxes[q.c].style.background = "#dcfce7";
+
+        // تسجيل الخطأ
+        wrongAnswers.push({
+            question: q.q,
+            yourAnswer: q.a[i],
+            correctAnswer: q.a[q.c]
+        });
     }
 
     current++;
-    setTimeout(showQuestion,500);
+    setTimeout(showQuestion, 500);
 }
-
+        
 function showResult() {
 
     const percent = questions.length
