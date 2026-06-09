@@ -179,9 +179,14 @@ async function loadQuestions(){
 
         allQuestions = raw.map(normalize).filter(Boolean);
 
-        questions = allQuestions.slice(0, selectedCount);
+            if (!selectedCount || selectedCount > allQuestions.length) {
+    selectedCount = allQuestions.length;
+}
 
-        return allQuestions.length > 0;
+questions = allQuestions.slice(0, selectedCount);
+
+            
+               return allQuestions.length > 0;
 
     }catch(e){
         document.getElementById("quiz").innerHTML = "فشل تحميل الملف";
