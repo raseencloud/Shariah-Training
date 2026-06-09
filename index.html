@@ -355,6 +355,24 @@ function showResult() {
 
     document.getElementById("certName").innerText = candidateName;
     document.getElementById("certificate").style.display = "none";
+
+            if (wrongAnswers && wrongAnswers.length > 0) {
+
+        const wrongHTML = `
+            <div style="margin-top:20px;text-align:right">
+                <h3>الأسئلة التي أخطأت فيها</h3>
+                <hr>
+                ${wrongAnswers.map(w => `
+                    <div style="margin:10px;padding:10px;border:1px solid #ddd;border-radius:8px">
+                        <p><b>السؤال:</b> ${w.question}</p>
+                        <p style="color:red"><b>إجابتك:</b> ${w.yourAnswer}</p>
+                        <p style="color:green"><b>الإجابة الصحيحة:</b> ${w.correctAnswer}</p>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+
+        document.getElementById("quiz").insertAdjacentHTML("beforeend", wrongHTML);
 }
     
 function printCertificate() {
