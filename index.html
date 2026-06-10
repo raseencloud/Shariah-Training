@@ -234,6 +234,8 @@ async function startExam(){
 
     candidateName = document.getElementById("candidateName").value.trim();
 
+    let count = parseInt(document.getElementById("questionCount").value);
+
     if(!candidateName){
         alert("أدخل الاسم");
         return;
