@@ -173,7 +173,7 @@ function saveQuestion(){
 // عرض + بحث
 function render(){
 
-    let keyword = searchBox.value.toLowerCase();
+    let keyword = document.getElementById("searchBox").value.toLowerCase();
 
     let filtered = data.filter(x =>
         x.q.toLowerCase().includes(keyword)
