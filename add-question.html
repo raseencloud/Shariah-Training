@@ -260,6 +260,16 @@ function clearForm(){
     editId = null;
 }
 
+    function toggleForm(){
+    const box = document.getElementById("formBox");
+
+    if(box.style.display === "none" || box.style.display === ""){
+        box.style.display = "block";
+    }else{
+        box.style.display = "none";
+    }
+}
+
 </script>
 
 </body>
