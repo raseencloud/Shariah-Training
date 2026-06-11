@@ -390,9 +390,43 @@ function printCertificate() {
         "&total=" + questions.length +
         "&id=" + certId;
 
-    window.location.href = url;
+  window.location.href = url;
 }
 
 </script>
+
+<!-- ⚙ زر إدارة الأسئلة -->
+<div style="text-align:center;margin-top:30px;">
+
+<button onclick="openAdmin()" 
+style="
+background:#6b7280;
+color:#fff;
+padding:10px 18px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+opacity:0.85;
+font-size:14px;
+">
+⚙ إدارة الأسئلة
+</button>
+
+</div>
+
+<script>
+function openAdmin(){
+
+    const password = prompt("أدخل كلمة مرور المدير:");
+
+    if(password === "1234"){
+        sessionStorage.setItem("admin_access","granted");
+        window.location.href = "admin.html";
+    }else{
+        alert("غير مصرح بالدخول");
+    }
+}
+</script>
+
 </body>
 </html>
