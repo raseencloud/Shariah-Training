@@ -77,19 +77,24 @@ if(access !== "granted"){
 </div>
 
 <div class="card">
-<h2>➕ إضافة / تعديل سؤال</h2>
 
-<input id="q" placeholder="السؤال">
-<input id="a1" placeholder="الخيار 1">
-<input id="a2" placeholder="الخيار 2">
-<input id="a3" placeholder="الخيار 3">
-<input id="a4" placeholder="الخيار 4">
-<input id="c" type="number" placeholder="الإجابة الصحيحة (0-3)">
+    <button onclick="toggleForm()">➕ إضافة سؤال جديد</button>
 
-<button onclick="saveQuestion()">حفظ</button>
-<button class="small" onclick="clearForm()">تفريغ</button>
-</div>
+    <div id="formBox" style="display:none; margin-top:15px;">
 
+        <h2>➕ إضافة / تعديل سؤال</h2>
+
+        <input id="q" placeholder="السؤال">
+        <input id="a1" placeholder="الخيار 1">
+        <input id="a2" placeholder="الخيار 2">
+        <input id="a3" placeholder="الخيار 3">
+        <input id="a4" placeholder="الخيار 4">
+        <input id="c" type="number" placeholder="الإجابة الصحيحة (0-3)">
+
+        <button onclick="saveQuestion()">حفظ</button>
+        <button class="small" onclick="clearForm()">تفريغ</button>
+
+    </div>
 <div class="card">
 <h2>📥 إضافة جماعية</h2>
 <textarea id="bulk" rows="6" placeholder="الصق الأسئلة هنا"></textarea>
