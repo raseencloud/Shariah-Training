@@ -200,17 +200,21 @@ function editQuestion(id){
 
     let item = data.find(x => x.id === id);
 
+    if(!item) return;
+
     editId = id;
 
-    q.value = item.q;
-    a1.value = item.a[0];
-    a2.value = item.a[1];
-    a3.value = item.a[2];
-    a4.value = item.a[3];
-    c.value = item.c;
-}
+    document.getElementById("q").value = item.q;
+    document.getElementById("a1").value = item.a[0];
+    document.getElementById("a2").value = item.a[1];
+    document.getElementById("a3").value = item.a[2];
+    document.getElementById("a4").value = item.a[3];
+    document.getElementById("c").value = item.c;
 
-// حذف
+    // إظهار نموذج التعديل تلقائياً
+    document.getElementById("formBox").style.display = "block";
+}
+    // حذف
 function deleteQ(id){
     data = data.filter(x => x.id !== id);
     render();
