@@ -217,10 +217,16 @@ function editQuestion(id){
     
     // حذف
 function deleteQ(id){
+
+    let ok = confirm("هل أنت متأكد أنك تريد حذف هذا السؤال؟");
+
+    if(!ok) return;
+
     data = data.filter(x => x.id !== id);
     render();
+    exportJSON();
 }
-
+    
 // إضافة جماعية بسيطة
 function addBulk(){
 
