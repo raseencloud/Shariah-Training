@@ -212,9 +212,9 @@ function editQuestion(id){
     document.getElementById("a4").value = item.a[3];
     document.getElementById("c").value = item.c;
 
-    // إظهار نموذج التعديل تلقائياً
     document.getElementById("formBox").style.display = "block";
 }
+    
     // حذف
 function deleteQ(id){
     data = data.filter(x => x.id !== id);
