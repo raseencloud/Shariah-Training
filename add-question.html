@@ -173,7 +173,13 @@ function saveQuestion(){
 // عرض + بحث
 function render(){
 
-    let keyword = (document.getElementById("searchBox")?.value || "").toLowerCase();
+    let keyword = (document.getElementById("searchBox").value || "").toLowerCase().trim();
+
+    // إذا لا يوجد بحث → لا تعرض أي شيء
+    if(keyword === ""){
+        list.innerHTML = "";
+        return;
+    }
 
     let filtered = data.filter(x =>
         x.q.toLowerCase().includes(keyword)
@@ -188,8 +194,7 @@ function render(){
             </td>
         </tr>`
     ).join("");
-}
-    
+}    
 // تعديل
 function editQuestion(id){
 
