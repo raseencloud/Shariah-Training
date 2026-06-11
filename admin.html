@@ -14,8 +14,45 @@ body{
     padding:20px;
 }
 
-</style>
+.card{
+    background:#fff;
+    padding:22px;
+    border-radius:16px;
+    border:1px solid #d1fae5;
+    box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
 
+h2{
+    color:#14532d;
+}
+
+input, select, button{
+    width:100%;
+    padding:12px;
+    margin:8px 0;
+    border-radius:10px;
+    border:1px solid #d1d5db;
+    font-size:15px;
+}
+
+button{
+    background:#16a34a;
+    color:#fff;
+    border:none;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+button.secondary{
+    background:#6b7280;
+}
+
+.counter{
+    margin-top:10px;
+    font-weight:bold;
+    color:#065f46;
+}
+</style>
 <script>
 if(sessionStorage.getItem("admin_access") !== "granted"){
     document.body.innerHTML = "<h2 style='text-align:center'>غير مصرح بالدخول</h2>";
