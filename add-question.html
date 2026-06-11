@@ -2,54 +2,235 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>إضافة سؤال</title>
+<title>إدارة الأسئلة</title>
+
 <style>
-body{font-family:Tahoma;background:#f0fdf4;padding:20px}
-input,button{width:100%;padding:10px;margin:5px 0}
-button{background:#16a34a;color:#fff;border:0}
+body{
+    font-family:Tahoma;
+    background:#f0fdf4;
+    padding:20px;
+    max-width:1000px;
+    margin:auto;
+}
+
+.card{
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:20px;
+    border:1px solid #ddd;
+}
+
+input,textarea,button{
+    width:100%;
+    padding:10px;
+    margin:6px 0;
+}
+
+button{
+    background:#16a34a;
+    color:#fff;
+    border:0;
+    cursor:pointer;
+}
+
+.danger{background:#dc2626;}
+.small{background:#6b7280;}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:8px;
+    text-align:center;
+}
 </style>
 </head>
+
 <body>
 
-<h2>إضافة سؤال</h2>
+<script>
+const password = "1234";
+let input = prompt("أدخل كلمة مرور المدير:");
+
+if(input !== password){
+    alert("غير مصرح");
+    document.body.innerHTML = "<h2>Access Denied</h2>";
+}
+</script>
+
+<div class="card">
+<h2>🔍 بحث عن سؤال</h2>
+<input id="searchBox" placeholder="اكتب جزء من السؤال..." oninput="render()">
+</div>
+
+<div class="card">
+<h2>➕ إضافة / تعديل سؤال</h2>
 
 <input id="q" placeholder="السؤال">
-
 <input id="a1" placeholder="الخيار 1">
 <input id="a2" placeholder="الخيار 2">
 <input id="a3" placeholder="الخيار 3">
 <input id="a4" placeholder="الخيار 4">
+<input id="c" type="number" placeholder="الإجابة الصحيحة (0-3)">
 
-<input id="c" placeholder="رقم الإجابة الصحيحة (0-3)">
+<button onclick="saveQuestion()">حفظ</button>
+<button onclick="clearForm()" class="small">تفريغ</button>
+</div>
 
-<button onclick="addQ()">إضافة</button>
-<button onclick="download()">تحميل JSON</button>
+<div class="card">
+<h2>📥 إضافة جماعية</h2>
+<textarea id="bulk" rows="6"></textarea>
+<button onclick="addBulk()">تحويل وإضافة</button>
+</div>
+
+<div class="card">
+<h2>📋 قائمة الأسئلة</h2>
+
+<table>
+<thead>
+<tr>
+<th>السؤال</th>
+<th>إجراء</th>
+</tr>
+</thead>
+<tbody id="list"></tbody>
+</table>
+</div>
+
+<div class="card">
+<button onclick="exportJSON()">⬇ تصدير JSON</button>
+</div>
 
 <script>
+
 let data = [];
+let nextId = 1;
+let editId = null;
 
-function addQ(){
-    data.push({
-        q: document.getElementById("q").value,
-        a: [
-            document.getElementById("a1").value,
-            document.getElementById("a2").value,
-            document.getElementById("a3").value,
-            document.getElementById("a4").value
-        ],
-        c: parseInt(document.getElementById("c").value)
-    });
+// تحميل
+fetch("fiqh-questions.json")
+.then(r=>r.json())
+.then(res=>{
+    data = res;
+    nextId = data.length ? Math.max(...data.map(x=>x.id||0))+1 : 1;
+    render();
+});
 
-    alert("تمت الإضافة");
+// حفظ (إضافة أو تعديل)
+function saveQuestion(){
+
+    if(editId){
+        let q = data.find(x=>x.id===editId);
+        q.q = q.value = qInput();
+        q.a = [a1.value,a2.value,a3.value,a4.value];
+        q.c = parseInt(c.value);
+        editId = null;
+    }else{
+        data.push({
+            id: nextId++,
+            q: qInput(),
+            a:[a1.value,a2.value,a3.value,a4.value],
+            c: parseInt(c.value)
+        });
+    }
+
+    render();
+    clearForm();
 }
 
-function download(){
-    let blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
+// جلب السؤال
+function qInput(){
+    return document.getElementById("q").value;
+}
+
+// بحث + عرض
+function render(){
+
+    let keyword = searchBox.value.toLowerCase();
+
+    let filtered = data.filter(x=>
+        x.q.toLowerCase().includes(keyword)
+    );
+
+    list.innerHTML = filtered.map(q=>
+        `<tr>
+            <td>${q.q}</td>
+            <td>
+                <button onclick="editQuestion(${q.id})">تعديل</button>
+                <button class="danger" onclick="deleteQ(${q.id})">حذف</button>
+            </td>
+        </tr>`
+    ).join("");
+}
+
+// تعديل
+function editQuestion(id){
+    let q = data.find(x=>x.id===id);
+
+    editId = id;
+
+    document.getElementById("q").value = q.q;
+    a1.value = q.a[0];
+    a2.value = q.a[1];
+    a3.value = q.a[2];
+    a4.value = q.a[3];
+    c.value = q.c;
+}
+
+// حذف
+function deleteQ(id){
+    data = data.filter(x=>x.id!==id);
+    render();
+}
+
+// إضافة جماعي (بسيط)
+function addBulk(){
+
+    let lines = bulk.value.split("\n");
+    let q="", a=[], c=0;
+
+    lines.forEach(line=>{
+        if(line.includes("?")) q=line;
+        else if(line.startsWith("أ")) a[0]=line;
+        else if(line.startsWith("ب")) a[1]=line;
+        else if(line.startsWith("ج")) a[2]=line;
+        else if(line.startsWith("د")) a[3]=line;
+        else if(line.includes(":")) c=parseInt(line.split(":")[1]);
+    });
+
+    data.push({
+        id: nextId++,
+        q,
+        a,
+        c
+    });
+
+    render();
+}
+
+// تصدير
+function exportJSON(){
+    let blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
     let a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "fiqh-questions.json";
     a.click();
 }
+
+// تنظيف
+function clearForm(){
+    q.value="";
+    a1.value="";
+    a2.value="";
+    a3.value="";
+    a4.value="";
+    c.value="";
+}
+
 </script>
 
 </body>
