@@ -25,6 +25,7 @@ input,textarea,button{
     width:100%;
     padding:10px;
     margin:6px 0;
+    font-size:14px;
 }
 
 button{
@@ -52,19 +53,27 @@ th,td{
 
 <body>
 
+<!-- 🔐 حماية الدخول -->
 <script>
-const password = "1234";
-let input = prompt("أدخل كلمة مرور المدير:");
+const PASSWORD = "1234";
 
-if(input !== password){
-    alert("غير مصرح");
-    document.body.innerHTML = "<h2>Access Denied</h2>";
+let access = sessionStorage.getItem("admin_access");
+
+if(access !== "granted"){
+    let input = prompt("أدخل كلمة مرور المدير:");
+
+    if(input === PASSWORD){
+        sessionStorage.setItem("admin_access","granted");
+    }else{
+        document.body.innerHTML = "<h2 style='text-align:center'>غير مصرح بالدخول</h2>";
+        throw new Error("Access Denied");
+    }
 }
 </script>
 
 <div class="card">
 <h2>🔍 بحث عن سؤال</h2>
-<input id="searchBox" placeholder="اكتب جزء من السؤال..." oninput="render()">
+<input id="searchBox" placeholder="ابحث عن سؤال..." oninput="render()">
 </div>
 
 <div class="card">
@@ -78,12 +87,12 @@ if(input !== password){
 <input id="c" type="number" placeholder="الإجابة الصحيحة (0-3)">
 
 <button onclick="saveQuestion()">حفظ</button>
-<button onclick="clearForm()" class="small">تفريغ</button>
+<button class="small" onclick="clearForm()">تفريغ</button>
 </div>
 
 <div class="card">
 <h2>📥 إضافة جماعية</h2>
-<textarea id="bulk" rows="6"></textarea>
+<textarea id="bulk" rows="6" placeholder="الصق الأسئلة هنا"></textarea>
 <button onclick="addBulk()">تحويل وإضافة</button>
 </div>
 
@@ -111,52 +120,61 @@ let data = [];
 let nextId = 1;
 let editId = null;
 
-// تحميل
+// تحميل البيانات
 fetch("fiqh-questions.json")
-.then(r=>r.json())
-.then(res=>{
-    data = res;
-    nextId = data.length ? Math.max(...data.map(x=>x.id||0))+1 : 1;
+.then(r => r.json())
+.then(res => {
+    data = res || [];
+    nextId = data.length ? Math.max(...data.map(x => x.id || 0)) + 1 : 1;
+    render();
+})
+.catch(() => {
+    data = [];
     render();
 });
 
 // حفظ (إضافة أو تعديل)
 function saveQuestion(){
 
+    if(!q.value || !a1.value || !a2.value || !a3.value || !a4.value){
+        alert("أكمل البيانات");
+        return;
+    }
+
     if(editId){
-        let q = data.find(x=>x.id===editId);
-        q.q = q.value = qInput();
-        q.a = [a1.value,a2.value,a3.value,a4.value];
-        q.c = parseInt(c.value);
+
+        let item = data.find(x => x.id === editId);
+
+        item.q = q.value;
+        item.a = [a1.value, a2.value, a3.value, a4.value];
+        item.c = parseInt(c.value);
+
         editId = null;
+
     }else{
+
         data.push({
             id: nextId++,
-            q: qInput(),
-            a:[a1.value,a2.value,a3.value,a4.value],
+            q: q.value,
+            a: [a1.value, a2.value, a3.value, a4.value],
             c: parseInt(c.value)
         });
     }
 
-    render();
     clearForm();
+    render();
 }
 
-// جلب السؤال
-function qInput(){
-    return document.getElementById("q").value;
-}
-
-// بحث + عرض
+// عرض + بحث
 function render(){
 
     let keyword = searchBox.value.toLowerCase();
 
-    let filtered = data.filter(x=>
+    let filtered = data.filter(x =>
         x.q.toLowerCase().includes(keyword)
     );
 
-    list.innerHTML = filtered.map(q=>
+    list.innerHTML = filtered.map(q =>
         `<tr>
             <td>${q.q}</td>
             <td>
@@ -169,66 +187,72 @@ function render(){
 
 // تعديل
 function editQuestion(id){
-    let q = data.find(x=>x.id===id);
+
+    let item = data.find(x => x.id === id);
 
     editId = id;
 
-    document.getElementById("q").value = q.q;
-    a1.value = q.a[0];
-    a2.value = q.a[1];
-    a3.value = q.a[2];
-    a4.value = q.a[3];
-    c.value = q.c;
+    q.value = item.q;
+    a1.value = item.a[0];
+    a2.value = item.a[1];
+    a3.value = item.a[2];
+    a4.value = item.a[3];
+    c.value = item.c;
 }
 
 // حذف
 function deleteQ(id){
-    data = data.filter(x=>x.id!==id);
+    data = data.filter(x => x.id !== id);
     render();
 }
 
-// إضافة جماعي (بسيط)
+// إضافة جماعية بسيطة
 function addBulk(){
 
     let lines = bulk.value.split("\n");
-    let q="", a=[], c=0;
 
-    lines.forEach(line=>{
-        if(line.includes("?")) q=line;
-        else if(line.startsWith("أ")) a[0]=line;
-        else if(line.startsWith("ب")) a[1]=line;
-        else if(line.startsWith("ج")) a[2]=line;
-        else if(line.startsWith("د")) a[3]=line;
-        else if(line.includes(":")) c=parseInt(line.split(":")[1]);
+    let qText="", a=[], c=0;
+
+    lines.forEach(line => {
+        if(line.includes("?")) qText = line;
+        else if(line.startsWith("أ")) a[0] = line;
+        else if(line.startsWith("ب")) a[1] = line;
+        else if(line.startsWith("ج")) a[2] = line;
+        else if(line.startsWith("د")) a[3] = line;
+        else if(line.includes(":")) c = parseInt(line.split(":")[1]);
     });
 
     data.push({
         id: nextId++,
-        q,
+        q: qText,
         a,
         c
     });
 
     render();
+    bulk.value = "";
 }
 
-// تصدير
+// تصدير JSON
 function exportJSON(){
-    let blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+
+    let blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+
     let a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = "fiqh-questions.json";
     a.click();
 }
 
-// تنظيف
+// تنظيف النموذج
 function clearForm(){
-    q.value="";
-    a1.value="";
-    a2.value="";
-    a3.value="";
-    a4.value="";
-    c.value="";
+    q.value = "";
+    a1.value = "";
+    a2.value = "";
+    a3.value = "";
+    a4.value = "";
+    c.value = "";
+    editId = null;
 }
 
 </script>
