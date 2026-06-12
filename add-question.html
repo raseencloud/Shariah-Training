@@ -277,7 +277,7 @@ function addBulk(){
 
         else if(line.includes("الإجابة")){
     let val = line.split(":")[1];
-    c = parseInt(val.trim());
+    c = parseInt((val || "").trim());
 }
 
         if(qText && a.filter(x => x && x.trim()).length === 4){
