@@ -246,6 +246,7 @@ function addBulk(){
         else if(line.startsWith("ج")) a[2] = line;
         else if(line.startsWith("د")) a[3] = line;
         else if(line.includes(":")) c = parseInt(line.split(":")[1]);
+        alert("السؤال = " + qText + "\nالخيارات = " + a.length);
     });
 
     data.push({
