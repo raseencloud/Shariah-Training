@@ -276,19 +276,20 @@ function addBulk(){
         }
     }
 
-        if(qText && a.filter(x => x).length === 4){
+        if(qText && a.filter(x => x && x.trim()).length === 4){
 
-            data.push({
-    id: nextId++,
-    category: category,
-    level: level,
-    q: qText,
-    a,
-    c
-});
-            
-            added++;
-        }
+    data.push({
+        id: nextId++,
+        category: category,
+        level: level,
+        q: qText,
+        a,
+        c
+    });
+
+    added++;
+}
+        
     });
 
     if(added === 0){
