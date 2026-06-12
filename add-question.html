@@ -230,44 +230,82 @@ function deleteQ(id){
 // إضافة جماعية بسيطة
 function addBulk(){
 
-    let lines = bulk.value.split("\n");
+    let text = bulk.value.trim();
 
-    let qText = "", a = [], c = 0;
+    // تقسيم الأسئلة (يدعم ChatGPT)
+    let blocks = text
+        .split(/\n\s*\n+/)
+        .map(b => b.trim())
+        .filter(b => b.length > 0);
 
-    for(let line of lines){
+    let added = 0;
 
-        line = line.trim();
+    blocks.forEach(block => {
 
-        // السؤال
-        if(!qText && (line.includes("?") || line.includes("؟") || line.length > 10 && !line.startsWith("أ") && !line.startsWith("ب") && !line.startsWith("ج") && !line.startsWith("د"))){
-            qText = line;
+        let lines = block.split("\n");
+
+        let qText = "", a = [], c = 0;
+
+        for(let line of lines){
+
+            line = line.trim();
+
+            // السؤال
+            if(!qText && (
+                line.includes("?") ||
+                line.includes("؟") ||
+                (line.length > 10 &&
+                !line.startsWith("أ") &&
+                !line.startsWith("ب") &&
+                !line.startsWith("ج") &&
+                !line.startsWith("د"))
+            )){
+                qText = line;
+            }
+
+            // الخيارات
+            else if(line.startsWith("أ")){
+                a[0] = line.replace("أ","").replace(".","").replace("-","").trim();
+            }
+            else if(line.startsWith("ب")){
+                a[1] = line.replace("ب","").replace(".","").replace("-","").trim();
+            }
+            else if(line.startsWith("ج")){
+                a[2] = line.replace("ج","").replace(".","").replace("-","").trim();
+            }
+            else if(line.startsWith("د")){
+                a[3] = line.replace("د","").replace(".","").replace("-","").trim();
+            }
+
+            // الإجابة
+            else if(line.includes(":")){
+                c = parseInt(line.split(":")[1]);
+            }
         }
 
-        // الخيارات
-        else if(line.startsWith("أ")){
-            a[0] = line.replace("أ","").replace(".","").replace("-","").trim();
-        }
-        else if(line.startsWith("ب")){
-            a[1] = line.replace("ب","").replace(".","").replace("-","").trim();
-        }
-        else if(line.startsWith("ج")){
-            a[2] = line.replace("ج","").replace(".","").replace("-","").trim();
-        }
-        else if(line.startsWith("د")){
-            a[3] = line.replace("د","").replace(".","").replace("-","").trim();
-        }
+        if(qText && a.filter(x => x).length === 4){
 
-        // الإجابة
-        else if(line.includes(":")){
-            c = parseInt(line.split(":")[1]);
-        }
-    }
+            data.push({
+                id: nextId++,
+                q: qText,
+                a,
+                c
+            });
 
-    if(!qText || a.filter(x => x).length !== 4){
-        alert("لم يتم التعرف على السؤال أو الخيارات بشكل صحيح");
+            added++;
+        }
+    });
+
+    if(added === 0){
+        alert("لم يتم إضافة أي سؤال");
         return;
     }
 
+    render();
+    bulk.value = "";
+
+    alert("تمت إضافة " + added + " سؤال بنجاح");
+}
     data.push({
         id: nextId++,
         q: qText,
