@@ -270,10 +270,10 @@ function addBulk(){
             qText = line;
         }
 
-        else if(line.startsWith("أ")) a[0] = line.replace(/أ|\.|-/g,"").trim();
-        else if(line.startsWith("ب")) a[1] = line.replace(/ب|\.|-/g,"").trim();
-        else if(line.startsWith("ج")) a[2] = line.replace(/ج|\.|-/g,"").trim();
-        else if(line.startsWith("د")) a[3] = line.replace(/د|\.|-/g,"").trim();
+        else if(line.includes("أ")) a[0] = line.replace(/أ|\.|-\s*/g,"").trim();
+else if(line.includes("ب")) a[1] = line.replace(/ب|\.|-\s*/g,"").trim();
+else if(line.includes("ج")) a[2] = line.replace(/ج|\.|-\s*/g,"").trim();
+else if(line.includes("د")) a[3] = line.replace(/د|\.|-\s*/g,"").trim();
 
         else if(line.includes("الإجابة")){
     let val = line.split(":")[1];
