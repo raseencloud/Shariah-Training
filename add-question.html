@@ -275,10 +275,10 @@ function addBulk(){
         else if(line.startsWith("ج")) a[2] = line.replace(/ج|\.|-/g,"").trim();
         else if(line.startsWith("د")) a[3] = line.replace(/د|\.|-/g,"").trim();
 
-        else if(line.includes(":")){
-            c = parseInt(line.split(":")[1]);
-        }
-    }
+        else if(line.includes("الإجابة")){
+    let val = line.split(":")[1];
+    c = parseInt(val.trim());
+}
 
         if(qText && a.filter(x => x && x.trim()).length === 4){
 
