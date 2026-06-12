@@ -276,12 +276,14 @@ function addBulk(){
         if(qText && a.filter(x => x).length === 4){
 
             data.push({
-                id: nextId++,
-                q: qText,
-                a,
-                c
-            });
-
+    id: nextId++,
+    category: category,
+    level: level,
+    q: qText,
+    a,
+    c
+});
+            
             added++;
         }
     });
