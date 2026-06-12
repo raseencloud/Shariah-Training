@@ -138,8 +138,15 @@ fetch("fiqh-questions.json")
     render();
 });
 
-// حفظ (إضافة أو تعديل)
+// حفظ
 function saveQuestion(){
+
+    const q = document.getElementById("q");
+    const a1 = document.getElementById("a1");
+    const a2 = document.getElementById("a2");
+    const a3 = document.getElementById("a3");
+    const a4 = document.getElementById("a4");
+    const c  = document.getElementById("c");
 
     if(!q.value || !a1.value || !a2.value || !a3.value || !a4.value){
         alert("أكمل البيانات");
@@ -149,6 +156,8 @@ function saveQuestion(){
     if(editId){
 
         let item = data.find(x => x.id === editId);
+
+        if(!item) return;
 
         item.q = q.value;
         item.a = [a1.value, a2.value, a3.value, a4.value];
@@ -173,17 +182,14 @@ function saveQuestion(){
 // عرض + بحث
 function render(){
 
-    let keyword = (document.getElementById("searchBox").value || "").toLowerCase().trim();
+    const searchBox = document.getElementById("searchBox");
+    const list = document.getElementById("list");
 
-    // إذا لا يوجد بحث → لا تعرض أي شيء
-    if(keyword === ""){
-        list.innerHTML = "";
-        return;
-    }
+    let keyword = (searchBox.value || "").toLowerCase().trim();
 
-    let filtered = data.filter(x =>
-        x.q.toLowerCase().includes(keyword)
-    );
+    let filtered = keyword === ""
+        ? data
+        : data.filter(x => x.q.toLowerCase().includes(keyword));
 
     list.innerHTML = filtered.map(q =>
         `<tr>
@@ -195,12 +201,11 @@ function render(){
         </tr>`
     ).join("");
 }
-    
-    // تعديل
+
+// تعديل
 function editQuestion(id){
 
     let item = data.find(x => x.id === id);
-
     if(!item) return;
 
     editId = id;
@@ -214,22 +219,20 @@ function editQuestion(id){
 
     document.getElementById("formBox").style.display = "block";
 }
-    
-    // حذف
+
+// حذف
 function deleteQ(id){
 
-    let ok = confirm("هل أنت متأكد أنك تريد حذف هذا السؤال؟");
-
-    if(!ok) return;
+    if(!confirm("هل أنت متأكد؟")) return;
 
     data = data.filter(x => x.id !== id);
     render();
-    exportJSON();
 }
-    
-// إضافة جماعية بسيطة
+
+// إضافة جماعية
 function addBulk(){
 
+    const bulk = document.getElementById("bulk");
     let text = bulk.value.trim();
 
     let blocks = text
@@ -252,27 +255,15 @@ function addBulk(){
             if(!qText && (
                 line.includes("?") ||
                 line.includes("؟") ||
-                (line.length > 10 &&
-                !line.startsWith("أ") &&
-                !line.startsWith("ب") &&
-                !line.startsWith("ج") &&
-                !line.startsWith("د"))
+                line.length > 10
             )){
                 qText = line;
             }
 
-            else if(line.startsWith("أ")){
-                a[0] = line.replace("أ","").replace(".","").replace("-","").trim();
-            }
-            else if(line.startsWith("ب")){
-                a[1] = line.replace("ب","").replace(".","").replace("-","").trim();
-            }
-            else if(line.startsWith("ج")){
-                a[2] = line.replace("ج","").replace(".","").replace("-","").trim();
-            }
-            else if(line.startsWith("د")){
-                a[3] = line.replace("د","").replace(".","").replace("-","").trim();
-            }
+            else if(line.startsWith("أ")) a[0] = line.replace(/أ|\.|-/g,"").trim();
+            else if(line.startsWith("ب")) a[1] = line.replace(/ب|\.|-/g,"").trim();
+            else if(line.startsWith("ج")) a[2] = line.replace(/ج|\.|-/g,"").trim();
+            else if(line.startsWith("د")) a[3] = line.replace(/د|\.|-/g,"").trim();
 
             else if(line.includes(":")){
                 c = parseInt(line.split(":")[1]);
@@ -301,8 +292,9 @@ function addBulk(){
     bulk.value = "";
 
     alert("تمت إضافة " + added + " سؤال بنجاح");
-}    
-    // تصدير JSON
+}
+
+// تصدير JSON
 function exportJSON(){
 
     let blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
@@ -313,27 +305,26 @@ function exportJSON(){
     a.click();
 }
 
-// تنظيف النموذج
+// تنظيف
 function clearForm(){
-    q.value = "";
-    a1.value = "";
-    a2.value = "";
-    a3.value = "";
-    a4.value = "";
-    c.value = "";
+
+    document.getElementById("q").value = "";
+    document.getElementById("a1").value = "";
+    document.getElementById("a2").value = "";
+    document.getElementById("a3").value = "";
+    document.getElementById("a4").value = "";
+    document.getElementById("c").value = "";
     editId = null;
 }
 
-    function toggleForm(){
+// toggle form
+function toggleForm(){
+
     const box = document.getElementById("formBox");
 
-    if(box.style.display === "none" || box.style.display === ""){
-        box.style.display = "block";
-    }else{
-        box.style.display = "none";
-    }
+    box.style.display = (box.style.display === "block") ? "none" : "block";
 }
-
+    
 </script>
 
 </body>
