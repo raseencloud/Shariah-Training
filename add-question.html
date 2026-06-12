@@ -247,31 +247,34 @@ function addBulk(){
 
     blocks.forEach(block => {
 
-        let lines = block.split("\n");
+    let category = "غير محدد";
+    let level = "متوسط";
 
-        let qText = "", a = [], c = 0;
+    let lines = block.split("\n");
 
-        for(let line of lines){
+    let qText = "", a = [], c = 0;
 
-            line = line.trim();
+    for(let line of lines){
 
-            if(!qText && (
-                line.includes("?") ||
-                line.includes("؟") ||
-                line.length > 10
-            )){
-                qText = line;
-            }
+        line = line.trim();
 
-            else if(line.startsWith("أ")) a[0] = line.replace(/أ|\.|-/g,"").trim();
-            else if(line.startsWith("ب")) a[1] = line.replace(/ب|\.|-/g,"").trim();
-            else if(line.startsWith("ج")) a[2] = line.replace(/ج|\.|-/g,"").trim();
-            else if(line.startsWith("د")) a[3] = line.replace(/د|\.|-/g,"").trim();
-
-            else if(line.includes(":")){
-                c = parseInt(line.split(":")[1]);
-            }
+        if(!qText && (
+            line.includes("?") ||
+            line.includes("؟") ||
+            line.length > 10
+        )){
+            qText = line;
         }
+
+        else if(line.startsWith("أ")) a[0] = line.replace(/أ|\.|-/g,"").trim();
+        else if(line.startsWith("ب")) a[1] = line.replace(/ب|\.|-/g,"").trim();
+        else if(line.startsWith("ج")) a[2] = line.replace(/ج|\.|-/g,"").trim();
+        else if(line.startsWith("د")) a[3] = line.replace(/د|\.|-/g,"").trim();
+
+        else if(line.includes(":")){
+            c = parseInt(line.split(":")[1]);
+        }
+    }
 
         if(qText && a.filter(x => x).length === 4){
 
