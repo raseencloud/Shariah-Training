@@ -230,6 +230,11 @@ function deleteQ(id){
 // إضافة جماعية بسيطة
 function addBulk(){
 
+    if(!qText || a.length !== 4){
+    alert("صيغة السؤال غير صحيحة");
+    return;
+}
+
     let lines = bulk.value.split("\n");
 
     let qText="", a=[], c=0;
