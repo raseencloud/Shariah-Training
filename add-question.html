@@ -234,22 +234,39 @@ function addBulk(){
 
     let qText = "", a = [], c = 0;
 
-    lines.forEach(line => {
-        if(line.includes("?") || line.includes("؟")) qText = line.trim();
-        else if(line.startsWith("أ")) a[0] = line.replace("أ.","").replace("أ","").trim();
-        else if(line.startsWith("ب")) a[1] = line.replace("ب.","").replace("ب","").trim();
-        else if(line.startsWith("ج")) a[2] = line.replace("ج.","").replace("ج","").trim();
-        else if(line.startsWith("د")) a[3] = line.replace("د.","").replace("د","").trim();
-        else if(line.includes(":")) c = parseInt(line.split(":")[1]);
-    });
+    for(let line of lines){
 
-    // التحقق بعد التجميع
-    if(!qText || a.length !== 4 || a.some(x => !x)){
-        alert("صيغة السؤال غير صحيحة");
-        return;
+        line = line.trim();
+
+        // السؤال
+        if(!qText && (line.includes("?") || line.includes("؟") || line.length > 10 && !line.startsWith("أ") && !line.startsWith("ب") && !line.startsWith("ج") && !line.startsWith("د"))){
+            qText = line;
+        }
+
+        // الخيارات
+        else if(line.startsWith("أ")){
+            a[0] = line.replace("أ","").replace(".","").replace("-","").trim();
+        }
+        else if(line.startsWith("ب")){
+            a[1] = line.replace("ب","").replace(".","").replace("-","").trim();
+        }
+        else if(line.startsWith("ج")){
+            a[2] = line.replace("ج","").replace(".","").replace("-","").trim();
+        }
+        else if(line.startsWith("د")){
+            a[3] = line.replace("د","").replace(".","").replace("-","").trim();
+        }
+
+        // الإجابة
+        else if(line.includes(":")){
+            c = parseInt(line.split(":")[1]);
+        }
     }
 
-    alert("السؤال = " + qText + "\nعدد الخيارات = " + a.length);
+    if(!qText || a.filter(x => x).length !== 4){
+        alert("لم يتم التعرف على السؤال أو الخيارات بشكل صحيح");
+        return;
+    }
 
     data.push({
         id: nextId++,
@@ -260,8 +277,11 @@ function addBulk(){
 
     render();
     bulk.value = "";
+
+    alert("تمت إضافة السؤال بنجاح");
 }
-// تصدير JSON
+    
+    // تصدير JSON
 function exportJSON(){
 
     let blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
