@@ -107,12 +107,21 @@ if(access !== "ok"){
 <button onclick="addBulk()">إضافة جماعية</button>
 </div>
 
-<script>
+    </script>
 
 let data = [];
 let nextId = 1;
 let editId = null;
 
+function normalizeText(text){
+    return (text || "")
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, " ")
+        .replace(/[؟?]/g, "")
+        .replace(/[.,،]/g, "");
+}
+    
 /* ===================== SAVE ===================== */
 function save(){
 
