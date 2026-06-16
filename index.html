@@ -416,28 +416,23 @@ font-size:14px;
 </div>
 
 <script>
-function openAdmin(){
+<div style="text-align:center;margin-top:30px;">
 
-    const password = prompt("أدخل كلمة مرور المدير:");
+<button onclick="openAdmin()" 
+style="
+background:#6b7280;
+color:#fff;
+padding:10px 18px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+opacity:0.85;
+font-size:14px;
+">
+⚙ إدارة الأسئلة
+</button>
 
-    if(password === "1234"){
-        sessionStorage.setItem("admin_access","granted");
-        window.location.href = "add-question.html";
-    }else{
-        alert("غير مصرح بالدخول");
-    }
-}
-
-       <select id="questionCount">
-    <option value="3" selected>3</option>
-    <option value="5">5</option>
-    <option value="10">10</option>
-    <option value="20">20</option>
-    <option value="30">30</option>
-    <option value="50">50</option>
-    <option value="80">80</option>
-    <option value="100">100</option>
-</select>
+</div>
 
 <script>
 function openAdmin(){
