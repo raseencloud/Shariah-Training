@@ -427,45 +427,30 @@ function openAdmin(){
         alert("غير مصرح بالدخول");
     }
 }
-        <script>
-document.addEventListener("DOMContentLoaded", function () {
 
-    const select = document.getElementById("questionCount");
+       <select id="questionCount">
+    <option value="3" selected>3</option>
+    <option value="5">5</option>
+    <option value="10">10</option>
+    <option value="20">20</option>
+    <option value="30">30</option>
+    <option value="50">50</option>
+    <option value="80">80</option>
+    <option value="100">100</option>
+</select>
 
-    // تأكد أن بنك الأسئلة موجود
-    const totalQuestions = typeof questions !== "undefined" ? questions.length : 0;
+<script>
+function openAdmin(){
 
-    const baseOptions = [3, 5, 10, 20, 30, 50, 80, 100];
+    const password = prompt("أدخل كلمة مرور المدير:");
 
-    select.innerHTML = "";
-
-    baseOptions.forEach(val => {
-
-        if (val <= totalQuestions || totalQuestions === 0) {
-
-            const opt = document.createElement("option");
-            opt.value = val;
-            opt.textContent = val;
-
-            if (val === 3) {
-                opt.selected = true;
-            }
-
-            select.appendChild(opt);
-        }
-    });
-
-    // إذا كان البنك صغير جدًا
-    if (select.options.length === 0 && totalQuestions > 0) {
-        const opt = document.createElement("option");
-        opt.value = totalQuestions;
-        opt.textContent = totalQuestions;
-        opt.selected = true;
-        select.appendChild(opt);
+    if(password === "1234"){
+        sessionStorage.setItem("admin_access","granted");
+        window.location.href = "add-question.html";
+    }else{
+        alert("غير مصرح بالدخول");
     }
-
-});
-
+}
 </script>
 
 </body>
