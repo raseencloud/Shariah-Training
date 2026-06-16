@@ -107,7 +107,7 @@ if(access !== "ok"){
 <button onclick="addBulk()">إضافة جماعية</button>
 </div>
 
- <script>
+<script>
 
 let data = [];
 let nextId = 1;
@@ -121,9 +121,18 @@ function normalizeText(text){
         .replace(/[؟?]/g, "")
         .replace(/[.,،]/g, "");
 }
-    
+
+function isDuplicateQuestion(newQuestion){
+
+    let newNorm = normalizeText(newQuestion);
+
+    return data.some(item =>
+        normalizeText(item.q) === newNorm
+    );
+}
+
 /* ===================== SAVE ===================== */
-function save(){
+    function save(){
 
     const q = document.getElementById("q").value.trim();
     const a1 = document.getElementById("a1").value.trim();
