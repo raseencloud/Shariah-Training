@@ -132,20 +132,25 @@ function isDuplicateQuestion(newQuestion){
 }
 
 /* ===================== SAVE ===================== */
-    function save(){
+   function save(){
 
-    const q = document.getElementById("q").value.trim();
-    const a1 = document.getElementById("a1").value.trim();
-    const a2 = document.getElementById("a2").value.trim();
-    const a3 = document.getElementById("a3").value.trim();
-    const a4 = document.getElementById("a4").value.trim();
-    let c = parseInt(document.getElementById("c").value);
+   const q = document.getElementById("q").value.trim();
+   const a1 = document.getElementById("a1").value.trim();
+   const a2 = document.getElementById("a2").value.trim();
+   const a3 = document.getElementById("a3").value.trim();
+   const a4 = document.getElementById("a4").value.trim();
+   let c = parseInt(document.getElementById("c").value);
 
-    if(!q || !a1 || !a2 || !a3 || !a4){
-        alert("أكمل جميع البيانات");
-        return;
-    }
+   if(isDuplicateQuestion(q) && editId === null){
+       alert("هذا السؤال موجود مسبقاً في بنك الأسئلة");
+       return;
+   }
 
+   if(!q || !a1 || !a2 || !a3 || !a4){
+       alert("أكمل جميع البيانات");
+       return;
+   }
+       
     if(isNaN(c) || c < 0 || c > 3){
         alert("الإجابة يجب أن تكون بين 0 و 3");
         return;
