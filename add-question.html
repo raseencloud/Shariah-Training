@@ -197,13 +197,17 @@ function render(){
 
     let keyword = (searchBox.value || "").toLowerCase().trim();
 
-    let filtered = keyword === ""
-        ? data
-        : data.filter(x => x.q.toLowerCase().includes(keyword))
+    let filtered = data.filter(x => {
+
+        // حماية من القيم الفارغة
+        if(!x || !x.q) return false;
+
+        return x.q.toString().toLowerCase().includes(keyword);
+    });
 
     list.innerHTML = filtered.map(q =>
         `<tr>
-            <td>${q.q}</td>
+            <td>${q.q || ""}</td>
             <td>
                 <button onclick="editQuestion(${q.id})">تعديل</button>
                 <button class="danger" onclick="deleteQ(${q.id})">حذف</button>
@@ -211,7 +215,6 @@ function render(){
         </tr>`
     ).join("");
 }
-
 // تعديل
 function editQuestion(id){
 
