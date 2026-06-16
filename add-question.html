@@ -1,67 +1,335 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>إدارة الأسئلة</title>
+
+<style>
+body{
+    font-family:Tahoma;
+    background:#f0fdf4;
+    padding:20px;
+    max-width:1000px;
+    margin:auto;
+}
+
+.card{
+    background:#fff;
+    padding:20px;
+    border-radius:12px;
+    margin-bottom:20px;
+    border:1px solid #ddd;
+}
+
+input,textarea,button{
+    width:100%;
+    padding:10px;
+    margin:6px 0;
+    font-size:14px;
+}
+
+button{
+    background:#16a34a;
+    color:#fff;
+    border:0;
+    cursor:pointer;
+}
+
+.danger{background:#dc2626;}
+.small{background:#6b7280;}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:8px;
+    text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<!-- 🔐 حماية الدخول -->
+<script>
+const PASSWORD = "1234";
+
+let access = sessionStorage.getItem("admin_access");
+
+if(access !== "granted"){
+    let input = prompt("أدخل كلمة مرور المدير:");
+
+    if(input === PASSWORD){
+        sessionStorage.setItem("admin_access","granted");
+    }else{
+        document.body.innerHTML = "<h2 style='text-align:center'>غير مصرح بالدخول</h2>";
+        throw new Error("Access Denied");
+    }
+}
+</script>
+
+<div class="card">
+<h2>🔍 بحث عن سؤال</h2>
+<input id="searchBox" placeholder="ابحث عن سؤال..." oninput="render()">
+</div>
+
+<div class="card">
+
+<button onclick="toggleForm()">➕ إضافة سؤال جديد</button>
+
+<div id="formBox" style="display:none; margin-top:15px;">
+
+    <h2>➕ إضافة / تعديل سؤال</h2>
+
+    <input id="q" placeholder="السؤال">
+    <input id="a1" placeholder="الخيار 1">
+    <input id="a2" placeholder="الخيار 2">
+    <input id="a3" placeholder="الخيار 3">
+    <input id="a4" placeholder="الخيار 4">
+    <input id="c" type="number" placeholder="الإجابة الصحيحة (0-3)">
+
+    <button onclick="saveQuestion()">حفظ</button>
+    <button class="small" onclick="clearForm()">تفريغ</button>
+
+</div>
+
+<div class="card">
+<h2>📥 إضافة جماعية</h2>
+<textarea id="bulk" rows="6" placeholder="الصق الأسئلة هنا"></textarea>
+<button onclick="addBulk()">تحويل وإضافة</button>
+<button onclick="exportJSON()">⬇ تصدير JSON</button>
+</div>
+
+<div class="card">
+<h2>📋 قائمة الأسئلة</h2>
+
+<table>
+<thead>
+<tr>
+<th>السؤال</th>
+<th>إجراء</th>
+</tr>
+</thead>
+<tbody id="list"></tbody>
+</table>
+</div>
+
+<div class="card">
+<button onclick="exportJSON()">⬇ تصدير JSON</button>
+</div>
+
+<script>
+
+let data = [];
+let nextId = 1;
+let editId = null;
+
+// تحميل البيانات
+fetch("fiqh-questions.json")
+.then(r => r.json())
+.then(res => {
+    data = res || [];
+    nextId = data.length ? Math.max(...data.map(x => x.id || 0)) + 1 : 1;
+    render();
+})
+.catch(() => {
+    data = [];
+    render();
+});
+
+// حفظ سؤال
 function saveQuestion(){
 
-    try{
+    const q = document.getElementById("q");
+    const a1 = document.getElementById("a1");
+    const a2 = document.getElementById("a2");
+    const a3 = document.getElementById("a3");
+    const a4 = document.getElementById("a4");
+    const c  = document.getElementById("c");
 
-        const q = document.getElementById("q");
-        const a1 = document.getElementById("a1");
-        const a2 = document.getElementById("a2");
-        const a3 = document.getElementById("a3");
-        const a4 = document.getElementById("a4");
-        const c  = document.getElementById("c");
+    if(!q.value || !a1.value || !a2.value || !a3.value || !a4.value){
+        alert("أكمل البيانات");
+        return;
+    }
 
-        if(!q || !a1 || !a2 || !a3 || !a4 || !c){
-            alert("خطأ في عناصر الصفحة");
-            return;
+    const correct = parseInt(c.value);
+
+    if(isNaN(correct) || correct < 0 || correct > 3){
+        alert("رقم الإجابة الصحيحة يجب أن يكون بين 0 و 3");
+        return;
+    }
+
+    if(editId){
+
+        let item = data.find(x => x.id === editId);
+        if(!item) return;
+
+        item.q = q.value;
+        item.a = [a1.value, a2.value, a3.value, a4.value];
+        item.c = correct;
+
+        editId = null;
+
+    }else{
+
+        data.push({
+            id: nextId++,
+            category: "غير محدد",
+            level: "متوسط",
+            q: q.value,
+            a: [a1.value, a2.value, a3.value, a4.value],
+            c: correct
+        });
+    }
+
+    clearForm();
+    render();
+}
+
+// عرض + بحث
+function render(){
+
+    const searchBox = document.getElementById("searchBox");
+    const list = document.getElementById("list");
+
+    let keyword = (searchBox.value || "").toLowerCase().trim();
+
+    let filtered = keyword === ""
+        ? data
+        : data.filter(x => x.q.toLowerCase().includes(keyword));
+
+    list.innerHTML = filtered.map(q =>
+        `<tr>
+            <td>${q.q}</td>
+            <td>
+                <button onclick="editQuestion(${q.id})">تعديل</button>
+                <button class="danger" onclick="deleteQ(${q.id})">حذف</button>
+            </td>
+        </tr>`
+    ).join("");
+}
+
+// تعديل
+function editQuestion(id){
+
+    let item = data.find(x => x.id === id);
+    if(!item) return;
+
+    editId = id;
+
+    document.getElementById("q").value = item.q;
+    document.getElementById("a1").value = item.a[0];
+    document.getElementById("a2").value = item.a[1];
+    document.getElementById("a3").value = item.a[2];
+    document.getElementById("a4").value = item.a[3];
+    document.getElementById("c").value = item.c;
+
+    document.getElementById("formBox").style.display = "block";
+}
+
+// حذف
+function deleteQ(id){
+
+    if(!confirm("هل أنت متأكد؟")) return;
+
+    data = data.filter(x => x.id !== id);
+    render();
+}
+
+// إضافة جماعية
+function addBulk(){
+
+    const bulk = document.getElementById("bulk");
+    let text = bulk.value.trim();
+
+    let blocks = text.split(/\n\s*\n+/).filter(b => b.trim());
+
+    let added = 0;
+
+    blocks.forEach(block => {
+
+        let lines = block.split("\n");
+
+        let qText = "", a = [], c = 0;
+
+        for(let line of lines){
+
+            line = line.trim();
+
+            if(!qText && (line.includes("?") || line.includes("؟") || line.length > 10)){
+                qText = line;
+            }
+
+            else if(line.includes("أ")) a[0] = line.replace(/أ|\.|-\s*/g,"").trim();
+            else if(line.includes("ب")) a[1] = line.replace(/ب|\.|-\s*/g,"").trim();
+            else if(line.includes("ج")) a[2] = line.replace(/ج|\.|-\s*/g,"").trim();
+            else if(line.includes("د")) a[3] = line.replace(/د|\.|-\s*/g,"").trim();
+
+            else if(line.includes("الإجابة")){
+                let val = line.split(":")[1];
+                c = parseInt((val || "").trim());
+            }
         }
 
-        if(
-            !q.value.trim() ||
-            !a1.value.trim() ||
-            !a2.value.trim() ||
-            !a3.value.trim() ||
-            !a4.value.trim()
-        ){
-            alert("أكمل جميع الحقول");
-            return;
-        }
-
-        const correct = parseInt(c.value);
-
-        if(isNaN(correct) || correct < 0 || correct > 3){
-            alert("رقم الإجابة الصحيحة يجب أن يكون بين 0 و 3");
-            return;
-        }
-
-        if(editId){
-
-            let item = data.find(x => x.id === editId);
-            if(!item) return;
-
-            item.q = q.value.trim();
-            item.a = [a1.value, a2.value, a3.value, a4.value];
-            item.c = correct;
-
-            editId = null;
-
-        }else{
+        if(qText && a.length === 4){
 
             data.push({
                 id: nextId++,
                 category: "غير محدد",
                 level: "متوسط",
-                q: q.value.trim(),
-                a: [a1.value, a2.value, a3.value, a4.value],
-                c: correct
+                q: qText,
+                a: a,
+                c: c
             });
+
+            added++;
         }
+    });
 
-        clearForm();
-        render();
-
-        console.log("Question saved successfully");
-
-    }catch(err){
-        console.error(err);
-        alert("حدث خطأ أثناء حفظ السؤال");
+    if(added === 0){
+        alert("لم يتم إضافة أي سؤال");
+        return;
     }
+
+    render();
+    bulk.value = "";
+
+    alert("تمت إضافة " + added + " سؤال بنجاح");
 }
+
+// تصدير JSON
+function exportJSON(){
+
+    let blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "fiqh-questions.json";
+    a.click();
+}
+
+// تنظيف
+function clearForm(){
+
+    document.getElementById("q").value = "";
+    document.getElementById("a1").value = "";
+    document.getElementById("a2").value = "";
+    document.getElementById("a3").value = "";
+    document.getElementById("a4").value = "";
+    document.getElementById("c").value = "";
+    editId = null;
+}
+
+// toggle form
+function toggleForm(){
+    const box = document.getElementById("formBox");
+    box.style.display = (box.style.display === "block") ? "none" : "block";
+}
+
+</script>
+
+</body>
+</html>
