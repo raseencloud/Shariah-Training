@@ -417,6 +417,45 @@ function openAdmin(){
         alert("غير مصرح بالدخول");
     }
 }
+        <script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const select = document.getElementById("questionCount");
+
+    // تأكد أن بنك الأسئلة موجود
+    const totalQuestions = typeof questions !== "undefined" ? questions.length : 0;
+
+    const baseOptions = [3, 5, 10, 20, 30, 50, 80, 100];
+
+    select.innerHTML = "";
+
+    baseOptions.forEach(val => {
+
+        if (val <= totalQuestions || totalQuestions === 0) {
+
+            const opt = document.createElement("option");
+            opt.value = val;
+            opt.textContent = val;
+
+            if (val === 3) {
+                opt.selected = true;
+            }
+
+            select.appendChild(opt);
+        }
+    });
+
+    // إذا كان البنك صغير جدًا
+    if (select.options.length === 0 && totalQuestions > 0) {
+        const opt = document.createElement("option");
+        opt.value = totalQuestions;
+        opt.textContent = totalQuestions;
+        opt.selected = true;
+        select.appendChild(opt);
+    }
+
+});
+
 </script>
 
 </body>
