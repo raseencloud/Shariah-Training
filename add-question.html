@@ -78,31 +78,29 @@ if(access !== "granted"){
 
 <div class="card">
 
-    <button onclick="toggleForm()">➕ إضافة سؤال جديد</button>
+<button onclick="toggleForm()">➕ إضافة سؤال جديد</button>
 
-    <div id="formBox" style="display:none; margin-top:15px;">
+<div id="formBox" style="display:none; margin-top:15px;">
 
-        <h2>➕ إضافة / تعديل سؤال</h2>
+    <h2>➕ إضافة / تعديل سؤال</h2>
 
-        <input id="q" placeholder="السؤال">
-        <input id="a1" placeholder="الخيار 1">
-        <input id="a2" placeholder="الخيار 2">
-        <input id="a3" placeholder="الخيار 3">
-        <input id="a4" placeholder="الخيار 4">
-        <input id="c" type="number" placeholder="الإجابة الصحيحة (0-3)">
+    <input id="q" placeholder="السؤال">
+    <input id="a1" placeholder="الخيار 1">
+    <input id="a2" placeholder="الخيار 2">
+    <input id="a3" placeholder="الخيار 3">
+    <input id="a4" placeholder="الخيار 4">
+    <input id="c" type="number" placeholder="الإجابة الصحيحة (0-3)">
 
-        <button onclick="saveQuestion()">حفظ</button>
-        <button class="small" onclick="clearForm()">تفريغ</button>
+    <button onclick="saveQuestion()">حفظ</button>
+    <button class="small" onclick="clearForm()">تفريغ</button>
 
-    </div>
+</div>
+
 <div class="card">
 <h2>📥 إضافة جماعية</h2>
-
 <textarea id="bulk" rows="6" placeholder="الصق الأسئلة هنا"></textarea>
-
 <button onclick="addBulk()">تحويل وإضافة</button>
 <button onclick="exportJSON()">⬇ تصدير JSON</button>
-
 </div>
 
 <div class="card">
@@ -142,7 +140,7 @@ fetch("fiqh-questions.json")
     render();
 });
 
-// حفظ
+// حفظ سؤال
 function saveQuestion(){
 
     const q = document.getElementById("q");
@@ -157,29 +155,34 @@ function saveQuestion(){
         return;
     }
 
+    const correct = parseInt(c.value);
+
+    if(isNaN(correct) || correct < 0 || correct > 3){
+        alert("رقم الإجابة الصحيحة يجب أن يكون بين 0 و 3");
+        return;
+    }
+
     if(editId){
 
         let item = data.find(x => x.id === editId);
-
         if(!item) return;
 
         item.q = q.value;
         item.a = [a1.value, a2.value, a3.value, a4.value];
-        item.c = parseInt(c.value);
+        item.c = correct;
 
         editId = null;
 
     }else{
 
         data.push({
-    id: nextId++,
-    category: "غير محدد",
-    level: "متوسط",
-    q: qText,
-    a,
-    c
-});
-        
+            id: nextId++,
+            category: "غير محدد",
+            level: "متوسط",
+            q: q.value,
+            a: [a1.value, a2.value, a3.value, a4.value],
+            c: correct
+        });
     }
 
     clearForm();
@@ -242,58 +245,48 @@ function addBulk(){
     const bulk = document.getElementById("bulk");
     let text = bulk.value.trim();
 
-    let blocks = text
-        .split(/\n\s*\n+/)
-        .map(b => b.trim())
-        .filter(b => b.length > 0);
+    let blocks = text.split(/\n\s*\n+/).filter(b => b.trim());
 
     let added = 0;
 
     blocks.forEach(block => {
 
-    let category = "غير محدد";
-    let level = "متوسط";
+        let lines = block.split("\n");
 
-    let lines = block.split("\n");
+        let qText = "", a = [], c = 0;
 
-    let qText = "", a = [], c = 0;
+        for(let line of lines){
 
-    for(let line of lines){
+            line = line.trim();
 
-        line = line.trim();
+            if(!qText && (line.includes("?") || line.includes("؟") || line.length > 10)){
+                qText = line;
+            }
 
-        if(!qText && (
-            line.includes("?") ||
-            line.includes("؟") ||
-            line.length > 10
-        )){
-            qText = line;
+            else if(line.includes("أ")) a[0] = line.replace(/أ|\.|-\s*/g,"").trim();
+            else if(line.includes("ب")) a[1] = line.replace(/ب|\.|-\s*/g,"").trim();
+            else if(line.includes("ج")) a[2] = line.replace(/ج|\.|-\s*/g,"").trim();
+            else if(line.includes("د")) a[3] = line.replace(/د|\.|-\s*/g,"").trim();
+
+            else if(line.includes("الإجابة")){
+                let val = line.split(":")[1];
+                c = parseInt((val || "").trim());
+            }
         }
 
-        else if(line.includes("أ")) a[0] = line.replace(/أ|\.|-\s*/g,"").trim();
-else if(line.includes("ب")) a[1] = line.replace(/ب|\.|-\s*/g,"").trim();
-else if(line.includes("ج")) a[2] = line.replace(/ج|\.|-\s*/g,"").trim();
-else if(line.includes("د")) a[3] = line.replace(/د|\.|-\s*/g,"").trim();
+        if(qText && a.length === 4){
 
-        else if(line.includes("الإجابة")){
-    let val = line.split(":")[1];
-    c = parseInt((val || "").trim());
-}
+            data.push({
+                id: nextId++,
+                category: "غير محدد",
+                level: "متوسط",
+                q: qText,
+                a: a,
+                c: c
+            });
 
-        if(qText && a.filter(x => x && x.trim()).length === 4){
-
-    data.push({
-        id: nextId++,
-        category: category,
-        level: level,
-        q: qText,
-        a,
-        c
-    });
-
-    added++;
-}
-        
+            added++;
+        }
     });
 
     if(added === 0){
@@ -332,12 +325,10 @@ function clearForm(){
 
 // toggle form
 function toggleForm(){
-
     const box = document.getElementById("formBox");
-
     box.style.display = (box.style.display === "block") ? "none" : "block";
 }
-    
+
 </script>
 
 </body>
