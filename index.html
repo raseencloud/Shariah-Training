@@ -179,8 +179,9 @@ let wrongAnswers = [];
 
 async function loadQuestions() {
     try {
-        const res = await fetch("fiqh-questions.json", { cache: "no-store" });
 
+const res = await fetch("https://raw.githubusercontent.com/ieashehata1965-netizen/Shariah-Training/main/fiqh-questions.json", { cache: "no-store" });
+           
         if (!res.ok) {
             throw new Error("HTTP Error: " + res.status);
         }
