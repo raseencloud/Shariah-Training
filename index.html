@@ -177,31 +177,51 @@ let selectedCount = 5;
 let answered = false;
 let wrongAnswers = [];
 
-async function loadQuestions(){
-    try{
-        const res = await fetch("fiqh-questions.json", { cache:"no-store" });
-        if(!res.ok) return false;
+async function loadQuestions() {
+    try {
+        const res = await fetch("fiqh-questions.json", { cache: "no-store" });
 
-        const raw = await res.json();
+        if (!res.ok) {
+            throw new Error("HTTP Error: " + res.status);
+        }
 
-        if(!Array.isArray(raw)) return false;
+        const rawText = await res.text();
 
-        allQuestions = raw.map(normalize).filter(Boolean);
+        let raw;
+        try {
+            raw = JSON.parse(rawText);
+        } catch (jsonErr) {
+            console.error("JSON Parse Error:", rawText);
+            throw new Error("Invalid JSON file");
+        }
 
-        if (!selectedCount || selectedCount > allQuestions.length) {
+        if (!Array.isArray(raw)) {
+            throw new Error("Data is not an array");
+        }
+
+        allQuestions = raw.map(normalize).filter(q => q !== null && q !== undefined);
+
+        selectedCount = selectedCount || allQuestions.length;
+
+        if (selectedCount > allQuestions.length) {
             selectedCount = allQuestions.length;
         }
 
         questions = allQuestions.slice(0, selectedCount);
 
+        console.log("Loaded questions:", allQuestions.length);
+
         return allQuestions.length > 0;
 
-    }catch(e){
-        document.getElementById("quiz").innerHTML = "فشل تحميل الملف";
+    } catch (e) {
+        console.error("Load Questions Failed:", e);
+
+        document.getElementById("quiz").innerHTML =
+            "فشل تحميل الملف - تحقق من console";
+
         return false;
     }
- }  
-        
+}        
         
 function normalize(item){
     if(!item) return null;
