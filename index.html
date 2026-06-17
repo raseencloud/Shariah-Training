@@ -200,7 +200,7 @@ const res = await fetch("https://raw.githubusercontent.com/ieashehata1965-netize
             throw new Error("Data is not an array");
         }
 
-        allQuestions = raw.map(normalize).filter(q => q !== null && q !== undefined);
+        allQuestions = raw.map(normalize).filter(q => q);
 
         selectedCount = selectedCount || allQuestions.length;
 
