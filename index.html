@@ -460,18 +460,18 @@ font-size:14px;
 </div>
 
 <script>
-function openAdmin(){
+window.openAdmin = function () {
 
     const password = prompt("أدخل كلمة مرور المدير:");
 
-    if(password === "1234"){
-        sessionStorage.setItem("admin_access","granted");
+    if (password === "1234") {
+        sessionStorage.setItem("admin_access", "granted");
         window.location.href = "add-question.html";
-    }else{
+    } else {
         alert("غير مصرح بالدخول");
     }
-}
+};
 </script>
-
+        
 </body>
 </html>
