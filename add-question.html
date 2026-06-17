@@ -125,18 +125,27 @@ let nextId = 1;
 let editId = null;
 
 /* ===================== تحميل ===================== */
-fetch("fiqh-questions.json")
-.then(r => r.json())
+
+fetch("https://raw.githubusercontent.com/ieashehata1965-netizen/Shariah-Training/main/fiqh-questions.json")
+.then(r => {
+    if (!r.ok) throw new Error("Network Error");
+    return r.json();
+})
 .then(res => {
-    data = res || [];
-    nextId = data.length ? Math.max(...data.map(x => x.id || 0)) + 1 : 1;
+    data = Array.isArray(res) ? res : [];
+
+    nextId = data.length
+        ? Math.max(...data.map(x => x.id || 0)) + 1
+        : 1;
+
     render();
 })
-.catch(() => {
+.catch(err => {
+    console.error("Load Error:", err);
     data = [];
     render();
 });
-
+    
 /* ===================== أدوات ===================== */
 function normalizeText(text){
     return (text || "")
