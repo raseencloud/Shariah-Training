@@ -227,15 +227,13 @@ const res = await fetch("https://raw.githubusercontent.com/ieashehata1965-netize
 function normalize(item){
     if(!item) return null;
 
-    const q = String(item.q ?? item.question ?? "").trim();
+    const q = String(item.q ?? "").trim();
 
-    const a = Array.isArray(item.a)
-        ? item.a
-        : (Array.isArray(item.options) ? item.options : []);
+    const a = Array.isArray(item.a) ? item.a : [];
 
-    const c = Number(item.c ?? item.correct);
+    const c = Number(item.c);
 
-    if(!q || a.length !== 4 || a.some(x => !x) || !Number.isInteger(c) || c < 0 || c > 3){
+    if(!q || a.length < 2 || c < 0 || c >= a.length){
         return null;
     }
 
@@ -247,7 +245,7 @@ function normalize(item){
         c
     };
 }
-
+        
 function shuffle(arr){
     const a = [...arr];
     for(let i=a.length-1;i>0;i--){
