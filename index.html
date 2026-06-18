@@ -255,7 +255,7 @@ function shuffle(arr){
     return a;
 }
 
-async function startExam(){
+window.startExam = async function () {
 
     candidateName = document.getElementById("candidateName").value.trim();
 
@@ -297,8 +297,8 @@ async function startExam(){
     wrongAnswers = [];
 
     showQuestion();
-}
-
+};
+        
 function showQuestion(){
 
     answered = false;
