@@ -201,7 +201,9 @@ const res = await fetch("https://raw.githubusercontent.com/ieashehata1965-netize
 }
 
         allQuestions = raw.map(normalize).filter(Boolean);
-
+           console.log("RAW LENGTH:", raw.length);
+            console.log("AFTER NORMALIZE:", allQuestions.length);
+            
         selectedCount = selectedCount || allQuestions.length;
 
         if (selectedCount > allQuestions.length) {
