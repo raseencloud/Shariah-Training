@@ -77,16 +77,12 @@ button:hover{background:#15803d;}
     font-weight:700;
     margin-bottom:8px;
 }
-    @media print {
 
-    body * {
-        visibility: hidden !important;
-    }
+@media print {
+    body * { visibility: hidden !important; }
 
     #certificate,
-    #certificate * {
-        visibility: visible !important;
-    }
+    #certificate * { visibility: visible !important; }
 
     #certificate {
         position: absolute !important;
@@ -95,11 +91,8 @@ button:hover{background:#15803d;}
         width: 100%;
     }
 
-    #quiz {
-        display: none !important;
-    }
+    #quiz { display: none !important; }
 }
-    
 </style>
 </head>
 
@@ -147,26 +140,28 @@ button:hover{background:#15803d;}
 <button onclick="startExam()">ابدأ الاختبار</button>
 
 <div id="quiz"></div>
-        
+
 <div id="certificate" style="display:none; margin-top:20px; padding:25px; border:8px double #166534; border-radius:18px; background:linear-gradient(135deg,#ecfdf5,#ffffff);">
 
-    <h2 style="color:#166534; margin-bottom:20px;">شهادة إتمام الاختبار</h2>
+    <h2 style="color:#166534;">شهادة إتمام الاختبار</h2>
 
     <p>اسم المتدرب: <span id="certName"></span></p>
-        <p>النتيجة: <span id="score"></span> / <span id="total"></span></p>
-        <p>نسبة النجاح: <span id="percent"></span>%</p>
-        
+    <p>النتيجة: <span id="score"></span> / <span id="total"></span></p>
+    <p>نسبة النجاح: <span id="percent"></span>%</p>
 
     <p>رقم الشهادة: <span id="id"></span></p>
 
-    <div id="qr" style="margin:20px auto;"></div>
+    <div id="qr"></div>
 
-    <p style="margin-top:30px;">ختم واعتماد المدير التنفيذي للمنصة</p>
-
+    <p>ختم واعتماد المدير التنفيذي للمنصة</p>
 </div>
-    
-<script>
 
+<script>
+"use strict";
+
+/* =========================
+   STATE
+========================= */
 let allQuestions = [];
 let questions = [];
 let current = 0;
@@ -175,64 +170,41 @@ let candidateName = "";
 let selectedCount = 5;
 let answered = false;
 let wrongAnswers = [];
-console.log("Parsing JSON...");
-        
+
+/* =========================
+   LOAD QUESTIONS
+========================= */
 async function loadQuestions() {
     try {
-
         const res = await fetch(
             "https://raw.githubusercontent.com/ieashehata1965-netizen/Shariah-Training/main/fiqh-questions.json",
             { cache: "no-store" }
         );
 
-        if (!res.ok) {
-            throw new Error("HTTP Error: " + res.status);
-        }
+        if (!res.ok) throw new Error("HTTP Error: " + res.status);
 
         const rawText = await res.text();
+        const raw = JSON.parse(rawText);
 
-        let raw;
-        try {
-            raw = JSON.parse(rawText);
-        } catch (jsonErr) {
-            console.error("JSON Parse Error:", rawText);
-            throw new Error("Invalid JSON file");
-        }
-
-        if (!Array.isArray(raw)) {
-            console.warn("Unexpected data format:", raw);
-            throw new Error("Data is not an array");
-        }
-
-        console.log("RAW LENGTH:", raw.length);
+        if (!Array.isArray(raw)) throw new Error("Data not array");
 
         allQuestions = raw.map(normalize).filter(Boolean);
 
-        console.log("AFTER NORMALIZE:", allQuestions.length);
-
-        selectedCount = selectedCount || allQuestions.length;
-
         selectedCount = Math.min(selectedCount, allQuestions.length);
-
         questions = allQuestions.slice(0, selectedCount);
 
-        console.log("SELECTED COUNT:", selectedCount);
-        console.log("FINAL QUESTIONS:", questions.length);
-
-        return allQuestions.length > 0;
+        return true;
 
     } catch (e) {
-        console.error("Load Questions Failed:", e);
-
-        document.getElementById("quiz").innerHTML =
-            "فشل تحميل الملف - تحقق من console";
-
+        console.error(e);
+        document.getElementById("quiz").innerHTML = "فشل تحميل الأسئلة";
         return false;
     }
-}   
+}
 
-<script>
-                
+/* =========================
+   NORMALIZE
+========================= */
 function normalize(item){
     if(!item) return null;
 
@@ -240,20 +212,21 @@ function normalize(item){
     const a = Array.isArray(item.a) ? item.a : [];
     const c = Number(item.c);
 
-    if(!q || a.length < 2){
-        return null;
-    }
+    if(!q || a.length < 2) return null;
 
     return {
         id: item.id,
         category: item.category || "غير مصنف",
         level: item.level || "غير محدد",
-        source: item.source || "",
         q,
         a,
         c: (c >= 0 && c < a.length) ? c : 0
     };
-}        
+}
+
+/* =========================
+   SHUFFLE
+========================= */
 function shuffle(arr){
     const a = [...arr];
     for(let i=a.length-1;i>0;i--){
@@ -263,26 +236,24 @@ function shuffle(arr){
     return a;
 }
 
+/* =========================
+   START EXAM (GLOBAL)
+========================= */
 window.startExam = async function () {
 
     candidateName = document.getElementById("candidateName").value.trim();
-
-    let count = parseInt(document.getElementById("questionCount").value);
 
     if(!candidateName){
         alert("أدخل الاسم");
         return;
     }
 
-    selectedCount = Math.max(1, parseInt(document.getElementById("questionCount").value,10) || 5);
+    selectedCount = parseInt(document.getElementById("questionCount").value,10) || 5;
 
     document.getElementById("quiz").innerHTML = "جاري التحميل...";
 
     const ok = await loadQuestions();
-    if(!ok){
-        document.getElementById("quiz").innerHTML = "لا توجد أسئلة";
-        return;
-    }
+    if(!ok) return;
 
     const cat = document.getElementById("categoryFilter").value;
     const lvl = document.getElementById("levelFilter").value;
@@ -292,12 +263,6 @@ window.startExam = async function () {
         (lvl === "all" || q.level === lvl)
     );
 
-    if(pool.length === 0 || selectedCount <= 0){
-        document.getElementById("quiz").innerHTML =
-            "لا توجد أسئلة مطابقة للفلاتر";
-        return;
-    }
-
     questions = shuffle(pool).slice(0, selectedCount);
 
     current = 0;
@@ -306,7 +271,10 @@ window.startExam = async function () {
 
     showQuestion();
 };
-        
+
+/* =========================
+   SHOW QUESTION
+========================= */
 function showQuestion(){
 
     answered = false;
@@ -331,6 +299,9 @@ function showQuestion(){
     document.getElementById("quiz").innerHTML = html;
 }
 
+/* =========================
+   ANSWER
+========================= */
 function answer(i){
 
     if(answered) return;
@@ -342,7 +313,7 @@ function answer(i){
     if(i === q.c){
         score++;
         if(boxes[i]) boxes[i].style.background = "#dcfce7";
-    }else{
+    } else {
         if(boxes[i]) boxes[i].style.background = "#fee2e2";
         if(boxes[q.c]) boxes[q.c].style.background = "#dcfce7";
 
@@ -357,7 +328,10 @@ function answer(i){
     setTimeout(showQuestion, 500);
 }
 
-function showResult() {
+/* =========================
+   RESULT
+========================= */
+function showResult(){
 
     const percent = questions.length
         ? Math.round((score / questions.length) * 100)
@@ -369,81 +343,31 @@ function showResult() {
         percent >= 60 ? "جيد" :
         "يحتاج تطوير";
 
-    document.getElementById("total").textContent = questions.length;
-
-    const resultHTML = `
-        <div id="resultBox" class="result-container">
+    document.getElementById("quiz").innerHTML = `
+        <div>
             <h2>النتيجة</h2>
             <p>الاسم: ${candidateName}</p>
-            <p>الصحيح: ${score}</p>
-            <p>الخطأ: ${questions.length - score}</p>
+            <p>النتيجة: ${score} / ${questions.length}</p>
             <p>النسبة: ${percent}%</p>
             <p>التقييم: ${level}</p>
-            <div class="buttons">
-                <button onclick="printCertificate()">طباعة الشهادة</button>
-                <button onclick="location.reload()">إعادة</button>
-            </div>
+            <button onclick="location.reload()">إعادة</button>
         </div>
     `;
-
-    const quiz = document.getElementById("quiz");
-    quiz.innerHTML = "";
-    quiz.insertAdjacentHTML("beforeend", resultHTML);
-
-    document.getElementById("certName").innerText = candidateName;
-    document.getElementById("certificate").style.display = "none";
-
-    if (wrongAnswers && wrongAnswers.length > 0) {
-
-        const wrongHTML = `
-            <div style="margin-top:20px;text-align:right">
-                <h3>الأسئلة التي أخطأت فيها</h3>
-                <hr>
-                ${wrongAnswers.map(w => `
-                    <div style="margin:10px;padding:10px;border:1px solid #ddd;border-radius:8px">
-                        <p><b>السؤال:</b> ${w.question}</p>
-                        <p style="color:red"><b>إجابتك:</b> ${w.yourAnswer}</p>
-                        <p style="color:green"><b>الإجابة الصحيحة:</b> ${w.correctAnswer}</p>
-                    </div>
-                `).join("")}
-            </div>
-        `;
-
-        document.getElementById("quiz").insertAdjacentHTML("beforeend", wrongHTML);
-    }
 }
 
-function printCertificate() {
-
-    const certId = "FIQH-" + Date.now();
-
-    const url =
-        "certificate.html?name=" + encodeURIComponent(candidateName) +
-        "&score=" + score +
-        "&total=" + questions.length +
-        "&id=" + certId;
-
-  window.location.href = url;
-}
-
-<script>
-   // JavaScript (إن وجد لاحقًا يوضع هنا فقط)
-<script>
-
-// JavaScript فقط هنا
-
-function openAdmin() {
-    const password = prompt("أدخل كلمة مرور المدير:");
-
-    if (password === "1234") {
-        sessionStorage.setItem("admin_access", "granted");
-        window.location.href = "add-question.html";
+/* =========================
+   ADMIN
+========================= */
+function openAdmin(){
+    const password = prompt("أدخل كلمة المرور:");
+    if(password === "1234"){
+        sessionStorage.setItem("admin_access","granted");
+        location.href = "add-question.html";
     } else {
-        alert("غير مصرح بالدخول");
+        alert("غير مصرح");
     }
 }
-      
+</script>
+
 </body>
 </html>
-
-        <script>
