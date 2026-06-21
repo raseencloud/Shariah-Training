@@ -228,24 +228,23 @@ function normalize(item){
     if(!item) return null;
 
     const q = String(item.q ?? "").trim();
-
     const a = Array.isArray(item.a) ? item.a : [];
-
     const c = Number(item.c);
 
-    if(!q || a.length < 2 || c < 0 || c >= a.length){
+    if(!q || a.length < 2){
         return null;
     }
 
     return {
+        id: item.id,
         category: item.category || "غير مصنف",
         level: item.level || "غير محدد",
+        source: item.source || "",
         q,
         a,
-        c
+        c: (c >= 0 && c < a.length) ? c : 0
     };
-}
-        
+}        
 function shuffle(arr){
     const a = [...arr];
     for(let i=a.length-1;i>0;i--){
