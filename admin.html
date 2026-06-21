@@ -264,7 +264,27 @@ function addQuestion(){
     alert("تمت الإضافة بنجاح");
 }
 
+    function validateData(){
+    const broken = data.find(x =>
+        !x.q ||
+        !Array.isArray(x.a) ||
+        x.a.length !== 4 ||
+        x.a.some(v => !v || v.trim() === "")
+    );
+
+    if(broken){
+        alert("يوجد سؤال غير مكتمل — لا يمكن التصدير");
+        console.error("Broken question:", broken);
+        return false;
+    }
+
+    return true;
+}
+
 function downloadJSON(){
+
+    if(!validateData()) return;
+
     if(!data.length){
         alert("لا توجد بيانات");
         return;
@@ -293,6 +313,8 @@ function updateCounter(){
     document.getElementById("counter").textContent =
         "إجمالي الأسئلة: " + data.length;
 }
+
+    
 </script>
 
 </body>
