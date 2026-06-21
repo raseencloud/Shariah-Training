@@ -288,7 +288,7 @@ window.startExam = async function () {
         (lvl === "all" || q.level === lvl)
     );
 
-    if(pool.length === 0){
+    if(pool.length === 0 || selectedCount <= 0){
         document.getElementById("quiz").innerHTML =
             "لا توجد أسئلة مطابقة للفلاتر";
         return;
