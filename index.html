@@ -335,6 +335,7 @@ function answer(i){
 /* =========================
    RESULT
 ========================= */
+        
 function showResult(){
 
     const percent = questions.length
@@ -347,6 +348,8 @@ function showResult(){
         percent >= 60 ? "جيد" :
         "يحتاج تطوير";
 
+    const showCertificate = questions.length >= 20;
+
     document.getElementById("quiz").innerHTML = `
         <div>
             <h2>النتيجة</h2>
@@ -356,11 +359,21 @@ function showResult(){
             <p>النسبة: ${percent}%</p>
             <p>التقييم: ${level}</p>
 
-            <button onclick="printCertificate(${percent})">طباعة الشهادة</button>
+            ${showCertificate ? `
+                <button onclick="printCertificate(${percent})">
+                    طباعة الشهادة
+                </button>
+            ` : `
+                <p style="color:#b91c1c;font-weight:bold;">
+                    لا تتوفر شهادة إلا عند حل 20 سؤالًا فأكثر
+                </p>
+            `}
+
             <button onclick="location.reload()">إعادة</button>
         </div>
     `;
 }
+        
 /* =========================
    ADMIN
 ========================= */
