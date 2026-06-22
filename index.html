@@ -373,6 +373,23 @@ function openAdmin(){
         alert("غير مصرح");
     }
 }
+        
+function printCertificate(percent){
+
+    const certId = "FIQH-" + Date.now();
+
+    document.getElementById("certName").innerText = candidateName;
+    document.getElementById("score").innerText = score;
+    document.getElementById("total").innerText = questions.length;
+    document.getElementById("percent").innerText = percent;
+
+    document.getElementById("id").innerText = certId;
+
+    document.getElementById("certificate").style.display = "block";
+
+    window.print();
+}
+              
 </script>
 
 </body>
