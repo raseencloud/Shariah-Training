@@ -350,15 +350,17 @@ function showResult(){
     document.getElementById("quiz").innerHTML = `
         <div>
             <h2>النتيجة</h2>
+
             <p>الاسم: ${candidateName}</p>
             <p>النتيجة: ${score} / ${questions.length}</p>
             <p>النسبة: ${percent}%</p>
             <p>التقييم: ${level}</p>
+
+            <button onclick="printCertificate(${percent})">طباعة الشهادة</button>
             <button onclick="location.reload()">إعادة</button>
         </div>
     `;
 }
-
 /* =========================
    ADMIN
 ========================= */
