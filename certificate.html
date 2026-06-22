@@ -320,8 +320,19 @@ const score = parseInt(params.get("score") || "0");
 const total = parseInt(params.get("total") || "1");
 const id = params.get("id") || "";
 
-const percent = Math.round((score / total) * 100);
+/* 👇 هنا مباشرة ضع الكود الجديد */
+if (!name || !id) {
+    document.body.innerHTML = `
+        <div style="text-align:center;padding:50px;font-family:Cairo">
+            <h2>لا يمكن عرض الشهادة</h2>
+            <p>يجب فتحها من نظام الاختبار</p>
+        </div>
+    `;
+    throw new Error("Missing certificate parameters");
+}
 
+const percent = Math.round((score / total) * 100);
+    
 /* عرض */
 document.getElementById("name").innerText = name;
 
