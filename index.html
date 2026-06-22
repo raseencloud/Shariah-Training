@@ -348,7 +348,8 @@ function showResult(){
         percent >= 60 ? "جيد" :
         "يحتاج تطوير";
 
-    const showCertificate = questions.length >= 20;
+    const showCertificate = questions.length >= 3; // مؤقت للاختبار فقط
+        
 
     document.getElementById("quiz").innerHTML = `
         <div>
