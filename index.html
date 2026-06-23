@@ -170,11 +170,10 @@ let candidateName = "";
 let selectedCount = 5;
 let answered = false;
 let wrongAnswers = [];
+let userAnswers = []; // ✅ FIX: تعريف الإجابات
 
-const MIN_CERT_QUESTIONS = 3; // ⚠️ مؤقت للاختبار فقط
+const MIN_CERT_QUESTIONS = 3;
 
-console.log("Parsing JSON...");
-        
 /* =========================
    LOAD QUESTIONS
 ========================= */
@@ -187,8 +186,7 @@ async function loadQuestions() {
 
         if (!res.ok) throw new Error("HTTP Error: " + res.status);
 
-        const rawText = await res.text();
-        const raw = JSON.parse(rawText);
+        const raw = await res.json();
 
         if (!Array.isArray(raw)) throw new Error("Data not array");
 
@@ -241,7 +239,7 @@ function shuffle(arr){
 }
 
 /* =========================
-   START EXAM (GLOBAL)
+   START EXAM
 ========================= */
 window.startExam = async function () {
 
@@ -272,11 +270,10 @@ window.startExam = async function () {
     current = 0;
     score = 0;
     wrongAnswers = [];
+    userAnswers = []; // reset
 
     showQuestion();
 };
-        
-        
 
 /* =========================
    SHOW QUESTION
@@ -316,6 +313,8 @@ function answer(i){
     const q = questions[current];
     const boxes = document.querySelectorAll(".answer");
 
+    userAnswers[current] = i; // ✅ FIX: تسجيل الإجابة
+
     if(i === q.c){
         score++;
         if(boxes[i]) boxes[i].style.background = "#dcfce7";
@@ -332,27 +331,19 @@ function answer(i){
 
     setTimeout(() => {
 
-        answered = false;
         current++;
-
-                }
-
-        showQuestion();
+        showQuestion(); // ✅ FIX: إصلاح البنية
 
     }, 300);
 }
-        
 
 /* =========================
    RESULT
 ========================= */
-        
 function showResult(){
 
     const total = questions?.length || 0;
-    const percent = total
-        ? Math.round((score / total) * 100)
-        : 0;
+    const percent = total ? Math.round((score / total) * 100) : 0;
 
     const level =
         percent >= 90 ? "ممتاز" :
@@ -360,51 +351,40 @@ function showResult(){
         percent >= 60 ? "جيد" :
         "يحتاج تطوير";
 
-    const showCertificate =
-        total >= 20 && percent >= 60;
+    let wrongAnswersHTML = "";
 
-    // حماية كاملة من undefined
     const safeQuestions = Array.isArray(questions) ? questions : [];
     const safeAnswers = Array.isArray(userAnswers) ? userAnswers : [];
 
-    let wrongAnswersHTML = "";
+    safeQuestions.forEach((q, index) => {
 
-safeQuestions.forEach((q, index) => {
+        const userAnswer = safeAnswers[index];
+        const correct = q?.c;
+        const options = Array.isArray(q?.a) ? q.a : [];
 
-    const userAnswer = safeAnswers[index];
+        if(userAnswer !== correct){
 
-    // 🔴 توحيد النظام مع answer()
-    const correct = q?.c;
-    const options = Array.isArray(q?.a) ? q.a : [];
+            wrongAnswersHTML += `
+                <div style="border:1px solid #ddd;padding:10px;margin:10px 0;border-radius:6px;">
+                    <p><b>السؤال:</b> ${q?.q || "غير متوفر"}</p>
 
-    // إذا لا يوجد إجابة صحيحة
-    if (typeof correct === "undefined") return;
+                    <p style="color:#b91c1c;">
+                        إجابتك: ${options[userAnswer] ?? "لم تتم الإجابة"}
+                    </p>
 
-    if (userAnswer !== correct) {
+                    <p style="color:#15803d;">
+                        الإجابة الصحيحة: ${options[correct] ?? "غير متوفرة"}
+                    </p>
+                </div>
+            `;
+        }
+    });
 
-        wrongAnswersHTML += `
-            <div style="border:1px solid #ddd;padding:10px;margin:10px 0;border-radius:6px;">
-                
-                <p><b>السؤال:</b> ${q?.q || "غير متوفر"}</p>
-
-                <p style="color:#b91c1c;">
-                    إجابتك: ${options[userAnswer] ?? "لم تتم الإجابة"}
-                </p>
-
-                <p style="color:#15803d;">
-                    الإجابة الصحيحة: ${options[correct] ?? "غير متوفرة"}
-                </p>
-
-            </div>
-        `;
-    }
-});
-        
     document.getElementById("quiz").innerHTML = `
         <div>
             <h2>النتيجة النهائية</h2>
 
-            <p>النتيجة: ${score || 0} / ${total}</p>
+            <p>النتيجة: ${score} / ${total}</p>
             <p>النسبة: ${percent}%</p>
             <p>التقييم: ${level}</p>
 
@@ -412,55 +392,14 @@ safeQuestions.forEach((q, index) => {
 
             <h3>تحليل الأخطاء</h3>
 
-            ${
-                wrongAnswersHTML
-                ? wrongAnswersHTML
-                : "<p style='color:green;'>لا توجد أخطاء 🎯</p>"
-            }
+            ${wrongAnswersHTML || "<p style='color:green;'>لا توجد أخطاء 🎯</p>"}
 
             <hr>
-
-            ${
-                showCertificate
-                ? `<button onclick="printCertificate(${percent})">
-                        طباعة الشهادة
-                   </button>`
-                : `<p style="color:#b91c1c;font-weight:bold;">
-                        لا تتوفر شهادة إلا عند حل 20 سؤالًا فأكثر
-                   </p>`
-            }
 
             <button onclick="location.reload()">إعادة الاختبار</button>
         </div>
     `;
 }
-        
-/* =========================
-   ADMIN
-========================= */
-function openAdmin(){
-    const password = prompt("أدخل كلمة المرور:");
-    if(password === "1234"){
-        sessionStorage.setItem("admin_access","granted");
-        location.href = "add-question.html";
-    } else {
-        alert("غير مصرح");
-    }
-}
-        
-function printCertificate(percent){
-
-    const certId = "FIQH-" + Date.now();
-
-    const url =
-        "certificate.html?name=" + encodeURIComponent(candidateName) +
-        "&score=" + score +
-        "&total=" + questions.length +
-        "&id=" + certId;
-
-    window.location.href = url;
-}
-        
 </script>
 
 </body>
