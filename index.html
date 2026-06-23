@@ -338,8 +338,9 @@ function answer(i){
         
 function showResult(){
 
-    const percent = questions.length
-        ? Math.round((score / questions.length) * 100)
+    const total = questions?.length || 0;
+    const percent = total
+        ? Math.round((score / total) * 100)
         : 0;
 
     const level =
@@ -349,29 +350,74 @@ function showResult(){
         "يحتاج تطوير";
 
     const showCertificate =
-    questions.length >= 20 &&
-    percent >= 60;   
+        total >= 20 && percent >= 60;
+
+    // حماية كاملة من undefined
+    const safeQuestions = Array.isArray(questions) ? questions : [];
+    const safeAnswers = Array.isArray(userAnswers) ? userAnswers : [];
+
+    let wrongAnswersHTML = "";
+
+    safeQuestions.forEach((q, index) => {
+
+        const userAnswer = safeAnswers[index];
+        const correct = q?.correct;
+        const options = Array.isArray(q?.options) ? q.options : [];
+
+        // إذا لا يوجد correct skip
+        if (typeof correct === "undefined") return;
+
+        if (userAnswer !== correct) {
+
+            wrongAnswersHTML += `
+                <div style="border:1px solid #ddd;padding:10px;margin:10px 0;border-radius:6px;">
+                    
+                    <p><b>السؤال:</b> ${q?.q || "غير متوفر"}</p>
+
+                    <p style="color:#b91c1c;">
+                        إجابتك: ${options[userAnswer] ?? "لم تتم الإجابة"}
+                    </p>
+
+                    <p style="color:#15803d;">
+                        الإجابة الصحيحة: ${options[correct] ?? "غير متوفرة"}
+                    </p>
+
+                </div>
+            `;
+        }
+    });
 
     document.getElementById("quiz").innerHTML = `
         <div>
-            <h2>النتيجة</h2>
+            <h2>النتيجة النهائية</h2>
 
-            <p>الاسم: ${candidateName}</p>
-            <p>النتيجة: ${score} / ${questions.length}</p>
+            <p>النتيجة: ${score || 0} / ${total}</p>
             <p>النسبة: ${percent}%</p>
             <p>التقييم: ${level}</p>
 
-            ${showCertificate ? `
-                <button onclick="printCertificate(${percent})">
-                    طباعة الشهادة
-                </button>
-            ` : `
-                <p style="color:#b91c1c;font-weight:bold;">
-                    لا تتوفر شهادة إلا عند حل 20 سؤالًا فأكثر
-                </p>
-            `}
+            <hr>
 
-            <button onclick="location.reload()">إعادة</button>
+            <h3>تحليل الأخطاء</h3>
+
+            ${
+                wrongAnswersHTML
+                ? wrongAnswersHTML
+                : "<p style='color:green;'>لا توجد أخطاء 🎯</p>"
+            }
+
+            <hr>
+
+            ${
+                showCertificate
+                ? `<button onclick="printCertificate(${percent})">
+                        طباعة الشهادة
+                   </button>`
+                : `<p style="color:#b91c1c;font-weight:bold;">
+                        لا تتوفر شهادة إلا عند حل 20 سؤالًا فأكثر
+                   </p>`
+            }
+
+            <button onclick="location.reload()">إعادة الاختبار</button>
         </div>
     `;
 }
