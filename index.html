@@ -329,8 +329,19 @@ function answer(i){
     }
 
     current++;
-    setTimeout(showQuestion, 500);
-}
+
+setTimeout(() => {
+
+    if (current >= questions.length) {
+        showResult();
+        return;
+    }
+
+    answered = false;
+    showQuestion();
+
+}, 500);
+        
 
 /* =========================
    RESULT
