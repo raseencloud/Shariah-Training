@@ -373,35 +373,37 @@ function showResult(){
 
     let wrongAnswersHTML = "";
 
-    safeQuestions.forEach((q, index) => {
+safeQuestions.forEach((q, index) => {
 
-        const userAnswer = safeAnswers[index];
-        const correct = q?.correct;
-        const options = Array.isArray(q?.options) ? q.options : [];
+    const userAnswer = safeAnswers[index];
 
-        // إذا لا يوجد correct skip
-        if (typeof correct === "undefined") return;
+    // 🔴 توحيد النظام مع answer()
+    const correct = q?.c;
+    const options = Array.isArray(q?.a) ? q.a : [];
 
-        if (userAnswer !== correct) {
+    // إذا لا يوجد إجابة صحيحة
+    if (typeof correct === "undefined") return;
 
-            wrongAnswersHTML += `
-                <div style="border:1px solid #ddd;padding:10px;margin:10px 0;border-radius:6px;">
-                    
-                    <p><b>السؤال:</b> ${q?.q || "غير متوفر"}</p>
+    if (userAnswer !== correct) {
 
-                    <p style="color:#b91c1c;">
-                        إجابتك: ${options[userAnswer] ?? "لم تتم الإجابة"}
-                    </p>
+        wrongAnswersHTML += `
+            <div style="border:1px solid #ddd;padding:10px;margin:10px 0;border-radius:6px;">
+                
+                <p><b>السؤال:</b> ${q?.q || "غير متوفر"}</p>
 
-                    <p style="color:#15803d;">
-                        الإجابة الصحيحة: ${options[correct] ?? "غير متوفرة"}
-                    </p>
+                <p style="color:#b91c1c;">
+                    إجابتك: ${options[userAnswer] ?? "لم تتم الإجابة"}
+                </p>
 
-                </div>
-            `;
-        }
-    });
+                <p style="color:#15803d;">
+                    الإجابة الصحيحة: ${options[correct] ?? "غير متوفرة"}
+                </p>
 
+            </div>
+        `;
+    }
+});
+        
     document.getElementById("quiz").innerHTML = `
         <div>
             <h2>النتيجة النهائية</h2>
