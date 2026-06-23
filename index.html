@@ -332,19 +332,18 @@ function answer(i){
 
     setTimeout(() => {
 
+        answered = false;
         current++;
 
-        // 🔴 الحل الأساسي هنا
-        if (current >= questions.length) {
+        if(current >= questions.length){
             showResult();
             return;
         }
 
-        answered = false;
         showQuestion();
 
-    }, 400);
-}           
+    }, 300);
+}
         
 
 /* =========================
