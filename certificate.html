@@ -381,7 +381,11 @@ new QRCode(document.getElementById("qr"), {
     width: 140,
     height: 140
 });
-
+    
+setTimeout(() => {
+    window.print();
+}, 800);
+    
 </script>
 
 </body>
