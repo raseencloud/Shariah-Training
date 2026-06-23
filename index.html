@@ -330,21 +330,21 @@ function answer(i){
         });
     }
 
-    current++;
+    setTimeout(() => {
 
-setTimeout(() => {
+        current++;
 
-    if (current >= questions.length) {
-        showResult();
-        return;
-    }
+        // 🔴 الحل الأساسي هنا
+        if (current >= questions.length) {
+            showResult();
+            return;
+        }
 
-    answered = false;
-    showQuestion();
+        answered = false;
+        showQuestion();
 
-}, 500);
-        
- }        
+    }, 400);
+}           
         
 
 /* =========================
