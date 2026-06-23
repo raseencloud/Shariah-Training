@@ -351,6 +351,12 @@ function showResult(){
         percent >= 60 ? "جيد" :
         "يحتاج تطوير";
 
+    // ✅ شرط الشهادة الصحيح (تصحيح رقابي)
+    const MIN_CERT_QUESTIONS = 20;
+
+    const showCertificate =
+        selectedCount >= MIN_CERT_QUESTIONS && percent >= 60;
+
     let wrongAnswersHTML = "";
 
     const safeQuestions = Array.isArray(questions) ? questions : [];
@@ -396,10 +402,21 @@ function showResult(){
 
             <hr>
 
+            ${
+                showCertificate
+                ? `<button onclick="printCertificate(${percent})">
+                        طباعة الشهادة
+                   </button>`
+                : `<p style="color:#b91c1c;font-weight:bold;">
+                        لا تتوفر شهادة إلا عند حل 20 سؤالًا فأكثر بنسبة نجاح 60%
+                   </p>`
+            }
+
             <button onclick="location.reload()">إعادة الاختبار</button>
         </div>
     `;
 }
+
 </script>
 
 </body>
