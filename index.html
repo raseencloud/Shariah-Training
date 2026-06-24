@@ -416,6 +416,18 @@ function showResult(){
         </div>
     `;
 }
+        function printCertificate(percent){
+
+    const certId = "FIQH-" + Date.now();
+
+    const url =
+        "certificate.html?name=" + encodeURIComponent(candidateName) +
+        "&score=" + score +
+        "&total=" + questions.length +
+        "&id=" + certId;
+
+    window.location.href = url;
+}
 
 </script>
 
