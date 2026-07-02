@@ -303,7 +303,8 @@
             })
             .then(loadedData => {
                 console.log("✅ تم تحميل:", loadedData.length, "سؤال");
-                window.data = loadedData;
+                data = loadedData;
+                window.data = data;
                 nextId = loadedData.length
                     ? Math.max(...loadedData.map(x => x.id || 0)) + 1
                     : 1;
