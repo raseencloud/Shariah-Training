@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام بنك الأسئلة المحسن - v1.2</title>
+    <title>نظام بنك الأسئلة المحسن - v1.3</title>
     <style>
         * {
             margin: 0;
@@ -183,6 +183,16 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
         }
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+            color: #1e40af;
+        }
     </style>
 </head>
 <body>
@@ -243,6 +253,15 @@
 <div class="card">
     <h2>📥 إضافة جماعية</h2>
     <textarea id="bulk" rows="6" placeholder="أدخل عدة أسئلة مفصولة بأسطر فارغة"></textarea>
+    <div class="info-box">
+        <strong>📋 صيغة إدخال الأسئلة:</strong><br>
+        السؤال هنا؟<br>
+        أ الخيار الأول<br>
+        ب الخيار الثاني<br>
+        ج الخيار الثالث<br>
+        د الخيار الرابع<br>
+        الإجابة:2
+    </div>
     <button onclick="addBulk()" id="bulkBtn">📤 تحويل وإضافة</button>
 </div>
 
@@ -454,7 +473,7 @@
         saveToGitHub();
     }
 
-    // ===================== إضافة جماعية =====================
+    // ===================== إضافة جماعية - محسّنة =====================
     function addBulk() {
         let text = document.getElementById("bulk").value.trim();
         if (!text) {
@@ -462,58 +481,99 @@
             return;
         }
 
-        let blocks = text.split(/\n\s*\n+/).filter(b => b);
+        let blocks = text.split(/\n\s*\n+/).filter(b => b.trim());
         let added = 0;
+        let failed = [];
 
-        blocks.forEach(block => {
-            let lines = block.split("\n");
+        blocks.forEach((block, blockIndex) => {
+            let lines = block.split("\n").map(l => l.trim()).filter(l => l);
+            
             let qText = "";
             let a = ["", "", "", ""];
-            let c = 0;
+            let c = null;
+            let answerIndex = -1;
 
+            // البحث عن السؤال - أول سطر طويل أو يحتوي على علامة استفهام
+            for (let i = 0; i < lines.length; i++) {
+                if (!qText && (lines[i].includes("؟") || lines[i].includes("?") || lines[i].length > 15)) {
+                    qText = lines[i];
+                    break;
+                }
+            }
+
+            // البحث عن الخيارات
             lines.forEach(line => {
-                line = line.trim();
-
-                if (!qText && (line.includes("?") || line.includes("؟") || line.length > 10)) {
-                    qText = line;
-                } else if (line.startsWith("أ")) {
-                    a[0] = line.replace("أ", "").trim();
-                } else if (line.startsWith("ب")) {
-                    a[1] = line.replace("ب", "").trim();
-                } else if (line.startsWith("ج")) {
-                    a[2] = line.replace("ج", "").trim();
-                } else if (line.startsWith("د")) {
-                    a[3] = line.replace("د", "").trim();
-                } else if (line.includes("الإجابة")) {
-                    let parts = line.split(":");
-                    if (parts.length > 1) c = parseInt(parts[1]);
+                // البحث عن الخيار أ
+                if (line.match(/^[أa][\s\-:\.]/i)) {
+                    a[0] = line.replace(/^[أa][\s\-:\.]/i, "").trim();
+                }
+                // البحث عن الخيار ب
+                else if (line.match(/^[بb][\s\-:\.]/i)) {
+                    a[1] = line.replace(/^[بb][\s\-:\.]/i, "").trim();
+                }
+                // البحث عن الخيار ج
+                else if (line.match(/^[جg][\s\-:\.]/i)) {
+                    a[2] = line.replace(/^[جg][\s\-:\.]/i, "").trim();
+                }
+                // البحث عن الخيار د
+                else if (line.match(/^[د*][\s\-:\.]/i)) {
+                    a[3] = line.replace(/^[د*][\s\-:\.]/i, "").trim();
+                }
+                // البحث عن الإجابة الصحيحة
+                else if (line.includes("الإجابة") || line.includes("الجواب") || line.includes("الاجابة")) {
+                    let parts = line.split(/[:=]/);
+                    if (parts.length > 1) {
+                        let num = parseInt(parts[1].trim());
+                        if (!isNaN(num) && num >= 0 && num <= 3) {
+                            c = num;
+                        }
+                    }
                 }
             });
 
+            // التحقق من صحة السؤال
             if (qText && a[0] && a[1] && a[2] && a[3]) {
-                data.push({
-                    id: nextId++,
-                    category: "عام",
-                    level: "متوسط",
-                    source: "غير محدد",
-                    q: qText,
-                    a,
-                    c: isNaN(c) ? 0 : c
-                });
-                added++;
+                // إذا لم يتم العثور على إجابة، استخدم 0 كافتراضي
+                if (c === null) c = 0;
+
+                // التحقق من عدم التكرار
+                if (!isDuplicateQuestion(qText)) {
+                    data.push({
+                        id: nextId++,
+                        category: "عام",
+                        level: "متوسط",
+                        source: "غير محدد",
+                        q: qText,
+                        a,
+                        c
+                    });
+                    added++;
+                    console.log("✅ تم إضافة سؤال:", qText);
+                } else {
+                    failed.push(`السؤال #${blockIndex + 1}: موجود مسبقاً`);
+                }
+            } else {
+                failed.push(`السؤال #${blockIndex + 1}: صيغة غير صحيحة`);
             }
         });
 
         if (added > 0) {
-            alert(`✅ تمت إضافة ${added} سؤال`);
-            document.getElementById("bulk").value = "";
             updateQuestionCount();
             render();
             saveToGitHub();
-            console.log("✅ تمت إضافة جماعية:", added, "أسئلة");
+            document.getElementById("bulk").value = "";
+            
+            let msg = `✅ تمت إضافة ${added} سؤال`;
+            if (failed.length > 0) {
+                msg += `\n⚠️ فشل: ${failed.length} أسئلة\n${failed.slice(0, 3).join("\n")}`;
+                if (failed.length > 3) msg += `\n... و${failed.length - 3} آخرين`;
+            }
+            alert(msg);
         } else {
-            alert("⚠️ لم يتم إضافة أي أسئلة. تأكد من الصيغة");
+            alert("❌ لم يتم إضافة أي أسئلة\n" + failed.slice(0, 3).join("\n"));
         }
+        
+        console.log(`📊 النتيجة: تم إضافة ${added}, فشل ${failed.length}`);
     }
 
     // ===================== تصدير JSON =====================
@@ -534,7 +594,6 @@
     // ===================== الحفظ على GitHub =====================
     async function saveToGitHub() {
         try {
-            // طلب Token من المستخدم (يتم طلبه مرة واحدة فقط)
             let token = sessionStorage.getItem("github_token");
             
             if (!token) {
@@ -548,7 +607,6 @@
 
             const [owner, repo] = GITHUB_REPO.split("/");
             
-            // الحصول على معلومات الملف الحالي
             const getFileResponse = await fetch(
                 `https://api.github.com/repos/${owner}/${repo}/contents/${FILE_PATH}`,
                 {
@@ -565,7 +623,6 @@
                 sha = fileData.sha;
             }
 
-            // رفع الملف
             const uploadResponse = await fetch(
                 `https://api.github.com/repos/${owner}/${repo}/contents/${FILE_PATH}`,
                 {
