@@ -1,337 +1,473 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<title>نظام بنك الأسئلة المحسن</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام بنك الأسئلة المحسن - v1.1</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-body{
-    font-family:Tahoma;
-    background:#f0fdf4;
-    padding:20px;
-    max-width:1000px;
-    margin:auto;
-}
+        body {
+            font-family: Tahoma, sans-serif;
+            background: #f0fdf4;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            color: #333;
+        }
 
-.card{
-    background:#fff;
-    padding:20px;
-    border-radius:12px;
-    margin-bottom:20px;
-    border:1px solid #ddd;
-}
+        .card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
 
-input,textarea,button{
-    width:100%;
-    padding:10px;
-    margin:6px 0;
-    font-size:14px;
-}
+        .card h2 {
+            margin-bottom: 15px;
+            color: #16a34a;
+            font-size: 18px;
+        }
 
-button{
-    background:#16a34a;
-    color:#fff;
-    border:0;
-    cursor:pointer;
-}
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+        }
 
-.danger{background:#dc2626;}
-.small{background:#6b7280;}
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #16a34a;
+            box-shadow: 0 0 5px rgba(22, 163, 74, 0.3);
+        }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-}
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0;
+            font-size: 14px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background: #16a34a;
+            color: #fff;
+            transition: background 0.3s;
+        }
 
-th,td{
-    border:1px solid #ddd;
-    padding:8px;
-    text-align:center;
-}
-</style>
+        button:hover {
+            background: #15803d;
+        }
+
+        button.danger {
+            background: #dc2626;
+        }
+
+        button.danger:hover {
+            background: #b91c1c;
+        }
+
+        button.small {
+            background: #6b7280;
+        }
+
+        button.small:hover {
+            background: #4b5563;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background: #f3f4f6;
+            padding: 12px;
+            text-align: right;
+            border: 1px solid #ddd;
+            font-weight: bold;
+            color: #16a34a;
+        }
+
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: right;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 6px;
+        }
+
+        .button-group button {
+            flex: 1;
+            margin: 0;
+        }
+
+        .form-section {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        .alert {
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border-left: 4px solid;
+        }
+
+        .alert.success {
+            background: #dcfce7;
+            border-color: #16a34a;
+            color: #166534;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            border-color: #dc2626;
+            color: #991b1b;
+        }
+    </style>
 </head>
-
 <body>
 
 <!-- 🔐 حماية الدخول -->
 <script>
-const PASSWORD = "1234";
-let access = sessionStorage.getItem("admin_access");
+    const PASSWORD = "1234";
+    let access = sessionStorage.getItem("admin_access");
 
-if(access !== "granted"){
-    let input = prompt("أدخل كلمة مرور المدير:");
-
-    if(input === PASSWORD){
-        sessionStorage.setItem("admin_access","granted");
-    }else{
-        document.body.innerHTML = "<h2 style='text-align:center'>غير مصرح بالدخول</h2>";
-        throw new Error("Access Denied");
+    if (access !== "granted") {
+        let input = prompt("أدخل كلمة مرور المدير:");
+        if (input === PASSWORD) {
+            sessionStorage.setItem("admin_access", "granted");
+        } else {
+            document.body.innerHTML = "<h2 style='text-align:center; color:#dc2626; padding:40px;'>❌ غير مصرح بالدخول</h2>";
+            throw new Error("Access Denied");
+        }
     }
-}
 </script>
 
+<!-- البحث -->
 <div class="card">
-<h2>🔍 بحث عن سؤال</h2>
-<input id="searchBox" placeholder="ابحث عن سؤال..." oninput="render()">
+    <h2>🔍 بحث عن سؤال</h2>
+    <input id="searchBox" placeholder="ابحث عن سؤال..." oninput="render()">
 </div>
 
+<!-- إضافة / تعديل سؤال -->
 <div class="card">
-<button onclick="toggleForm()">➕ إضافة / تعديل سؤال</button>
-
-<div id="formBox" style="display:none; margin-top:15px;">
-
-<h2>إدخال سؤال</h2>
-
-<input id="q" placeholder="السؤال">
-<input id="a1" placeholder="الخيار 1">
-<input id="a2" placeholder="الخيار 2">
-<input id="a3" placeholder="الخيار 3">
-<input id="a4" placeholder="الخيار 4">
-<input id="c" type="number" placeholder="الإجابة الصحيحة (0-3)">
-
-<button onclick="saveQuestion()">حفظ</button>
-<button class="small" onclick="clearForm()">تفريغ</button>
-
-</div>
-</div>
-
-<div class="card">
-<h2>📥 إضافة جماعية</h2>
-<textarea id="bulk" rows="6"></textarea>
-<button onclick="addBulk()">تحويل وإضافة</button>
-</div>
-
-<div class="card">
-<h2>📋 قائمة الأسئلة</h2>
-<table>
-<thead>
-<tr>
-<th>السؤال</th>
-<th>الإجراء</th>
-</tr>
-</thead>
-<tbody id="list"></tbody>
-</table>
+    <button onclick="toggleForm()">➕ إضافة / تعديل سؤال</button>
+    
+    <div id="formBox" class="form-section">
+        <h2>إدخال البيانات</h2>
+        
+        <input id="q" placeholder="السؤال" type="text">
+        
+        <div style="margin-top: 10px;">
+            <label style="font-size: 12px; color: #666;">الخيارات:</label>
+            <input id="a1" placeholder="الخيار 1" type="text">
+            <input id="a2" placeholder="الخيار 2" type="text">
+            <input id="a3" placeholder="الخيار 3" type="text">
+            <input id="a4" placeholder="الخيار 4" type="text">
+        </div>
+        
+        <div style="margin-top: 10px;">
+            <input id="c" type="number" placeholder="الإجابة الصحيحة (0-3)" min="0" max="3">
+        </div>
+        
+        <div class="button-group">
+            <button onclick="saveQuestion()">💾 حفظ</button>
+            <button class="small" onclick="clearForm()">🗑️ تفريغ</button>
+        </div>
+    </div>
 </div>
 
+<!-- إضافة جماعية -->
 <div class="card">
-<button onclick="exportJSON()">⬇ تصدير JSON</button>
+    <h2>📥 إضافة جماعية</h2>
+    <textarea id="bulk" rows="6" placeholder="أدخل عدة أسئلة مفصولة بأسطر فارغة"></textarea>
+    <button onclick="addBulk()">📤 تحويل وإضافة</button>
+</div>
+
+<!-- قائمة الأسئلة -->
+<div class="card">
+    <h2>📋 قائمة الأسئلة</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>السؤال</th>
+                <th>الإجراء</th>
+            </tr>
+        </thead>
+        <tbody id="list"></tbody>
+    </table>
+</div>
+
+<!-- التصدير -->
+<div class="card">
+    <button onclick="exportJSON()">⬇️ تصدير JSON</button>
 </div>
 
 <script>
+    // ===================== المتغيرات العامة =====================
+    let data = [];
+    let nextId = 1;
+    let editId = null;
 
-let data = [];
-let nextId = 1;
-let editId = null;
-
-/* ===================== تحميل ===================== */
-
-fetch("https://raw.githubusercontent.com/ieashehata1965-netizen/Shariah-Training/main/fiqh-questions.json")
-  .then(r => {
-      if (!r.ok) throw new Error("HTTP Error: " + r.status);
-      return r.json();
-  })
-  .then(data => {
-      console.log("Loaded:", data.length);
-
-      window.data = data;
-
-      nextId = data.length
-          ? Math.max(...data.map(x => x.id || 0)) + 1
-          : 1;
-
-      render();
-  })
-  .catch(err => {
-      console.error("LOAD FAILED:", err);
-      data = [];
-      render();
-  });
-    
-/* ===================== أدوات ===================== */
-function normalizeText(text){
-    return (text || "")
-        .toLowerCase()
-        .trim()
-        .replace(/\s+/g," ")
-        .replace(/[؟?]/g,"")
-        .replace(/[.,،]/g,"");
-}
-
-function isDuplicateQuestion(q){
-    return data.some(x =>
-        normalizeText(x.q) === normalizeText(q)
-    );
-}
-
-/* ===================== حفظ ===================== */
-function saveQuestion(){
-
-    const q = document.getElementById("q").value.trim();
-    const a1 = document.getElementById("a1").value.trim();
-    const a2 = document.getElementById("a2").value.trim();
-    const a3 = document.getElementById("a3").value.trim();
-    const a4 = document.getElementById("a4").value.trim();
-    const c  = parseInt(document.getElementById("c").value);
-
-    if(!q || !a1 || !a2 || !a3 || !a4){
-        alert("أكمل البيانات");
-        return;
+    // ===================== تحميل البيانات =====================
+    function loadData() {
+        fetch("https://raw.githubusercontent.com/ieashehata1965-netizen/Shariah-Training/main/fiqh-questions.json")
+            .then(r => {
+                if (!r.ok) throw new Error("HTTP Error: " + r.status);
+                return r.json();
+            })
+            .then(loadedData => {
+                console.log("✅ تم تحميل:", loadedData.length, "سؤال");
+                window.data = loadedData;
+                nextId = loadedData.length
+                    ? Math.max(...loadedData.map(x => x.id || 0)) + 1
+                    : 1;
+                render();
+            })
+            .catch(err => {
+                console.error("❌ فشل التحميل:", err);
+                data = [];
+                render();
+            });
     }
 
-    if(isNaN(c) || c < 0 || c > 3){
-        alert("الإجابة يجب أن تكون بين 0 و 3");
-        return;
+    // ===================== دوال مساعدة =====================
+    function normalizeText(text) {
+        return (text || "")
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, " ")
+            .replace(/[؟?]/g, "")
+            .replace(/[.,،]/g, "");
     }
 
-    /* منع التكرار */
-    if(isDuplicateQuestion(q) && editId === null){
-        alert("هذا السؤال موجود مسبقاً");
-        return;
+    function isDuplicateQuestion(q) {
+        return data.some(x => normalizeText(x.q) === normalizeText(q));
     }
 
-    const obj = {
-        id: editId ? editId : nextId++,
-        q,
-        a:[a1,a2,a3,a4],
-        c
-    };
+    // ===================== حفظ السؤال =====================
+    function saveQuestion() {
+        const q = document.getElementById("q").value.trim();
+        const a1 = document.getElementById("a1").value.trim();
+        const a2 = document.getElementById("a2").value.trim();
+        const a3 = document.getElementById("a3").value.trim();
+        const a4 = document.getElementById("a4").value.trim();
+        const c = parseInt(document.getElementById("c").value);
 
-    if(editId){
-        let idx = data.findIndex(x=>x.id===editId);
-        if(idx !== -1) data[idx] = obj;
-        editId = null;
-    }else{
-        data.push(obj);
-    }
+        // التحقق من البيانات
+        if (!q || !a1 || !a2 || !a3 || !a4) {
+            alert("❌ أكمل جميع البيانات المطلوبة");
+            return;
+        }
 
-    clearForm();
-    render();
-}
+        if (isNaN(c) || c < 0 || c > 3) {
+            alert("❌ الإجابة الصحيحة يجب أن تكون بين 0 و 3");
+            return;
+        }
 
-/* ===================== عرض ===================== */
-function render(){
+        // منع التكرار
+        if (isDuplicateQuestion(q) && editId === null) {
+            alert("⚠️ هذا السؤال موجود مسبقاً");
+            return;
+        }
 
-    let keyword = (document.getElementById("searchBox").value || "")
-        .toLowerCase();
+        const obj = {
+            id: editId ? editId : nextId++,
+            category: "عام",
+            level: "متوسط",
+            source: "غير محدد",
+            q,
+            a: [a1, a2, a3, a4],
+            c
+        };
 
-    let filtered = data.filter(x =>
-        (x.q || "").toLowerCase().includes(keyword)
-    );
-
-    document.getElementById("list").innerHTML =
-    filtered.map(x=>`
-        <tr>
-            <td>${x.q}</td>
-            <td>
-                <button onclick="editQuestion(${x.id})">تعديل</button>
-                <button class="danger" onclick="deleteQ(${x.id})">حذف</button>
-            </td>
-        </tr>
-    `).join("");
-}
-
-/* ===================== تعديل ===================== */
-function editQuestion(id){
-
-    let item = data.find(x=>x.id===id);
-    if(!item) return;
-
-    editId = id;
-
-    document.getElementById("q").value = item.q;
-    document.getElementById("a1").value = item.a[0];
-    document.getElementById("a2").value = item.a[1];
-    document.getElementById("a3").value = item.a[2];
-    document.getElementById("a4").value = item.a[3];
-    document.getElementById("c").value = item.c;
-
-    document.getElementById("formBox").style.display = "block";
-}
-
-/* ===================== حذف ===================== */
-function deleteQ(id){
-    if(!confirm("حذف السؤال؟")) return;
-    data = data.filter(x=>x.id!==id);
-    render();
-}
-
-/* ===================== إضافة جماعية ===================== */
-function addBulk(){
-
-    let text = document.getElementById("bulk").value.trim();
-    let blocks = text.split(/\n\s*\n+/).filter(b=>b);
-
-    let added = 0;
-
-    blocks.forEach(block=>{
-
-        let lines = block.split("\n");
-
-        let qText = "";
-        let a = ["","","",""];
-        let c = 0;
-
-        lines.forEach(line=>{
-
-            line = line.trim();
-
-            if(!qText && (line.includes("?") || line.includes("؟") || line.length>10)){
-                qText = line;
+        if (editId) {
+            let idx = data.findIndex(x => x.id === editId);
+            if (idx !== -1) {
+                data[idx] = obj;
+                console.log("✏️ تم تحديث السؤال:", editId);
             }
+            editId = null;
+        } else {
+            data.push(obj);
+            console.log("✅ تم إضافة سؤال جديد");
+        }
 
-            else if(line.startsWith("أ")) a[0]=line.replace("أ","").trim();
-            else if(line.startsWith("ب")) a[1]=line.replace("ب","").trim();
-            else if(line.startsWith("ج")) a[2]=line.replace("ج","").trim();
-            else if(line.startsWith("د")) a[3]=line.replace("د","").trim();
+        clearForm();
+        render();
+    }
 
-            else if(line.includes("الإجابة")){
-                let parts = line.split(":");
-                if(parts.length>1) c=parseInt(parts[1]);
+    // ===================== عرض القائمة =====================
+    function render() {
+        let keyword = (document.getElementById("searchBox").value || "").toLowerCase();
+        let filtered = data.filter(x => (x.q || "").toLowerCase().includes(keyword));
+
+        let html = "";
+        if (filtered.length === 0) {
+            html = `<tr><td colspan="2" style="text-align:center; color:#999;">لا توجد أسئلة</td></tr>`;
+        } else {
+            html = filtered.map(x => `
+                <tr>
+                    <td>${x.q}</td>
+                    <td>
+                        <div class="button-group">
+                            <button onclick="editQuestion(${x.id})" style="background:#0284c7;">✏️ تعديل</button>
+                            <button class="danger" onclick="deleteQ(${x.id})">🗑️ حذف</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join("");
+        }
+
+        document.getElementById("list").innerHTML = html;
+        console.log(`📊 عرض ${filtered.length} من ${data.length} سؤال`);
+    }
+
+    // ===================== تعديل السؤال =====================
+    function editQuestion(id) {
+        let item = data.find(x => x.id === id);
+        if (!item) return;
+
+        editId = id;
+
+        document.getElementById("q").value = item.q;
+        document.getElementById("a1").value = item.a[0];
+        document.getElementById("a2").value = item.a[1];
+        document.getElementById("a3").value = item.a[2];
+        document.getElementById("a4").value = item.a[3];
+        document.getElementById("c").value = item.c;
+
+        document.getElementById("formBox").classList.add("active");
+        console.log("📝 تحرير السؤال:", id);
+    }
+
+    // ===================== حذف السؤال =====================
+    function deleteQ(id) {
+        if (!confirm("هل تريد حذف هذا السؤال؟")) return;
+        data = data.filter(x => x.id !== id);
+        console.log("🗑️ تم حذف السؤال:", id);
+        render();
+    }
+
+    // ===================== إضافة جماعية =====================
+    function addBulk() {
+        let text = document.getElementById("bulk").value.trim();
+        if (!text) {
+            alert("❌ أدخل نصاً");
+            return;
+        }
+
+        let blocks = text.split(/\n\s*\n+/).filter(b => b);
+        let added = 0;
+
+        blocks.forEach(block => {
+            let lines = block.split("\n");
+            let qText = "";
+            let a = ["", "", "", ""];
+            let c = 0;
+
+            lines.forEach(line => {
+                line = line.trim();
+
+                if (!qText && (line.includes("?") || line.includes("؟") || line.length > 10)) {
+                    qText = line;
+                } else if (line.startsWith("أ")) {
+                    a[0] = line.replace("أ", "").trim();
+                } else if (line.startsWith("ب")) {
+                    a[1] = line.replace("ب", "").trim();
+                } else if (line.startsWith("ج")) {
+                    a[2] = line.replace("ج", "").trim();
+                } else if (line.startsWith("د")) {
+                    a[3] = line.replace("د", "").trim();
+                } else if (line.includes("الإجابة")) {
+                    let parts = line.split(":");
+                    if (parts.length > 1) c = parseInt(parts[1]);
+                }
+            });
+
+            if (qText && a[0] && a[1] && a[2] && a[3]) {
+                data.push({
+                    id: nextId++,
+                    category: "عام",
+                    level: "متوسط",
+                    source: "غير محدد",
+                    q: qText,
+                    a,
+                    c: isNaN(c) ? 0 : c
+                });
+                added++;
             }
         });
 
-        if(qText && a[0] && a[1] && a[2] && a[3]){
-            data.push({
-                id: nextId++,
-                q:qText,
-                a,
-                c: isNaN(c)?0:c
-            });
-            added++;
+        if (added > 0) {
+            alert(`✅ تمت إضافة ${added} سؤال`);
+            document.getElementById("bulk").value = "";
+            render();
+            console.log("✅ تمت إضافة جماعية:", added, "أسئلة");
+        } else {
+            alert("⚠️ لم يتم إضافة أي أسئلة. تأكد من الصيغة");
         }
-    });
+    }
 
-    alert("تمت إضافة " + added + " سؤال");
-    document.getElementById("bulk").value="";
-    render();
-}
+    // ===================== تصدير JSON =====================
+    function exportJSON() {
+        if (data.length === 0) {
+            alert("❌ لا توجد أسئلة للتصدير");
+            return;
+        }
 
-/* ===================== تصدير ===================== */
-function exportJSON(){
-    let blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
-    let a=document.createElement("a");
-    a.href=URL.createObjectURL(blob);
-    a.download="fiqh-questions.json";
-    a.click();
-}
+        let blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        let a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "fiqh-questions.json";
+        a.click();
+        console.log("📥 تم تصدير", data.length, "سؤال");
+    }
 
-/* ===================== تنظيف ===================== */
-function clearForm(){
-    ["q","a1","a2","a3","a4","c"].forEach(id=>{
-        document.getElementById(id).value="";
-    });
-    editId=null;
-}
+    // ===================== تنظيف النموذج =====================
+    function clearForm() {
+        ["q", "a1", "a2", "a3", "a4", "c"].forEach(id => {
+            document.getElementById(id).value = "";
+        });
+        editId = null;
+        document.getElementById("formBox").classList.remove("active");
+        console.log("🧹 تم تنظيف النموذج");
+    }
 
-/* ===================== toggle ===================== */
-function toggleForm(){
-    let box=document.getElementById("formBox");
-    box.style.display = (box.style.display==="block")?"none":"block";
-}
+    // ===================== تبديل النموذج =====================
+    function toggleForm() {
+        let box = document.getElementById("formBox");
+        box.classList.toggle("active");
+        console.log("🔄 النموذج:", box.classList.contains("active") ? "مفتوح" : "مغلق");
+    }
 
-render();
-
+    // ===================== التهيئة =====================
+    loadData();
 </script>
 
 </body>
