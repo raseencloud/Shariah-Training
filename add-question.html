@@ -1198,20 +1198,22 @@
         showToast(`📊 تم تصدير ${data.length} سؤال كـ CSV`, "success");
     }
 
-    // ===================== الحفظ على GitHub =====================
+       // ===================== الحفظ على GitHub =====================
     async function saveToGitHub() {
         try {
             let token = sessionStorage.getItem("github_token");
             
-            if (!token) {
+            // التحقق من أن التوكن موجود وغير فارغ
+            if (!token || token.trim() === "") {
                 token = prompt("🔑 أدخل GitHub Personal Access Token (اتركه فارغاً لتخطي الحفظ على GitHub):");
-                if (!token) {
+                if (!token || token.trim() === "") {
                     console.log("⏭️ تم تخطي الحفظ على GitHub");
+                    // مسح القيمة الفارغة إذا كانت موجودة
+                    sessionStorage.removeItem("github_token");
                     return false;
                 }
-                sessionStorage.setItem("github_token", token);
+                sessionStorage.setItem("github_token", token.trim());
             }
-
             const [owner, repo] = GITHUB_REPO.split("/");
             
             const getFileResponse = await fetchWithTimeout(
