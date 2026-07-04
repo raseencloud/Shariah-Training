@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام بنك الأسئلة المحسن - v1.3</title>
+    <title>نظام بنك الأسئلة المحسن - v2.3</title>
     <style>
         * {
             margin: 0;
@@ -35,7 +35,7 @@
             font-size: 18px;
         }
 
-        input, textarea {
+        input, textarea, select {
             width: 100%;
             padding: 10px;
             margin: 6px 0;
@@ -45,7 +45,7 @@
             font-family: inherit;
         }
 
-        input:focus, textarea:focus {
+        input:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #16a34a;
             box-shadow: 0 0 5px rgba(22, 163, 74, 0.3);
@@ -87,6 +87,15 @@
 
         button.small:hover {
             background: #4b5563;
+        }
+
+        button.warning {
+            background: #f59e0b;
+            color: #fff;
+        }
+
+        button.warning:hover {
+            background: #d97706;
         }
 
         table {
@@ -139,7 +148,7 @@
             padding: 12px;
             margin: 10px 0;
             border-radius: 6px;
-            border-left: 4px solid;
+            border-right: 4px solid;
         }
 
         .alert.success {
@@ -177,6 +186,11 @@
             background: #fef08a;
             color: #78350f;
             animation: pulse 1.5s infinite;
+        }
+
+        .status-badge.offline {
+            background: #fee2e2;
+            color: #991b1b;
         }
 
         @keyframes pulse {
@@ -283,6 +297,7 @@
 <div class="card">
     <button onclick="exportJSON()">⬇️ تصدير JSON</button>
     <button onclick="syncWithGitHub()" id="syncBtn" style="background: #0284c7; margin-top: 6px;">🔄 مزامنة مع GitHub</button>
+    <button onclick="clearGitHubToken()" style="background: #f59e0b; margin-top: 6px;">🗑️ مسح توكن GitHub</button>
 </div>
 
 <script>
@@ -290,7 +305,6 @@
     let data = [];
     let nextId = 1;
     let editId = null;
-    const GITHUB_TOKEN = ""; // سيتم طلبه من المستخدم عند الحفظ
     const GITHUB_REPO = "ieashehata1965-netizen/Shariah-Training";
     const FILE_PATH = "fiqh-questions.json";
 
@@ -592,18 +606,23 @@
         console.log("📥 تم تصدير", data.length, "سؤال");
     }
 
-    // ===================== الحفظ على GitHub =====================
+    // ===================== الحفظ على GitHub - مصحح =====================
     async function saveToGitHub() {
         try {
             let token = sessionStorage.getItem("github_token");
             
-            if (!token) {
-                token = prompt("🔑 أدخل GitHub Personal Access Token (اتركه فارغاً لتخطي الحفظ على GitHub):");
-                if (!token) {
+            // ✅ التحقق من أن التوكن موجود وغير فارغ
+            if (!token || token.trim() === "") {
+                token = prompt("🔑 أدخل GitHub Personal Access Token:\n\n(احصل عليه من: github.com/settings/tokens)\n\nاتركه فارغاً لتخطي الحفظ:");
+                
+                // ✅ إذا ألغى المستخدم أو تركه فارغاً
+                if (!token || token.trim() === "") {
                     console.log("⏭️ تم تخطي الحفظ على GitHub");
-                    return;
+                    sessionStorage.removeItem("github_token"); // مسح القيمة الفارغة
+                    return false;
                 }
-                sessionStorage.setItem("github_token", token);
+                
+                sessionStorage.setItem("github_token", token.trim());
             }
 
             const [owner, repo] = GITHUB_REPO.split("/");
@@ -645,14 +664,17 @@
             if (uploadResponse.ok) {
                 console.log("✅ تم الحفظ على GitHub بنجاح");
                 showAlert("✅ تم الحفظ على GitHub بنجاح!", "success");
+                return true;
             } else {
                 const error = await uploadResponse.json();
                 console.error("❌ خطأ في الحفظ:", error);
                 showAlert("❌ خطأ في الحفظ على GitHub: " + (error.message || "خطأ غير معروف"), "error");
+                return false;
             }
         } catch (err) {
             console.error("❌ خطأ في الاتصال:", err);
             showAlert("❌ فشل الاتصال بـ GitHub: " + err.message, "error");
+            return false;
         }
     }
 
@@ -667,16 +689,25 @@
         btn.textContent = "⏳ جاري المزامنة...";
 
         try {
-            await saveToGitHub();
+            const success = await saveToGitHub();
+            if (!success) {
+                showAlert("💡 تم تخطي المزامنة. يمكنك تصدير JSON يدوياً.", "info");
+            }
+        } catch (err) {
+            alert("خطأ في المزامنة: " + err.message);
+        } finally {
             setTimeout(() => {
                 btn.disabled = false;
                 btn.textContent = "🔄 مزامنة مع GitHub";
             }, 2000);
-        } catch (err) {
-            btn.disabled = false;
-            btn.textContent = "🔄 مزامنة مع GitHub";
-            alert("خطأ في المزامنة: " + err.message);
         }
+    }
+
+    // ✅ مسح توكن GitHub
+    function clearGitHubToken() {
+        sessionStorage.removeItem("github_token");
+        showAlert("✅ تم مسح التوكن. أعد تحميل الصفحة واضغط مزامنة من جديد.", "success");
+        setTimeout(() => location.reload(), 2000);
     }
 
     // ===================== تنظيف النموذج =====================
