@@ -1,735 +1,332 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام بنك الأسئلة المحسن - v2.3</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: Tahoma, sans-serif;
-            background: #f0fdf4;
-            padding: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
-            color: #333;
-        }
-
-        .card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .card h2 {
-            margin-bottom: 15px;
-            color: #16a34a;
-            font-size: 18px;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 10px;
-            margin: 6px 0;
-            font-size: 14px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-family: inherit;
-        }
-
-        input:focus, textarea:focus, select:focus {
-            outline: none;
-            border-color: #16a34a;
-            box-shadow: 0 0 5px rgba(22, 163, 74, 0.3);
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            margin: 6px 0;
-            font-size: 14px;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            background: #16a34a;
-            color: #fff;
-            transition: background 0.3s;
-        }
-
-        button:hover {
-            background: #15803d;
-        }
-
-        button:disabled {
-            background: #9ca3af;
-            cursor: not-allowed;
-        }
-
-        button.danger {
-            background: #dc2626;
-        }
-
-        button.danger:hover {
-            background: #b91c1c;
-        }
-
-        button.small {
-            background: #6b7280;
-        }
-
-        button.small:hover {
-            background: #4b5563;
-        }
-
-        button.warning {
-            background: #f59e0b;
-            color: #fff;
-        }
-
-        button.warning:hover {
-            background: #d97706;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-
-        th {
-            background: #f3f4f6;
-            padding: 12px;
-            text-align: right;
-            border: 1px solid #ddd;
-            font-weight: bold;
-            color: #16a34a;
-        }
-
-        td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: right;
-        }
-
-        tr:hover {
-            background: #f9fafb;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 6px;
-        }
-
-        .button-group button {
-            flex: 1;
-            margin: 0;
-        }
-
-        .form-section {
-            display: none;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
-        }
-
-        .form-section.active {
-            display: block;
-        }
-
-        .alert {
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border-right: 4px solid;
-        }
-
-        .alert.success {
-            background: #dcfce7;
-            border-color: #16a34a;
-            color: #166534;
-        }
-
-        .alert.error {
-            background: #fee2e2;
-            border-color: #dc2626;
-            color: #991b1b;
-        }
-
-        .alert.info {
-            background: #dbeafe;
-            border-color: #0284c7;
-            color: #0c4a6e;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            margin-left: 10px;
-        }
-
-        .status-badge.synced {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-badge.syncing {
-            background: #fef08a;
-            color: #78350f;
-            animation: pulse 1.5s infinite;
-        }
-
-        .status-badge.offline {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .info-box {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-radius: 6px;
-            padding: 10px;
-            margin-top: 10px;
-            font-size: 12px;
-            color: #1e40af;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>لوحة إدارة بنك الأسئلة</title>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+    padding: 20px;
+}
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 900px;
+    margin: auto;
+    box-shadow: 0 0 10px #ccc;
+}
+input, select, textarea {
+    width: 100%;
+    padding: 8px;
+    margin: 6px 0;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+}
+button {
+    padding: 10px 20px;
+    background: #0077cc;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button:hover {
+    background: #005fa3;
+}
+hr { margin: 20px 0; }
+.hidden { display: none; }
+.search-box {
+    background: #eef;
+    padding: 10px;
+    border-radius: 5px;
+}
+.question-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    background: #fafafa;
+}
+</style>
 </head>
+
 <body>
 
-<!-- 🔐 حماية الدخول -->
+<!-- شاشة تسجيل الدخول -->
+<div id="loginScreen" class="container">
+<h2>تسجيل دخول لوحة الإدارة</h2>
+<label>كلمة المرور</label>
+<input id="adminPass" type="password" placeholder="أدخل كلمة المرور">
+<button onclick="login()">دخول</button>
+</div>
+
+<!-- شاشة الإدارة -->
+<div id="adminScreen" class="container hidden">
+
+<h2>لوحة إدارة بنك الأسئلة</h2>
+
+<label>GitHub Token (مرة واحدة فقط)</label>
+<input id="token" type="password" placeholder="ضع التوكن هنا">
+
+<button onclick="saveToken()">حفظ التوكن</button>
+
+<hr>
+
+<h3>إضافة سؤال جديد</h3>
+
+<label>نص السؤال</label>
+<textarea id="q"></textarea>
+
+<label>الخيارات الأربعة</label>
+<input id="a1" placeholder="الخيار الأول">
+<input id="a2" placeholder="الخيار الثاني">
+<input id="a3" placeholder="الخيار الثالث">
+<input id="a4" placeholder="الخيار الرابع">
+
+<label>الإجابة الصحيحة</label>
+<select id="correct">
+    <option value="0">الخيار 1</option>
+    <option value="1">الخيار 2</option>
+    <option value="2">الخيار 3</option>
+    <option value="3">الخيار 4</option>
+</select>
+
+<label>التصنيف</label>
+<select id="category">
+    <option>فقه</option>
+    <option>عقيدة</option>
+    <option>حديث</option>
+    <option>تفسير</option>
+    <option>أصول فقه</option>
+    <option>ثقافة إسلامية</option>
+</select>
+
+<label>المصدر</label>
+<input id="source" placeholder="مثال: صحيح البخاري">
+
+<label>مستوى الصعوبة</label>
+<select id="level">
+    <option>سهل</option>
+    <option>متوسط</option>
+    <option>صعب</option>
+</select>
+
+<button onclick="saveQuestion()">حفظ السؤال</button>
+
+<hr>
+
+<h3>إضافة مجموعة أسئلة دفعة واحدة (Bulk Add)</h3>
+<textarea id="bulkInput" placeholder='ضع هنا مجموعة أسئلة بصيغة JSON'></textarea>
+<button onclick="bulkAdd()">إضافة المجموعة</button>
+
+<hr>
+
+<h3>بحث وفلاتر</h3>
+<div class="search-box">
+<input id="searchText" placeholder="بحث في نص السؤال" oninput="applyFilters()">
+
+<label>التصنيف</label>
+<select id="filterCategory" onchange="applyFilters()">
+    <option value="">الكل</option>
+    <option>فقه</option>
+    <option>عقيدة</option>
+    <option>حديث</option>
+    <option>تفسير</option>
+    <option>أصول فقه</option>
+    <option>ثقافة إسلامية</option>
+</select>
+
+<label>الصعوبة</label>
+<select id="filterLevel" onchange="applyFilters()">
+    <option value="">الكل</option>
+    <option>سهل</option>
+    <option>متوسط</option>
+    <option>صعب</option>
+</select>
+
+</div>
+
+<hr>
+
+<h3>قائمة الأسئلة</h3>
+<div id="questionsList"></div>
+
+</div>
+
 <script>
-    const PASSWORD = "1234";
-    let access = sessionStorage.getItem("admin_access");
+let questions = [];
+let editingId = null;
 
-    if (access !== "granted") {
-        let input = prompt("أدخل كلمة مرور المدير:");
-        if (input === PASSWORD) {
-            sessionStorage.setItem("admin_access", "granted");
-        } else {
-            document.body.innerHTML = "<h2 style='text-align:center; color:#dc2626; padding:40px;'>❌ غير مصرح بالدخول</h2>";
-            throw new Error("Access Denied");
-        }
+// كلمة المرور
+const ADMIN_PASSWORD = "123456"; // غيرها كما تريد
+
+function login() {
+    const pass = document.getElementById("adminPass").value;
+    if (pass === ADMIN_PASSWORD) {
+        document.getElementById("loginScreen").classList.add("hidden");
+        document.getElementById("adminScreen").classList.remove("hidden");
+        loadToken();
+        loadQuestions();
+    } else {
+        alert("كلمة المرور غير صحيحة");
     }
-</script>
+}
 
-<!-- البحث -->
-<div class="card">
-    <h2>🔍 بحث عن سؤال <span id="searchStatus" class="status-badge synced">✓ جاهز</span></h2>
-    <input id="searchBox" placeholder="ابحث عن سؤال..." oninput="render()">
-    <small style="color: #666; margin-top: 5px; display: block;">البحث يتم على السؤال والخيارات والفئة</small>
-</div>
+// حفظ التوكن
+function saveToken() {
+    localStorage.setItem("githubToken", document.getElementById("token").value);
+    alert("تم حفظ التوكن");
+}
 
-<!-- إضافة / تعديل سؤال -->
-<div class="card">
-    <button onclick="toggleForm()">➕ إضافة / تعديل سؤال</button>
-    
-    <div id="formBox" class="form-section">
-        <h2>إدخال البيانات</h2>
-        
-        <input id="q" placeholder="السؤال" type="text">
-        
-        <div style="margin-top: 10px;">
-            <label style="font-size: 12px; color: #666;">الخيارات:</label>
-            <input id="a1" placeholder="الخيار 1" type="text">
-            <input id="a2" placeholder="الخيار 2" type="text">
-            <input id="a3" placeholder="الخيار 3" type="text">
-            <input id="a4" placeholder="الخيار 4" type="text">
-        </div>
-        
-        <div style="margin-top: 10px;">
-            <input id="c" type="number" placeholder="الإجابة الصحيحة (0-3)" min="0" max="3">
-        </div>
-        
-        <div class="button-group">
-            <button onclick="saveQuestion()" id="saveBtn">💾 حفظ</button>
-            <button class="small" onclick="clearForm()">🗑️ تفريغ</button>
-        </div>
-        <div id="saveStatus"></div>
-    </div>
-</div>
+// تحميل التوكن
+function loadToken() {
+    const t = localStorage.getItem("githubToken");
+    if (t) document.getElementById("token").value = t;
+}
 
-<!-- إضافة جماعية -->
-<div class="card">
-    <h2>📥 إضافة جماعية</h2>
-    <textarea id="bulk" rows="6" placeholder="أدخل عدة أسئلة مفصولة بأسطر فارغة"></textarea>
-    <div class="info-box">
-        <strong>📋 صيغة إدخال الأسئلة:</strong><br>
-        السؤال هنا؟<br>
-        أ الخيار الأول<br>
-        ب الخيار الثاني<br>
-        ج الخيار الثالث<br>
-        د الخيار الرابع<br>
-        الإجابة:2
-    </div>
-    <button onclick="addBulk()" id="bulkBtn">📤 تحويل وإضافة</button>
-</div>
+// تحميل الأسئلة
+async function loadQuestions() {
+    const token = localStorage.getItem("githubToken");
+    const url = "https://api.github.com/repos/ieashehata1965-netizen/Shariah-Training/contents/questions.json";
 
-<!-- قائمة الأسئلة -->
-<div class="card">
-    <h2>📋 قائمة الأسئلة (<span id="questionCount">0</span>)</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>السؤال</th>
-                <th>الإجراء</th>
-            </tr>
-        </thead>
-        <tbody id="list"></tbody>
-    </table>
-</div>
+    const res = await fetch(url, {
+        headers: { "Authorization": "token " + token }
+    });
 
-<!-- التصدير والمزامنة -->
-<div class="card">
-    <button onclick="exportJSON()">⬇️ تصدير JSON</button>
-    <button onclick="syncWithGitHub()" id="syncBtn" style="background: #0284c7; margin-top: 6px;">🔄 مزامنة مع GitHub</button>
-    <button onclick="clearGitHubToken()" style="background: #f59e0b; margin-top: 6px;">🗑️ مسح توكن GitHub</button>
-</div>
+    const data = await res.json();
+    const content = atob(data.content);
+    questions = JSON.parse(content);
 
-<script>
-    // ===================== المتغيرات العامة =====================
-    let data = [];
-    let nextId = 1;
-    let editId = null;
-    const GITHUB_REPO = "ieashehata1965-netizen/Shariah-Training";
-    const FILE_PATH = "fiqh-questions.json";
+    window.fileSha = data.sha;
 
-    // ===================== تحميل البيانات =====================
-    function loadData() {
-        fetch("https://raw.githubusercontent.com/ieashehata1965-netizen/Shariah-Training/main/fiqh-questions.json")
-            .then(r => {
-                if (!r.ok) throw new Error("HTTP Error: " + r.status);
-                return r.json();
-            })
-            .then(loadedData => {
-                console.log("✅ تم تحميل:", loadedData.length, "سؤال");
-                data = loadedData;
-                window.data = data;
-                nextId = loadedData.length
-                    ? Math.max(...loadedData.map(x => x.id || 0)) + 1
-                    : 1;
-                updateQuestionCount();
-                render();
-            })
-            .catch(err => {
-                console.error("❌ فشل التحميل:", err);
-                showAlert("فشل تحميل الأسئلة: " + err.message, "error");
-                data = [];
-                render();
-            });
+    renderQuestions(questions);
+}
+
+// عرض الأسئلة
+function renderQuestions(list) {
+    const box = document.getElementById("questionsList");
+    box.innerHTML = "";
+
+    list.forEach(q => {
+        const div = document.createElement("div");
+        div.className = "question-card";
+        div.innerHTML = `
+            <b>ID:</b> ${q.id}<br>
+            <b>السؤال:</b> ${q.q}<br>
+            <b>الخيارات:</b> ${q.a.join(" | ")}<br>
+            <b>الصحيح:</b> ${q.c}<br>
+            <button onclick="editQuestion(${q.id})">تعديل</button>
+            <button onclick="deleteQuestion(${q.id})">حذف</button>
+        `;
+        box.appendChild(div);
+    });
+}
+
+// تعديل سؤال
+function editQuestion(id) {
+    const q = questions.find(x => x.id === id);
+
+    editingId = id;
+
+    document.getElementById("q").value = q.q;
+    document.getElementById("a1").value = q.a[0];
+    document.getElementById("a2").value = q.a[1];
+    document.getElementById("a3").value = q.a[2];
+    document.getElementById("a4").value = q.a[3];
+    document.getElementById("correct").value = q.c;
+    document.getElementById("category").value = q.category;
+    document.getElementById("source").value = q.source;
+    document.getElementById("level").value = q.level;
+}
+
+// حذف سؤال
+function deleteQuestion(id) {
+    questions = questions.filter(q => q.id !== id);
+    saveToGitHub();
+}
+
+// حفظ سؤال جديد أو تعديل
+function saveQuestion() {
+    const newQ = {
+        id: editingId || (questions.length ? questions[questions.length - 1].id + 1 : 1),
+        q: document.getElementById("q").value,
+        a: [
+            document.getElementById("a1").value,
+            document.getElementById("a2").value,
+            document.getElementById("a3").value,
+            document.getElementById("a4").value
+        ],
+        c: parseInt(document.getElementById("correct").value),
+        category: document.getElementById("category").value,
+        source: document.getElementById("source").value,
+        level: document.getElementById("level").value
+    };
+
+    if (editingId) {
+        const index = questions.findIndex(q => q.id === editingId);
+        questions[index] = newQ;
+        editingId = null;
+    } else {
+        questions.push(newQ);
     }
 
-    // ===================== دوال مساعدة =====================
-    function normalizeText(text) {
-        return (text || "")
-            .toLowerCase()
-            .trim()
-            .replace(/\s+/g, " ")
-            .replace(/[؟?]/g, "")
-            .replace(/[.,،]/g, "");
-    }
+    saveToGitHub();
+}
 
-    function isDuplicateQuestion(q, excludeId = null) {
-        return data.some(x => 
-            normalizeText(x.q) === normalizeText(q) && x.id !== excludeId
-        );
-    }
-
-    function updateQuestionCount() {
-        document.getElementById("questionCount").textContent = data.length;
-    }
-
-    function showAlert(message, type = "success") {
-        const alertDiv = document.getElementById("saveStatus") || createAlert();
-        alertDiv.className = `alert ${type}`;
-        alertDiv.textContent = message;
-        alertDiv.style.display = "block";
-        setTimeout(() => {
-            alertDiv.style.display = "none";
-        }, 4000);
-    }
-
-    function createAlert() {
-        let div = document.createElement("div");
-        div.id = "saveStatus";
-        document.querySelector(".card:nth-child(2)").appendChild(div);
-        return div;
-    }
-
-    // ===================== حفظ السؤال =====================
-    function saveQuestion() {
-        const q = document.getElementById("q").value.trim();
-        const a1 = document.getElementById("a1").value.trim();
-        const a2 = document.getElementById("a2").value.trim();
-        const a3 = document.getElementById("a3").value.trim();
-        const a4 = document.getElementById("a4").value.trim();
-        const c = parseInt(document.getElementById("c").value);
-
-        // التحقق من البيانات
-        if (!q || !a1 || !a2 || !a3 || !a4) {
-            showAlert("❌ أكمل جميع البيانات المطلوبة", "error");
-            return;
-        }
-
-        if (isNaN(c) || c < 0 || c > 3) {
-            showAlert("❌ الإجابة الصحيحة يجب أن تكون بين 0 و 3", "error");
-            return;
-        }
-
-        // منع التكرار
-        if (isDuplicateQuestion(q, editId)) {
-            showAlert("⚠️ هذا السؤال موجود مسبقاً", "error");
-            return;
-        }
-
-        const obj = {
-            id: editId ? editId : nextId++,
-            category: "عام",
-            level: "متوسط",
-            source: "غير محدد",
-            q,
-            a: [a1, a2, a3, a4],
-            c
-        };
-
-        if (editId) {
-            let idx = data.findIndex(x => x.id === editId);
-            if (idx !== -1) {
-                data[idx] = obj;
-                console.log("✏️ تم تحديث السؤال:", editId);
-            }
-            editId = null;
-        } else {
-            data.push(obj);
-            console.log("✅ تم إضافة سؤال جديد");
-        }
-
-        clearForm();
-        updateQuestionCount();
-        render();
-        
-        // محاولة الحفظ على GitHub تلقائياً
+// إضافة مجموعة أسئلة دفعة واحدة
+function bulkAdd() {
+    try {
+        const arr = JSON.parse(document.getElementById("bulkInput").value);
+        arr.forEach(q => {
+            q.id = questions.length ? questions[questions.length - 1].id + 1 : 1;
+            questions.push(q);
+        });
         saveToGitHub();
-        showAlert("✅ تم الحفظ محلياً. جاري الرفع إلى GitHub...", "success");
+    } catch (e) {
+        alert("صيغة JSON غير صحيحة");
     }
+}
 
-    // ===================== عرض القائمة =====================
-    function render() {
-        let keyword = (document.getElementById("searchBox").value || "").toLowerCase();
-        let filtered = data.filter(x => {
-            let searchFields = (
-                (x.q || "") + " " +
-                (x.a ? x.a.join(" ") : "") + " " +
-                (x.category || "")
-            ).toLowerCase();
-            return searchFields.includes(keyword);
-        });
+// رفع الملف إلى GitHub
+async function saveToGitHub() {
+    const token = localStorage.getItem("githubToken");
+    const url = "https://api.github.com/repos/ieashehata1965-netizen/Shariah-Training/contents/questions.json";
 
-        let html = "";
-        if (filtered.length === 0) {
-            html = `<tr><td colspan="2" style="text-align:center; color:#999;">لا توجد أسئلة</td></tr>`;
-        } else {
-            html = filtered.map(x => `
-                <tr>
-                    <td>${x.q}</td>
-                    <td>
-                        <div class="button-group">
-                            <button onclick="editQuestion(${x.id})" style="background:#0284c7;">✏️ تعديل</button>
-                            <button class="danger" onclick="deleteQ(${x.id})">🗑️ حذف</button>
-                        </div>
-                    </td>
-                </tr>
-            `).join("");
-        }
+    const updatedContent = btoa(JSON.stringify(questions, null, 2));
 
-        document.getElementById("list").innerHTML = html;
-        console.log(`📊 عرض ${filtered.length} من ${data.length} سؤال`);
-    }
+    await fetch(url, {
+        method: "PUT",
+        headers: {
+            "Authorization": "token " + token,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            message: "Update questions",
+            content: updatedContent,
+            sha: window.fileSha
+        })
+    });
 
-    // ===================== تعديل السؤال =====================
-    function editQuestion(id) {
-        let item = data.find(x => x.id === id);
-        if (!item) return;
+    alert("تم حفظ التعديلات بنجاح");
+    loadQuestions();
+}
 
-        editId = id;
+// تطبيق الفلاتر
+function applyFilters() {
+    let filtered = questions;
 
-        document.getElementById("q").value = item.q;
-        document.getElementById("a1").value = item.a[0];
-        document.getElementById("a2").value = item.a[1];
-        document.getElementById("a3").value = item.a[2];
-        document.getElementById("a4").value = item.a[3];
-        document.getElementById("c").value = item.c;
+    const text = document.getElementById("searchText").value;
+    const cat = document.getElementById("filterCategory").value;
+    const lvl = document.getElementById("filterLevel").value;
 
-        document.getElementById("formBox").classList.add("active");
-        console.log("📝 تحرير السؤال:", id);
-    }
+    if (text) filtered = filtered.filter(q => q.q.includes(text));
+    if (cat) filtered = filtered.filter(q => q.category === cat);
+    if (lvl) filtered = filtered.filter(q => q.level === lvl);
 
-    // ===================== حذف السؤال =====================
-    function deleteQ(id) {
-        if (!confirm("هل تريد حذف هذا السؤال؟")) return;
-        data = data.filter(x => x.id !== id);
-        console.log("🗑️ تم حذف السؤال:", id);
-        updateQuestionCount();
-        render();
-        saveToGitHub();
-    }
+    renderQuestions(filtered);
+}
 
-    // ===================== إضافة جماعية - محسّنة =====================
-    function addBulk() {
-        let text = document.getElementById("bulk").value.trim();
-        if (!text) {
-            alert("❌ أدخل نصاً");
-            return;
-        }
-
-        let blocks = text.split(/\n\s*\n+/).filter(b => b.trim());
-        let added = 0;
-        let failed = [];
-
-        blocks.forEach((block, blockIndex) => {
-            let lines = block.split("\n").map(l => l.trim()).filter(l => l);
-            
-            let qText = "";
-            let a = ["", "", "", ""];
-            let c = null;
-            let answerIndex = -1;
-
-            // البحث عن السؤال - أول سطر طويل أو يحتوي على علامة استفهام
-            for (let i = 0; i < lines.length; i++) {
-                if (!qText && (lines[i].includes("؟") || lines[i].includes("?") || lines[i].length > 15)) {
-                    qText = lines[i];
-                    break;
-                }
-            }
-
-            // البحث عن الخيارات
-            lines.forEach(line => {
-                // البحث عن الخيار أ
-                if (line.match(/^[أa][\s\-:\.]/i)) {
-                    a[0] = line.replace(/^[أa][\s\-:\.]/i, "").trim();
-                }
-                // البحث عن الخيار ب
-                else if (line.match(/^[بb][\s\-:\.]/i)) {
-                    a[1] = line.replace(/^[بb][\s\-:\.]/i, "").trim();
-                }
-                // البحث عن الخيار ج
-                else if (line.match(/^[جg][\s\-:\.]/i)) {
-                    a[2] = line.replace(/^[جg][\s\-:\.]/i, "").trim();
-                }
-                // البحث عن الخيار د
-                else if (line.match(/^[د*][\s\-:\.]/i)) {
-                    a[3] = line.replace(/^[د*][\s\-:\.]/i, "").trim();
-                }
-                // البحث عن الإجابة الصحيحة
-                else if (line.includes("الإجابة") || line.includes("الجواب") || line.includes("الاجابة")) {
-                    let parts = line.split(/[:=]/);
-                    if (parts.length > 1) {
-                        let num = parseInt(parts[1].trim());
-                        if (!isNaN(num) && num >= 0 && num <= 3) {
-                            c = num;
-                        }
-                    }
-                }
-            });
-
-            // التحقق من صحة السؤال
-            if (qText && a[0] && a[1] && a[2] && a[3]) {
-                // إذا لم يتم العثور على إجابة، استخدم 0 كافتراضي
-                if (c === null) c = 0;
-
-                // التحقق من عدم التكرار
-                if (!isDuplicateQuestion(qText)) {
-                    data.push({
-                        id: nextId++,
-                        category: "عام",
-                        level: "متوسط",
-                        source: "غير محدد",
-                        q: qText,
-                        a,
-                        c
-                    });
-                    added++;
-                    console.log("✅ تم إضافة سؤال:", qText);
-                } else {
-                    failed.push(`السؤال #${blockIndex + 1}: موجود مسبقاً`);
-                }
-            } else {
-                failed.push(`السؤال #${blockIndex + 1}: صيغة غير صحيحة`);
-            }
-        });
-
-        if (added > 0) {
-            updateQuestionCount();
-            render();
-            saveToGitHub();
-            document.getElementById("bulk").value = "";
-            
-            let msg = `✅ تمت إضافة ${added} سؤال`;
-            if (failed.length > 0) {
-                msg += `\n⚠️ فشل: ${failed.length} أسئلة\n${failed.slice(0, 3).join("\n")}`;
-                if (failed.length > 3) msg += `\n... و${failed.length - 3} آخرين`;
-            }
-            alert(msg);
-        } else {
-            alert("❌ لم يتم إضافة أي أسئلة\n" + failed.slice(0, 3).join("\n"));
-        }
-        
-        console.log(`📊 النتيجة: تم إضافة ${added}, فشل ${failed.length}`);
-    }
-
-    // ===================== تصدير JSON =====================
-    function exportJSON() {
-        if (data.length === 0) {
-            alert("❌ لا توجد أسئلة للتصدير");
-            return;
-        }
-
-        let blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-        let a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "fiqh-questions.json";
-        a.click();
-        console.log("📥 تم تصدير", data.length, "سؤال");
-    }
-
-    // ===================== الحفظ على GitHub - مصحح =====================
-    async function saveToGitHub() {
-        try {
-            let token = sessionStorage.getItem("github_token");
-            
-            // ✅ التحقق من أن التوكن موجود وغير فارغ
-            if (!token || token.trim() === "") {
-                token = prompt("🔑 أدخل GitHub Personal Access Token:\n\n(احصل عليه من: github.com/settings/tokens)\n\nاتركه فارغاً لتخطي الحفظ:");
-                
-                // ✅ إذا ألغى المستخدم أو تركه فارغاً
-                if (!token || token.trim() === "") {
-                    console.log("⏭️ تم تخطي الحفظ على GitHub");
-                    sessionStorage.removeItem("github_token"); // مسح القيمة الفارغة
-                    return false;
-                }
-                
-                sessionStorage.setItem("github_token", token.trim());
-            }
-
-            const [owner, repo] = GITHUB_REPO.split("/");
-            
-            const getFileResponse = await fetch(
-                `https://api.github.com/repos/${owner}/${repo}/contents/${FILE_PATH}`,
-                {
-                    headers: {
-                        "Authorization": `token ${token}`,
-                        "Accept": "application/vnd.github.v3+json"
-                    }
-                }
-            );
-
-            let sha = null;
-            if (getFileResponse.ok) {
-                const fileData = await getFileResponse.json();
-                sha = fileData.sha;
-            }
-
-            const uploadResponse = await fetch(
-                `https://api.github.com/repos/${owner}/${repo}/contents/${FILE_PATH}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Authorization": `token ${token}`,
-                        "Content-Type": "application/json",
-                        "Accept": "application/vnd.github.v3+json"
-                    },
-                    body: JSON.stringify({
-                        message: `تحديث الأسئلة - ${new Date().toLocaleString('ar-SA')}`,
-                        content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
-                        sha: sha,
-                        branch: "main"
-                    })
-                }
-            );
-
-            if (uploadResponse.ok) {
-                console.log("✅ تم الحفظ على GitHub بنجاح");
-                showAlert("✅ تم الحفظ على GitHub بنجاح!", "success");
-                return true;
-            } else {
-                const error = await uploadResponse.json();
-                console.error("❌ خطأ في الحفظ:", error);
-                showAlert("❌ خطأ في الحفظ على GitHub: " + (error.message || "خطأ غير معروف"), "error");
-                return false;
-            }
-        } catch (err) {
-            console.error("❌ خطأ في الاتصال:", err);
-            showAlert("❌ فشل الاتصال بـ GitHub: " + err.message, "error");
-            return false;
-        }
-    }
-
-    async function syncWithGitHub() {
-        if (data.length === 0) {
-            alert("❌ لا توجد أسئلة للمزامنة");
-            return;
-        }
-
-        const btn = document.getElementById("syncBtn");
-        btn.disabled = true;
-        btn.textContent = "⏳ جاري المزامنة...";
-
-        try {
-            const success = await saveToGitHub();
-            if (!success) {
-                showAlert("💡 تم تخطي المزامنة. يمكنك تصدير JSON يدوياً.", "info");
-            }
-        } catch (err) {
-            alert("خطأ في المزامنة: " + err.message);
-        } finally {
-            setTimeout(() => {
-                btn.disabled = false;
-                btn.textContent = "🔄 مزامنة مع GitHub";
-            }, 2000);
-        }
-    }
-
-    // ✅ مسح توكن GitHub
-    function clearGitHubToken() {
-        sessionStorage.removeItem("github_token");
-        showAlert("✅ تم مسح التوكن. أعد تحميل الصفحة واضغط مزامنة من جديد.", "success");
-        setTimeout(() => location.reload(), 2000);
-    }
-
-    // ===================== تنظيف النموذج =====================
-    function clearForm() {
-        ["q", "a1", "a2", "a3", "a4", "c"].forEach(id => {
-            document.getElementById(id).value = "";
-        });
-        editId = null;
-        document.getElementById("formBox").classList.remove("active");
-        document.getElementById("saveStatus").textContent = "";
-        console.log("🧹 تم تنظيف النموذج");
-    }
-
-    // ===================== تبديل النموذج =====================
-    function toggleForm() {
-        let box = document.getElementById("formBox");
-        box.classList.toggle("active");
-        console.log("🔄 النموذج:", box.classList.contains("active") ? "مفتوح" : "مغلق");
-    }
-
-    // ===================== التهيئة =====================
-    loadData();
 </script>
 
 </body>
