@@ -103,6 +103,11 @@
       <a href="admin.html">⚙️ الإدارة</a>
       <a href="https://ieashehata1965-netizen.github.io/Shariah-Training/fiqh-questions.json" target="_blank">📄 ملف JSON</a>
     </div>
+    <!-- Connection Status Indicator -->
+    <div id="connectionStatus" style="margin-top:12px;padding:8px 16px;border-radius:20px;display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);">
+      <span id="connDot" style="width:10px;height:10px;border-radius:50%;background:#f39c12;display:inline-block;"></span>
+      <span id="connText">جاري التحقق من الاتصال...</span>
+    </div>
   </div>
 
   <div class="token-bar">
@@ -1969,8 +1974,22 @@ let githubToken = localStorage.getItem('githubToken') || '';
 // LOAD DATA (embedded first, then try fetch)
 // =====================
 function init() {
-  // Start with embedded data so page works immediately
-  questions = JSON.parse(JSON.stringify(EMBEDDED_QUESTIONS));
+  // Check for localStorage backup first (from previous session)
+  const backup = localStorage.getItem('questions_backup');
+  if (backup) {
+    try {
+      const backupData = JSON.parse(backup);
+      if (Array.isArray(backupData) && backupData.length > 0) {
+        questions = backupData;
+        toast('📂 تم استعادة ' + backupData.length + ' سؤال من النسخة الاحتياطية', 'inf');
+      }
+    } catch (e) {
+      questions = JSON.parse(JSON.stringify(EMBEDDED_QUESTIONS));
+    }
+  } else {
+    // Start with embedded data
+    questions = JSON.parse(JSON.stringify(EMBEDDED_QUESTIONS));
+  }
 
   // Then try to fetch latest from GitHub
   fetchLatest();
@@ -1988,6 +2007,7 @@ function init() {
 
 async function fetchLatest() {
   try {
+    updateConnectionStatus('checking');
     const res = await fetch(GITHUB_JSON_URL + '?v=' + Date.now());
     if (res.ok) {
       const data = await res.json();
@@ -1996,14 +2016,69 @@ async function fetchLatest() {
         updateStats();
         updateFilters();
         renderList();
-        toast('✅ تم تحديث الأسئلة من GitHub (' + questions.length + ' سؤال)', 'ok');
+        updateConnectionStatus('connected', questions.length);
+        toast('✅ متصل بـ GitHub - ' + questions.length + ' سؤال محمل', 'ok');
       }
+    } else {
+      updateConnectionStatus('error', 'خطأ ' + res.status);
     }
   } catch (e) {
     console.log('Fetch failed, using embedded data:', e);
+    updateConnectionStatus('offline');
     // Already using embedded data, no need to do anything
   }
 }
+
+function updateConnectionStatus(status, count) {
+  const dot = document.getElementById('connDot');
+  const text = document.getElementById('connText');
+  const bar = document.getElementById('connectionStatus');
+
+  if (!dot || !text) return;
+
+  switch(status) {
+    case 'checking':
+      dot.style.background = '#f39c12';
+      dot.style.animation = 'pulse 1.5s infinite';
+      text.textContent = 'جاري التحقق من الاتصال...';
+      bar.style.background = 'rgba(243, 156, 18, 0.3)';
+      break;
+    case 'connected':
+      dot.style.background = '#2ecc71';
+      dot.style.animation = 'none';
+      text.textContent = '✅ متصل بـ GitHub | ' + (count || questions.length) + ' سؤال في البنك';
+      bar.style.background = 'rgba(46, 204, 113, 0.3)';
+      break;
+    case 'offline':
+      dot.style.background = '#e74c3c';
+      dot.style.animation = 'none';
+      text.textContent = '❌ غير متصل - يعمل بالنسخة المحلية (' + questions.length + ' سؤال)';
+      bar.style.background = 'rgba(231, 76, 60, 0.3)';
+      break;
+    case 'error':
+      dot.style.background = '#e74c3c';
+      dot.style.animation = 'none';
+      text.textContent = '❌ خطأ: ' + (count || 'غير معروف');
+      bar.style.background = 'rgba(231, 76, 60, 0.3)';
+      break;
+    case 'synced':
+      dot.style.background = '#3498db';
+      dot.style.animation = 'none';
+      text.textContent = '📤 تم المزامنة - ' + (count || questions.length) + ' سؤال';
+      bar.style.background = 'rgba(52, 152, 219, 0.3)';
+      break;
+  }
+}
+
+// Add pulse animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+  }
+`;
+document.head.appendChild(style);
 
 // =====================
 // STATS & FILTERS
@@ -2029,31 +2104,75 @@ function updateFilters() {
 // =====================
 function addQuestion(e) {
   e.preventDefault();
-  const newQ = {
-    id: questions.length > 0 ? Math.max(...questions.map(q => q.id)) + 1 : 1,
-    category: document.getElementById('inCat').value,
-    level: document.getElementById('inLvl').value,
-    source: document.getElementById('inSrc').value,
-    q: document.getElementById('inQ').value,
-    a: [
-      document.getElementById('a0').value,
-      document.getElementById('a1').value,
-      document.getElementById('a2').value,
-      document.getElementById('a3').value
-    ],
-    c: parseInt(document.querySelector('input[name="correct"]:checked').value)
-  };
-  questions.push(newQ);
+
+  const submitBtn = document.querySelector('#addForm button[type="submit"]');
+
+  if (editingId !== null) {
+    // We're editing an existing question - find and update it
+    const idx = questions.findIndex(q => q.id === editingId);
+    if (idx > -1) {
+      questions[idx] = {
+        id: editingId,
+        category: document.getElementById('inCat').value,
+        level: document.getElementById('inLvl').value,
+        source: document.getElementById('inSrc').value,
+        q: document.getElementById('inQ').value,
+        a: [
+          document.getElementById('a0').value,
+          document.getElementById('a1').value,
+          document.getElementById('a2').value,
+          document.getElementById('a3').value
+        ],
+        c: parseInt(document.querySelector('input[name="correct"]:checked').value)
+      };
+      toast('✅ تم حفظ التعديل على السؤال #' + editingId, 'ok');
+    }
+    editingId = null;
+    // Reset button
+    submitBtn.textContent = '💾 إضافة السؤال';
+    submitBtn.style.background = '';
+  } else {
+    // Adding new question
+    const newQ = {
+      id: questions.length > 0 ? Math.max(...questions.map(q => q.id)) + 1 : 1,
+      category: document.getElementById('inCat').value,
+      level: document.getElementById('inLvl').value,
+      source: document.getElementById('inSrc').value,
+      q: document.getElementById('inQ').value,
+      a: [
+        document.getElementById('a0').value,
+        document.getElementById('a1').value,
+        document.getElementById('a2').value,
+        document.getElementById('a3').value
+      ],
+      c: parseInt(document.querySelector('input[name="correct"]:checked').value)
+    };
+    questions.push(newQ);
+    toast('✅ تم إضافة السؤال #' + newQ.id, 'ok');
+  }
+
   clearForm();
   updateStats();
   updateFilters();
   renderList();
-  toast('✅ تم إضافة السؤال #' + newQ.id, 'ok');
+
+  // Auto-save to localStorage as backup
+  localStorage.setItem('questions_backup', JSON.stringify(questions));
+  checkUnsaved();
+
+  // Show quick-save button if token is available
+  if (githubToken && githubToken.length > 10) {
+    showQuickPush();
+  }
 }
 
 function clearForm() {
   document.getElementById('addForm').reset();
   document.getElementById('r0').checked = true;
+  editingId = null;
+  const submitBtn = document.querySelector('#addForm button[type="submit"]');
+  submitBtn.textContent = '💾 إضافة السؤال';
+  submitBtn.style.background = '';
 }
 
 // =====================
@@ -2086,6 +2205,7 @@ function addBulk() {
     updateFilters();
     renderList();
     toast('✅ تم استيراد ' + added + ' سؤال', 'ok');
+    checkUnsaved();
   } catch (err) {
     toast('❌ خطأ JSON: ' + err.message, 'err');
   }
@@ -2175,9 +2295,17 @@ function deselectAll() {
 // =====================
 // EDIT & DELETE
 // =====================
+// Track editing state
+let editingId = null;
+
 function editQ(id) {
   const q = questions.find(x => x.id === id);
   if (!q) return;
+
+  // Save the ID we're editing
+  editingId = id;
+
+  // Load question data into form
   document.getElementById('inQ').value = q.q;
   document.getElementById('inCat').value = q.category;
   document.getElementById('inLvl').value = q.level;
@@ -2187,11 +2315,15 @@ function editQ(id) {
   document.getElementById('a2').value = q.a[2];
   document.getElementById('a3').value = q.a[3];
   document.getElementById('r' + q.c).checked = true;
-  const oldIdx = questions.findIndex(x => x.id === id);
-  if (oldIdx > -1) questions.splice(oldIdx, 1);
-  selected.delete(id);
-  toast('✏️ تم تحميل السؤال للتعديل، اضغط "إضافة السؤال" بعد التعديل', 'inf');
+
+  // Change button text to show we're editing
+  const submitBtn = document.querySelector('#addForm button[type="submit"]');
+  submitBtn.textContent = '💾 حفظ التعديل';
+  submitBtn.style.background = 'linear-gradient(135deg, #f39c12, #e67e22)';
+
+  // Scroll to form
   window.scrollTo(0, 0);
+  toast('✏️ تم تحميل السؤال #' + id + ' للتعديل', 'inf');
 }
 
 function deleteQ(id) {
@@ -2202,6 +2334,7 @@ function deleteQ(id) {
   updateFilters();
   renderList();
   toast('🗑️ تم الحذف', 'inf');
+  checkUnsaved();
 }
 
 function deleteSelected() {
@@ -2212,6 +2345,7 @@ function deleteSelected() {
   updateFilters();
   renderList();
   toast('🗑️ تم حذف المحدد', 'inf');
+  checkUnsaved();
 }
 
 // =====================
@@ -2262,6 +2396,7 @@ async function testConnection() {
     });
     if (res.ok) {
       const data = await res.json();
+      updateConnectionStatus('connected');
       toast('✅ متصل! المستودع: ' + data.name, 'ok');
     } else {
       const err = await res.json();
@@ -2269,6 +2404,110 @@ async function testConnection() {
     }
   } catch (e) {
     toast('❌ خطأ: ' + e.message, 'err');
+  }
+}
+
+let hasUnsavedChanges = false;
+let originalQuestionsHash = '';
+
+function getQuestionsHash() {
+  return JSON.stringify(questions).length.toString();
+}
+
+function initHash() {
+  originalQuestionsHash = getQuestionsHash();
+}
+
+function checkUnsaved() {
+  const currentHash = getQuestionsHash();
+  hasUnsavedChanges = currentHash !== originalQuestionsHash;
+
+  if (hasUnsavedChanges) {
+    document.getElementById('unsavedWarning').style.display = 'block';
+    if (githubToken && githubToken.length > 10) {
+      showQuickPush();
+    }
+  } else {
+    document.getElementById('unsavedWarning').style.display = 'none';
+    hideQuickPush();
+  }
+}
+
+function showQuickPush() {
+  const bar = document.getElementById('quickPushBar');
+  bar.style.display = 'flex';
+  document.getElementById('pendingCount').textContent = questions.length;
+}
+
+function hideQuickPush() {
+  document.getElementById('quickPushBar').style.display = 'none';
+}
+
+function dismissWarning() {
+  document.getElementById('unsavedWarning').style.display = 'none';
+}
+
+async function quickPushToGitHub() {
+  if (!githubToken || githubToken.length < 10) {
+    toast('❌ أدخل GitHub Token أولاً', 'err');
+    document.getElementById('githubToken').focus();
+    return;
+  }
+
+  // Validate
+  const bad = questions.filter(q => !q || !q.q || !q.a || !Array.isArray(q.a) || q.a.length !== 4 || typeof q.c !== 'number' || q.c < 0 || q.c > 3);
+  if (bad.length > 0) {
+    toast('❌ يوجد ' + bad.length + ' سؤال غير صالح', 'err');
+    return;
+  }
+
+  toast('🔄 جاري الرفع...', 'inf');
+  hideQuickPush();
+
+  try {
+    const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`, {
+      headers: { 'Authorization': 'token ' + githubToken, 'Accept': 'application/vnd.github.v3+json' }
+    });
+
+    if (!getRes.ok) {
+      if (getRes.status === 404) {
+        await createFile();
+        initHash();
+        return;
+      }
+      throw new Error('فشل الوصول للمستودع');
+    }
+
+    const fileData = await getRes.json();
+    const jsonStr = JSON.stringify(questions, null, 2);
+    const content = btoa(unescape(encodeURIComponent(jsonStr)));
+
+    const updateRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + githubToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: 'Auto-update via admin panel - ' + questions.length + ' questions',
+        content: content,
+        sha: fileData.sha,
+        branch: BRANCH
+      })
+    });
+
+    if (updateRes.ok) {
+      const result = await updateRes.json();
+      initHash();
+      document.getElementById('unsavedWarning').style.display = 'none';
+      updateConnectionStatus('synced', questions.length);
+      toast('✅ تم الرفع! ' + result.content.html_url, 'ok');
+      // Re-check connection after 3 seconds to show green
+      setTimeout(() => updateConnectionStatus('connected', questions.length), 3000);
+    } else {
+      const err = await updateRes.json();
+      throw new Error(err.message || 'فشل الرفع');
+    }
+  } catch (err) {
+    toast('❌ ' + err.message, 'err');
+    showQuickPush();
   }
 }
 
@@ -2369,9 +2608,34 @@ function esc(t) {
 }
 
 // =====================
+// BEFORE UNLOAD WARNING
+// =====================
+window.addEventListener('beforeunload', function(e) {
+  if (hasUnsavedChanges) {
+    e.preventDefault();
+    e.returnValue = 'يوجد تعديلات غير محفوظة. هل تريد المغادرة؟';
+    return 'يوجد تعديلات غير محفوظة. هل تريد المغادرة؟';
+  }
+});
+
+// =====================
 // INIT
 // =====================
 init();
+initHash();
 </script>
+
+<!-- Quick Push Button -->
+<div id="quickPushBar" style="position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#e94560,#c0392b);color:white;padding:14px 28px;border-radius:50px;box-shadow:0 8px 30px rgba(233,69,96,0.4);display:none;align-items:center;gap:12px;z-index:3000;cursor:pointer;transition:all 0.3s;font-weight:600;" onclick="quickPushToGitHub()">
+  <span style="font-size:20px;">🚀</span>
+  <span>رفع التعديلات إلى GitHub</span>
+  <span id="pendingCount" style="background:rgba(255,255,255,0.2);padding:2px 10px;border-radius:20px;font-size:12px;">0</span>
+</div>
+
+<!-- Unsaved Changes Warning -->
+<div id="unsavedWarning" style="position:fixed;top:0;left:0;right:0;background:#e74c3c;color:white;padding:10px;text-align:center;font-weight:600;display:none;z-index:4000;">
+  ⚠️ يوجد تعديلات غير محفوظة! <button onclick="quickPushToGitHub()" style="background:white;color:#e74c3c;border:none;padding:4px 12px;border-radius:4px;margin-right:10px;cursor:pointer;font-weight:600;">رفع الآن</button> <button onclick="dismissWarning()" style="background:transparent;color:white;border:1px solid white;padding:4px 12px;border-radius:4px;cursor:pointer;">تجاهل</button>
+</div>
+
 </body>
 </html>
