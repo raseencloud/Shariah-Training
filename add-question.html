@@ -68,7 +68,6 @@ hr { margin: 20px 0; }
 
 <label>GitHub Token (مرة واحدة فقط)</label>
 <input id="token" type="password" placeholder="ضع التوكن هنا">
-
 <button onclick="saveToken()">حفظ التوكن</button>
 
 <hr>
@@ -194,6 +193,11 @@ async function loadQuestions() {
         headers: { "Authorization": "token " + token }
     });
 
+    if (!res.ok) {
+        alert("خطأ في تحميل الأسئلة — تأكد من صحة التوكن");
+        return;
+    }
+
     const data = await res.json();
     const content = atob(data.content);
     questions = JSON.parse(content);
@@ -291,11 +295,16 @@ function bulkAdd() {
 // رفع الملف إلى GitHub
 async function saveToGitHub() {
     const token = localStorage.getItem("githubToken");
+    if (!token) {
+        alert("لم يتم حفظ التوكن — لا يمكن الحفظ");
+        return;
+    }
+
     const url = "https://api.github.com/repos/ieashehata1965-netizen/Shariah-Training/contents/questions.json";
 
     const updatedContent = btoa(JSON.stringify(questions, null, 2));
 
-    await fetch(url, {
+    const res = await fetch(url, {
         method: "PUT",
         headers: {
             "Authorization": "token " + token,
@@ -308,6 +317,11 @@ async function saveToGitHub() {
         })
     });
 
+    if (!res.ok) {
+        alert("فشل الحفظ — تأكد من صلاحيات التوكن");
+        return;
+    }
+
     alert("تم حفظ التعديلات بنجاح");
     loadQuestions();
 }
@@ -316,7 +330,7 @@ async function saveToGitHub() {
 function applyFilters() {
     let filtered = questions;
 
-    const text = document.getElementById("searchText").value;
+    const text = document.getElementById("searchText").value.trim();
     const cat = document.getElementById("filterCategory").value;
     const lvl = document.getElementById("filterLevel").value;
 
