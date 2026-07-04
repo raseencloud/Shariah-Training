@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام بنك الأسئلة المحسن - v2.0</title>
+    <title>نظام بنك الأسئلة المحسن - v2.1</title>
     <style>
         * {
             margin: 0;
@@ -546,6 +546,8 @@
             <option value="عقيدة">عقيدة</option>
             <option value="حديث">حديث</option>
             <option value="تفسير">تفسير</option>
+            <option value="سيرة">سيرة</option>
+            <option value="منوعات">منوعات</option>
         </select>
     </div>
 </div>
@@ -579,6 +581,20 @@
         </div>
         
         <div style="margin-top: 12px;">
+            <label style="font-size: 13px; color: #666; font-weight: 600;">المستوى:</label>
+            <select id="level">
+                <option value="سهل">سهل</option>
+                <option value="متوسط" selected>متوسط</option>
+                <option value="صعب">صعب</option>
+            </select>
+        </div>
+        
+        <div style="margin-top: 12px;">
+            <label style="font-size: 13px; color: #666; font-weight: 600;">المصدر:</label>
+            <input id="source" placeholder="مثال: دروس البلاغة - معهد بن عثيمين - درس/1" type="text">
+        </div>
+        
+        <div style="margin-top: 12px;">
             <label style="font-size: 13px; color: #666; font-weight: 600;">الفئة:</label>
             <select id="category">
                 <option value="عام">عام</option>
@@ -586,6 +602,8 @@
                 <option value="عقيدة">عقيدة</option>
                 <option value="حديث">حديث</option>
                 <option value="تفسير">تفسير</option>
+                <option value="سيرة">سيرة</option>
+                <option value="منوعات">منوعات</option>
             </select>
         </div>
         
@@ -608,7 +626,10 @@
         ب) الخيار الثاني<br>
         ج) الخيار الثالث<br>
         د) الخيار الرابع<br>
-        الإجابة: 2
+        الإجابة: 2<br>
+        المستوى: متوسط<br>
+        المصدر: دروس البلاغة - معهد بن عثيمين - درس/1<br>
+        الفئة: منوعات
     </div>
     <button onclick="addBulk()" id="bulkBtn">📤 تحويل وإضافة</button>
 </div>
@@ -629,9 +650,10 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 60%;">السؤال</th>
-                <th style="width: 15%;">الفئة</th>
-                <th style="width: 25%;">الإجراء</th>
+                <th style="width: 50%;">السؤال</th>
+                <th style="width: 10%;">المستوى</th>
+                <th style="width: 10%;">الفئة</th>
+                <th style="width: 30%;">الإجراء</th>
             </tr>
         </thead>
         <tbody id="list"></tbody>
@@ -813,6 +835,8 @@
         const a3 = document.getElementById("a3").value.trim();
         const a4 = document.getElementById("a4").value.trim();
         const c = document.getElementById("c").value;
+        const level = document.getElementById("level").value;
+        const source = document.getElementById("source").value.trim();
         const category = document.getElementById("category").value;
 
         if (!q || !a1 || !a2 || !a3 || !a4) {
@@ -835,8 +859,8 @@
         const obj = {
             id: editId ? editId : nextId++,
             category: category || "عام",
-            level: "متوسط",
-            source: "غير محدد",
+            level: level || "متوسط",
+            source: source || "غير محدد",
             q,
             a: [a1, a2, a3, a4],
             c: correctIndex
@@ -870,7 +894,8 @@
             let searchFields = (
                 (x.q || "") + " " +
                 (x.a ? x.a.join(" ") : "") + " " +
-                (x.category || "")
+                (x.category || "") + " " +
+                (x.source || "")
             ).toLowerCase();
             
             let matchesSearch = !keyword || searchFields.includes(keyword);
@@ -892,7 +917,7 @@
         if (paginated.length === 0) {
             html = `
                 <tr>
-                    <td colspan="3" class="empty-state">
+                    <td colspan="4" class="empty-state">
                         <div style="font-size:48px;margin-bottom:12px;">📭</div>
                         <div>لا توجد أسئلة</div>
                     </td>
@@ -904,6 +929,13 @@
                     <td>
                         <div style="font-weight: 600; margin-bottom: 4px;">${escapeHtml(x.q)}</div>
                         <small style="color: #9ca3af;">${x.a ? x.a.join(" | ") : ""}</small>
+                    </td>
+                    <td>
+                        <span style="background: ${x.level === 'سهل' ? '#dcfce7' : x.level === 'صعب' ? '#fee2e2' : '#fef3c7'}; 
+                                     color: ${x.level === 'سهل' ? '#065f46' : x.level === 'صعب' ? '#991b1b' : '#92400e'};
+                                     padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600;">
+                            ${escapeHtml(x.level || "متوسط")}
+                        </span>
                     </td>
                     <td>
                         <span style="background: #f3f4f6; padding: 4px 10px; border-radius: 12px; font-size: 12px;">
@@ -971,6 +1003,8 @@
             <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
                 <small style="color: #6b7280;">
                     📁 الفئة: ${escapeHtml(item.category || "عام")} | 
+                    📊 المستوى: ${escapeHtml(item.level || "متوسط")} | 
+                    📖 المصدر: ${escapeHtml(item.source || "غير محدد")} | 
                     🆔 الرقم: ${item.id}
                 </small>
             </div>
@@ -999,6 +1033,8 @@
         document.getElementById("a3").value = item.a[2] || "";
         document.getElementById("a4").value = item.a[3] || "";
         document.getElementById("c").value = item.c !== undefined ? item.c : "";
+        document.getElementById("level").value = item.level || "متوسط";
+        document.getElementById("source").value = item.source || "";
         document.getElementById("category").value = item.category || "عام";
 
         document.getElementById("formBox").classList.add("active");
@@ -1039,6 +1075,9 @@
             let qText = "";
             let a = ["", "", "", ""];
             let c = null;
+            let level = "متوسط";
+            let source = "غير محدد";
+            let category = "عام";
 
             for (let i = 0; i < lines.length; i++) {
                 if (!qText && (lines[i].includes("؟") || lines[i].includes("?") || lines[i].length > 10)) {
@@ -1056,6 +1095,14 @@
                     a[2] = line.replace(/^[جjc][\s\-\.:)\]]/i, "").trim();
                 } else if (line.match(/^[دd\*][\s\-\.:)\]]/i)) {
                     a[3] = line.replace(/^[دd\*][\s\-\.:)\]]/i, "").trim();
+                } else if (line.match(/^المستوى/i)) {
+                    let val = line.replace(/^المستوى[\s\-\.:)]*/i, "").trim();
+                    if (["سهل", "متوسط", "صعب"].includes(val)) level = val;
+                } else if (line.match(/^المصدر/i)) {
+                    source = line.replace(/^المصدر[\s\-\.:)]*/i, "").trim();
+                } else if (line.match(/^الفئة/i)) {
+                    let val = line.replace(/^الفئة[\s\-\.:)]*/i, "").trim();
+                    if (val) category = val;
                 } else if (line.match(/الإجابة|الجواب|الاجابة|الصحيحة/i)) {
                     let match = line.match(/[:\-=]\s*([٠١٢٣٤٥٦٧٨٩0-3])/);
                     if (match) {
@@ -1073,9 +1120,9 @@
                 if (!isDuplicateQuestion(qText)) {
                     data.push({
                         id: nextId++,
-                        category: "عام",
-                        level: "متوسط",
-                        source: "غير محدد",
+                        category: category,
+                        level: level,
+                        source: source,
                         q: qText,
                         a,
                         c
@@ -1128,7 +1175,7 @@
             return;
         }
 
-        const headers = ["الرقم", "السؤال", "الخيار1", "الخيار2", "الخيار3", "الخيار4", "الإجابة", "الفئة"];
+        const headers = ["الرقم", "السؤال", "الخيار1", "الخيار2", "الخيار3", "الخيار4", "الإجابة", "المستوى", "المصدر", "الفئة"];
         const rows = data.map(x => [
             x.id,
             `"${(x.q || "").replace(/"/g, '""')}"`,
@@ -1137,6 +1184,8 @@
             `"${(x.a[2] || "").replace(/"/g, '""')}"`,
             `"${(x.a[3] || "").replace(/"/g, '""')}"`,
             x.c,
+            x.level || "متوسط",
+            `"${(x.source || "").replace(/"/g, '""')}"`,
             x.category || "عام"
         ]);
 
@@ -1248,10 +1297,11 @@
 
     // ===================== تنظيف النموذج =====================
     function clearForm() {
-        ["q", "a1", "a2", "a3", "a4"].forEach(id => {
+        ["q", "a1", "a2", "a3", "a4", "source"].forEach(id => {
             document.getElementById(id).value = "";
         });
         document.getElementById("c").value = "";
+        document.getElementById("level").value = "متوسط";
         document.getElementById("category").value = "عام";
         editId = null;
         document.getElementById("formBox").classList.remove("active");
