@@ -2,346 +2,627 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>لوحة إدارة بنك الأسئلة</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>إضافة أسئلة - بنك الأسئلة الشرعية</title>
 <style>
-body {
-    font-family: Arial, sans-serif;
-    background: #f0f0f0;
-    padding: 20px;
-}
-.container {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    width: 900px;
-    margin: auto;
-    box-shadow: 0 0 10px #ccc;
-}
-input, select, textarea {
-    width: 100%;
-    padding: 8px;
-    margin: 6px 0;
-    border-radius: 5px;
-    border: 1px solid #aaa;
-}
-button {
-    padding: 10px 20px;
-    background: #0077cc;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-button:hover {
-    background: #005fa3;
-}
-hr { margin: 20px 0; }
-.hidden { display: none; }
-.search-box {
-    background: #eef;
-    padding: 10px;
-    border-radius: 5px;
-}
-.question-card {
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin: 10px 0;
-    background: #fafafa;
-}
+  :root {
+    --primary: #1a1a2e; --secondary: #16213e; --accent: #0f3460;
+    --highlight: #e94560; --success: #2ecc71; --warning: #f39c12;
+    --danger: #e74c3c; --light: #f8f9fa; --gray: #6c757d;
+    --border: #dee2e6; --shadow: 0 4px 20px rgba(0,0,0,0.1);
+    --radius: 12px; --font: 'Segoe UI', Tahoma, Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--font); background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ec 100%); min-height: 100vh; color: var(--primary); }
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+
+  .header { background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%); color: white; padding: 24px; border-radius: var(--radius); margin-bottom: 20px; box-shadow: var(--shadow); text-align: center; }
+  .header h1 { font-size: 24px; margin-bottom: 6px; }
+  .header p { opacity: 0.85; font-size: 13px; }
+  .nav-links { display: flex; justify-content: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+  .nav-links a { color: white; text-decoration: none; padding: 6px 14px; background: rgba(255,255,255,0.15); border-radius: 20px; font-size: 12px; transition: 0.2s; }
+  .nav-links a:hover { background: rgba(255,255,255,0.25); }
+
+  .token-bar { background: white; padding: 14px 18px; border-radius: var(--radius); margin-bottom: 16px; box-shadow: var(--shadow); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .token-bar label { font-weight: 600; font-size: 13px; color: var(--accent); }
+  .token-bar input { flex: 1; min-width: 200px; padding: 8px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 12px; font-family: monospace; }
+  .token-bar input:focus { outline: none; border-color: var(--accent); }
+  .token-badge { font-size: 11px; padding: 4px 10px; border-radius: 12px; font-weight: 600; }
+  .tb-ok { background: #d4edda; color: #155724; }
+  .tb-off { background: #f8d7da; color: #721c24; }
+
+  .card { background: white; border-radius: var(--radius); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); }
+  .card h2 { font-size: 16px; color: var(--accent); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .fg { margin-bottom: 12px; }
+  .fg.full { grid-column: 1 / -1; }
+  .fg label { display: block; font-size: 12px; font-weight: 600; color: var(--gray); margin-bottom: 4px; }
+  .fg input, .fg select, .fg textarea { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; transition: border-color 0.2s; }
+  .fg input:focus, .fg select:focus, .fg textarea:focus { outline: none; border-color: var(--accent); }
+  .fg textarea { min-height: 60px; resize: vertical; }
+  .answers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+  .ans-row { display: flex; align-items: center; gap: 8px; }
+  .ans-row input[type="radio"] { width: 18px; height: 18px; cursor: pointer; accent-color: var(--success); }
+  .ans-row input[type="text"] { flex: 1; }
+  .ans-row label { font-size: 12px; font-weight: 700; color: var(--gray); min-width: 20px; }
+  .btn { padding: 10px 20px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-family: inherit; }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--secondary)); color: white; }
+  .btn-success { background: linear-gradient(135deg, var(--success), #27ae60); color: white; }
+  .btn-danger { background: linear-gradient(135deg, var(--danger), #c0392b); color: white; }
+  .btn-outline { background: white; border: 2px solid var(--border); color: var(--gray); }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-group { display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border); }
+
+  .bulk-area { background: #f8f9fa; padding: 14px; border-radius: 10px; border: 1px dashed var(--border); }
+  .bulk-area textarea { width: 100%; min-height: 180px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-family: 'Courier New', monospace; direction: ltr; text-align: left; resize: vertical; }
+  .bulk-hint { font-size: 11px; color: var(--gray); margin-bottom: 8px; line-height: 1.5; }
+
+  .search-filter { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+  .search-filter input, .search-filter select { padding: 8px 12px; border: 2px solid var(--border); border-radius: 8px; font-size: 13px; font-family: inherit; }
+  .search-filter input { flex: 1; min-width: 200px; }
+  .search-filter input:focus, .search-filter select:focus { outline: none; border-color: var(--accent); }
+
+  .q-list { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; max-height: 500px; overflow-y: auto; }
+  .q-item { padding: 12px 14px; border-bottom: 1px solid #f0f0f0; display: flex; gap: 10px; align-items: flex-start; }
+  .q-item:hover { background: #fafbfc; }
+  .q-item:last-child { border-bottom: none; }
+  .q-chk { width: 16px; height: 16px; margin-top: 2px; cursor: pointer; accent-color: var(--accent); }
+  .q-body { flex: 1; min-width: 0; }
+  .q-meta { display: flex; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+  .q-tag { font-size: 10px; padding: 2px 8px; border-radius: 12px; font-weight: 600; }
+  .tg-cat { background: #e3f2fd; color: #1565c0; }
+  .tg-ez { background: #e8f5e9; color: #2e7d32; }
+  .tg-md { background: #fff3e0; color: #ef6c00; }
+  .tg-hd { background: #ffebee; color: #c62828; }
+  .q-txt { font-size: 13px; line-height: 1.5; color: var(--primary); margin-bottom: 6px; }
+  .q-ans { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+  .q-ans > div { font-size: 11px; padding: 4px 8px; border-radius: 6px; background: #f5f5f5; color: var(--gray); }
+  .q-ans > div.ok { background: #e8f5e9; color: #2e7d32; font-weight: 600; }
+  .q-acts { display: flex; gap: 4px; flex-direction: column; }
+  .ibtn { width: 26px; height: 26px; border: none; background: transparent; border-radius: 6px; cursor: pointer; font-size: 12px; display: flex; align-items: center; justify-content: center; color: var(--gray); }
+  .ibtn:hover { background: #f0f0f0; color: var(--primary); }
+  .ibtn.del:hover { color: var(--danger); background: #ffebee; }
+
+  .stats-bar { display: flex; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .stat-box { background: white; padding: 10px 16px; border-radius: 10px; box-shadow: var(--shadow); text-align: center; min-width: 100px; }
+  .stat-box .num { font-size: 20px; font-weight: 700; color: var(--accent); }
+  .stat-box .lbl { font-size: 11px; color: var(--gray); }
+
+  .toast-wrap { position: fixed; top: 16px; left: 16px; z-index: 2000; display: flex; flex-direction: column; gap: 6px; }
+  .toast { padding: 10px 16px; border-radius: 8px; color: white; font-size: 13px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,0.2); animation: tIn 0.25s ease; }
+  @keyframes tIn { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+  .toast.ok { background: var(--success); }
+  .toast.err { background: var(--danger); }
+  .toast.inf { background: var(--accent); }
+
+  .empty { text-align: center; padding: 40px 20px; color: var(--gray); }
+  .empty .ic { font-size: 40px; margin-bottom: 8px; opacity: 0.3; }
+
+  @media (max-width: 768px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .answers-grid { grid-template-columns: 1fr; }
+    .q-ans { grid-template-columns: 1fr; }
+  }
 </style>
+<base target="_blank">
 </head>
-
 <body>
+<div class="container">
+  <div class="header">
+    <h1>📚 لوحة إدارة بنك الأسئلة</h1>
+    <p>نظام متكامل لإدارة أسئلة الاختبارات الشرعية</p>
+    <div class="nav-links">
+      <a href="index.html">🏠 الرئيسية</a>
+      <a href="admin.html">⚙️ الإدارة</a>
+      <a href="fiqh-questions.json" target="_blank">📄 ملف JSON</a>
+    </div>
+  </div>
 
-<!-- شاشة تسجيل الدخول -->
-<div id="loginScreen" class="container">
-<h2>تسجيل دخول لوحة الإدارة</h2>
-<label>كلمة المرور</label>
-<input id="adminPass" type="password" placeholder="أدخل كلمة المرور">
-<button onclick="login()">دخول</button>
+  <div class="token-bar">
+    <label>🔐 GitHub Token:</label>
+    <input type="password" id="githubToken" placeholder="أدخل توكن GitHub (ghp_...)" oninput="checkToken()">
+    <span class="token-badge tb-off" id="tokenStatus">⚪ غير متصل</span>
+    <button class="btn btn-outline" onclick="testConnection()" style="padding:6px 12px;font-size:12px;">🔄 اختبار الاتصال</button>
+    <button class="btn btn-outline" onclick="clearToken()" style="padding:6px 12px;font-size:12px;">🗑️ مسح التوكن</button>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-box"><div class="num" id="stTotal">0</div><div class="lbl">إجمالي الأسئلة</div></div>
+    <div class="stat-box"><div class="num" id="stCats">0</div><div class="lbl">الفئات</div></div>
+    <div class="stat-box"><div class="num" id="stSelected">0</div><div class="lbl">المحدد</div></div>
+  </div>
+
+  <!-- Add Single Question -->
+  <div class="card">
+    <h2>➕ إضافة سؤال جديد</h2>
+    <form id="addForm" onsubmit="addQuestion(event)">
+      <div class="form-grid">
+        <div class="fg full"><label>نص السؤال</label><textarea id="inQ" required placeholder="اكتب نص السؤال هنا..."></textarea></div>
+        <div class="fg"><label>الفئة</label>
+          <select id="inCat" required>
+            <option value="فقه">فقه</option>
+            <option value="عقيدة">عقيدة</option>
+            <option value="حديث">حديث</option>
+            <option value="تفسير">تفسير</option>
+            <option value="أصول فقه">أصول فقه</option>
+            <option value="سيرة">سيرة</option>
+            <option value="لغة عربية">لغة عربية</option>
+            <option value="ثقافة إسلامية">ثقافة إسلامية</option>
+            <option value="منوعات إسلامية">منوعات إسلامية</option>
+            <option value="عام">عام</option>
+          </select>
+        </div>
+        <div class="fg"><label>المستوى</label>
+          <select id="inLvl" required>
+            <option value="سهل">🟢 سهل</option>
+            <option value="متوسط">🟡 متوسط</option>
+            <option value="صعب">🔴 صعب</option>
+          </select>
+        </div>
+        <div class="fg"><label>المصدر</label><input type="text" id="inSrc" required placeholder="مثال: زاد المستقنع"></div>
+      </div>
+      <div style="margin-top:10px;"><label style="font-size:12px;font-weight:600;color:var(--gray);">الإجابات (حدد الصحيحة):</label></div>
+      <div class="answers-grid">
+        <div class="ans-row"><input type="radio" name="correct" value="0" id="r0" required><label>أ</label><input type="text" id="a0" placeholder="الإجابة الأولى" required></div>
+        <div class="ans-row"><input type="radio" name="correct" value="1" id="r1"><label>ب</label><input type="text" id="a1" placeholder="الإجابة الثانية" required></div>
+        <div class="ans-row"><input type="radio" name="correct" value="2" id="r2"><label>ج</label><input type="text" id="a2" placeholder="الإجابة الثالثة" required></div>
+        <div class="ans-row"><input type="radio" name="correct" value="3" id="r3"><label>د</label><input type="text" id="a3" placeholder="الإجابة الرابعة" required></div>
+      </div>
+      <div class="btn-group">
+        <button type="button" class="btn btn-outline" onclick="clearForm()">🔄 مسح</button>
+        <button type="submit" class="btn btn-primary">💾 إضافة السؤال</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Bulk Add -->
+  <div class="card">
+    <h2>📋 إضافة مجموعة أسئلة (JSON)</h2>
+    <div class="bulk-hint">أدخل الأسئلة بتنسيق JSON كمصفوفة. سيتم دمجها تلقائياً مع إعادة ترقيم المعرفات لتجنب التعارض.</div>
+    <div class="bulk-area">
+      <textarea id="bulkInput" placeholder='[
+  {
+    "category": "فقه",
+    "level": "سهل",
+    "source": "مصدر",
+    "q": "نص السؤال",
+    "a": ["أ","ب","ج","د"],
+    "c": 0
+  }
+]'></textarea>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-outline" onclick="document.getElementById('bulkInput').value=''">🗑️ مسح</button>
+      <button class="btn btn-success" onclick="addBulk()">📥 استيراد الأسئلة</button>
+    </div>
+  </div>
+
+  <!-- Search & Filters -->
+  <div class="card">
+    <h2>🔍 البحث والفلاتر</h2>
+    <div class="search-filter">
+      <input type="text" id="searchQ" placeholder="ابحث في الأسئلة..." oninput="renderList()">
+      <select id="filterCat" onchange="renderList()"><option value="">جميع الفئات</option></select>
+      <select id="filterLvl" onchange="renderList()"><option value="">جميع المستويات</option><option value="سهل">سهل</option><option value="متوسط">متوسط</option><option value="صعب">صعب</option></select>
+      <select id="filterSrc" onchange="renderList()"><option value="">جميع المصادر</option></select>
+    </div>
+  </div>
+
+  <!-- Questions List -->
+  <div class="card">
+    <h2>📋 قائمة الأسئلة <span id="listCount" style="font-size:12px;color:var(--gray)"></span></h2>
+    <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+      <button class="btn btn-outline" onclick="selectAll()">☑️ تحديد الكل</button>
+      <button class="btn btn-outline" onclick="deselectAll()">⬜ إلغاء التحديد</button>
+      <button class="btn btn-danger" onclick="deleteSelected()" id="delBtn" style="display:none">🗑️ حذف المحدد</button>
+      <button class="btn btn-success" onclick="exportJSON()">📥 تصدير JSON</button>
+      <button class="btn btn-primary" onclick="pushToGitHub()" id="pushBtn" style="display:none">🚀 رفع إلى GitHub</button>
+    </div>
+    <div class="q-list" id="qList"></div>
+  </div>
 </div>
 
-<!-- شاشة الإدارة -->
-<div id="adminScreen" class="container hidden">
-
-<h2>لوحة إدارة بنك الأسئلة</h2>
-
-<label>GitHub Token (مرة واحدة فقط)</label>
-<input id="token" type="password" placeholder="ضع التوكن هنا">
-<button onclick="saveToken()">حفظ التوكن</button>
-
-<hr>
-
-<h3>إضافة سؤال جديد</h3>
-
-<label>نص السؤال</label>
-<textarea id="q"></textarea>
-
-<label>الخيارات الأربعة</label>
-<input id="a1" placeholder="الخيار الأول">
-<input id="a2" placeholder="الخيار الثاني">
-<input id="a3" placeholder="الخيار الثالث">
-<input id="a4" placeholder="الخيار الرابع">
-
-<label>الإجابة الصحيحة</label>
-<select id="correct">
-    <option value="0">الخيار 1</option>
-    <option value="1">الخيار 2</option>
-    <option value="2">الخيار 3</option>
-    <option value="3">الخيار 4</option>
-</select>
-
-<label>التصنيف</label>
-<select id="category">
-    <option>فقه</option>
-    <option>عقيدة</option>
-    <option>حديث</option>
-    <option>تفسير</option>
-    <option>أصول فقه</option>
-    <option>ثقافة إسلامية</option>
-</select>
-
-<label>المصدر</label>
-<input id="source" placeholder="مثال: صحيح البخاري">
-
-<label>مستوى الصعوبة</label>
-<select id="level">
-    <option>سهل</option>
-    <option>متوسط</option>
-    <option>صعب</option>
-</select>
-
-<button onclick="saveQuestion()">حفظ السؤال</button>
-
-<hr>
-
-<h3>إضافة مجموعة أسئلة دفعة واحدة (Bulk Add)</h3>
-<textarea id="bulkInput" placeholder='ضع هنا مجموعة أسئلة بصيغة JSON'></textarea>
-<button onclick="bulkAdd()">إضافة المجموعة</button>
-
-<hr>
-
-<h3>بحث وفلاتر</h3>
-<div class="search-box">
-<input id="searchText" placeholder="بحث في نص السؤال" oninput="applyFilters()">
-
-<label>التصنيف</label>
-<select id="filterCategory" onchange="applyFilters()">
-    <option value="">الكل</option>
-    <option>فقه</option>
-    <option>عقيدة</option>
-    <option>حديث</option>
-    <option>تفسير</option>
-    <option>أصول فقه</option>
-    <option>ثقافة إسلامية</option>
-</select>
-
-<label>الصعوبة</label>
-<select id="filterLevel" onchange="applyFilters()">
-    <option value="">الكل</option>
-    <option>سهل</option>
-    <option>متوسط</option>
-    <option>صعب</option>
-</select>
-
-</div>
-
-<hr>
-
-<h3>قائمة الأسئلة</h3>
-<div id="questionsList"></div>
-
-</div>
+<div class="toast-wrap" id="toastWrap"></div>
 
 <script>
+// =====================
+// CONFIG
+// =====================
+const REPO_OWNER = 'ieashehata1965-netizen';
+const REPO_NAME = 'Shariah-Training';
+const FILE_PATH = 'fiqh-questions.json';
+const BRANCH = 'main';
+
+// =====================
+// STATE
+// =====================
 let questions = [];
-let editingId = null;
+let selected = new Set();
+let githubToken = localStorage.getItem('githubToken') || '';
 
-// كلمة المرور
-const ADMIN_PASSWORD = "123456"; // غيرها كما تريد
-
-function login() {
-    const pass = document.getElementById("adminPass").value;
-    if (pass === ADMIN_PASSWORD) {
-        document.getElementById("loginScreen").classList.add("hidden");
-        document.getElementById("adminScreen").classList.remove("hidden");
-        loadToken();
-        loadQuestions();
-    } else {
-        alert("كلمة المرور غير صحيحة");
-    }
-}
-
-// حفظ التوكن
-function saveToken() {
-    localStorage.setItem("githubToken", document.getElementById("token").value);
-    alert("تم حفظ التوكن");
-}
-
-// تحميل التوكن
-function loadToken() {
-    const t = localStorage.getItem("githubToken");
-    if (t) document.getElementById("token").value = t;
-}
-
-// تحميل الأسئلة
+// =====================
+// LOAD INITIAL DATA
+// =====================
 async function loadQuestions() {
-    const token = localStorage.getItem("githubToken");
-    const url = "https://api.github.com/repos/ieashehata1965-netizen/Shariah-Training/contents/questions.json";
-
-    const res = await fetch(url, {
-        headers: { "Authorization": "token " + token }
-    });
-
-    if (!res.ok) {
-        alert("خطأ في تحميل الأسئلة — تأكد من صحة التوكن");
-        return;
-    }
-
-    const data = await res.json();
-    const content = atob(data.content);
-    questions = JSON.parse(content);
-
-    window.fileSha = data.sha;
-
-    renderQuestions(questions);
-}
-
-// عرض الأسئلة
-function renderQuestions(list) {
-    const box = document.getElementById("questionsList");
-    box.innerHTML = "";
-
-    list.forEach(q => {
-        const div = document.createElement("div");
-        div.className = "question-card";
-        div.innerHTML = `
-            <b>ID:</b> ${q.id}<br>
-            <b>السؤال:</b> ${q.q}<br>
-            <b>الخيارات:</b> ${q.a.join(" | ")}<br>
-            <b>الصحيح:</b> ${q.c}<br>
-            <button onclick="editQuestion(${q.id})">تعديل</button>
-            <button onclick="deleteQuestion(${q.id})">حذف</button>
-        `;
-        box.appendChild(div);
-    });
-}
-
-// تعديل سؤال
-function editQuestion(id) {
-    const q = questions.find(x => x.id === id);
-
-    editingId = id;
-
-    document.getElementById("q").value = q.q;
-    document.getElementById("a1").value = q.a[0];
-    document.getElementById("a2").value = q.a[1];
-    document.getElementById("a3").value = q.a[2];
-    document.getElementById("a4").value = q.a[3];
-    document.getElementById("correct").value = q.c;
-    document.getElementById("category").value = q.category;
-    document.getElementById("source").value = q.source;
-    document.getElementById("level").value = q.level;
-}
-
-// حذف سؤال
-function deleteQuestion(id) {
-    questions = questions.filter(q => q.id !== id);
-    saveToGitHub();
-}
-
-// حفظ سؤال جديد أو تعديل
-function saveQuestion() {
-    const newQ = {
-        id: editingId || (questions.length ? questions[questions.length - 1].id + 1 : 1),
-        q: document.getElementById("q").value,
-        a: [
-            document.getElementById("a1").value,
-            document.getElementById("a2").value,
-            document.getElementById("a3").value,
-            document.getElementById("a4").value
-        ],
-        c: parseInt(document.getElementById("correct").value),
-        category: document.getElementById("category").value,
-        source: document.getElementById("source").value,
-        level: document.getElementById("level").value
-    };
-
-    if (editingId) {
-        const index = questions.findIndex(q => q.id === editingId);
-        questions[index] = newQ;
-        editingId = null;
+  try {
+    const res = await fetch('fiqh-questions.json?v=' + Date.now());
+    if (res.ok) {
+      questions = await res.json();
+      // Validate loaded data
+      if (!Array.isArray(questions)) {
+        throw new Error('ملف JSON ليس مصفوفة');
+      }
+      // Filter out invalid entries
+      questions = questions.filter(q => q && q.q && q.a && q.a.length === 4);
+      updateStats();
+      updateFilters();
+      renderList();
+      toast('✅ تم تحميل ' + questions.length + ' سؤال', 'ok');
+    } else if (res.status === 404) {
+      toast('ℹ️ ملف fiqh-questions.json غير موجود بعد. ابدأ بإضافة أسئلة ثم اضغط "تصدير JSON"', 'inf');
+      questions = [];
+      updateStats();
     } else {
-        questions.push(newQ);
+      throw new Error('خطأ في التحميل: ' + res.status);
     }
-
-    saveToGitHub();
+  } catch (e) {
+    toast('⚠️ ' + e.message, 'inf');
+    console.warn('Load error:', e);
+    questions = [];
+    updateStats();
+  }
 }
 
-// إضافة مجموعة أسئلة دفعة واحدة
-function bulkAdd() {
-    try {
-        const arr = JSON.parse(document.getElementById("bulkInput").value);
-        arr.forEach(q => {
-            q.id = questions.length ? questions[questions.length - 1].id + 1 : 1;
-            questions.push(q);
-        });
-        saveToGitHub();
-    } catch (e) {
-        alert("صيغة JSON غير صحيحة");
-    }
+// =====================
+// STATS & FILTERS
+// =====================
+function updateStats() {
+  document.getElementById('stTotal').textContent = questions.length;
+  const cats = new Set(questions.map(q => q.category));
+  document.getElementById('stCats').textContent = cats.size;
+  document.getElementById('stSelected').textContent = selected.size;
+  document.getElementById('delBtn').style.display = selected.size > 0 ? 'inline-block' : 'none';
+  document.getElementById('pushBtn').style.display = (selected.size > 0 || questions.length > 0) && githubToken.length > 10 ? 'inline-block' : 'none';
 }
 
-// رفع الملف إلى GitHub
-async function saveToGitHub() {
-    const token = localStorage.getItem("githubToken");
-    if (!token) {
-        alert("لم يتم حفظ التوكن — لا يمكن الحفظ");
+function updateFilters() {
+  const cats = [...new Set(questions.map(q => q.category))].sort();
+  const srcs = [...new Set(questions.map(q => q.source))].sort();
+  document.getElementById('filterCat').innerHTML = '<option value="">جميع الفئات</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
+  document.getElementById('filterSrc').innerHTML = '<option value="">جميع المصادر</option>' + srcs.map(s => `<option value="${s}">${s}</option>`).join('');
+}
+
+// =====================
+// ADD SINGLE QUESTION
+// =====================
+function addQuestion(e) {
+  e.preventDefault();
+  const newQ = {
+    id: questions.length > 0 ? Math.max(...questions.map(q => q.id)) + 1 : 1,
+    category: document.getElementById('inCat').value,
+    level: document.getElementById('inLvl').value,
+    source: document.getElementById('inSrc').value,
+    q: document.getElementById('inQ').value,
+    a: [
+      document.getElementById('a0').value,
+      document.getElementById('a1').value,
+      document.getElementById('a2').value,
+      document.getElementById('a3').value
+    ],
+    c: parseInt(document.querySelector('input[name="correct"]:checked').value)
+  };
+  questions.push(newQ);
+  clearForm();
+  updateStats();
+  updateFilters();
+  renderList();
+  toast('✅ تم إضافة السؤال #' + newQ.id, 'ok');
+}
+
+function clearForm() {
+  document.getElementById('addForm').reset();
+  document.getElementById('r0').checked = true;
+}
+
+// =====================
+// BULK ADD
+// =====================
+function addBulk() {
+  try {
+    const input = document.getElementById('bulkInput').value.trim();
+    if (!input) { toast('❌ الرجاء إدخال بيانات', 'err'); return; }
+    let newQs = JSON.parse(input);
+    if (!Array.isArray(newQs)) newQs = [newQs];
+    let maxId = questions.length > 0 ? Math.max(...questions.map(q => q.id)) : 0;
+    let added = 0;
+    newQs.forEach(q => {
+      if (!q.q || !q.a || q.a.length !== 4) return;
+      maxId++;
+      questions.push({
+        id: maxId,
+        category: q.category || 'عام',
+        level: q.level || 'متوسط',
+        source: q.source || 'غير محدد',
+        q: q.q,
+        a: q.a,
+        c: typeof q.c === 'number' ? q.c : 0
+      });
+      added++;
+    });
+    document.getElementById('bulkInput').value = '';
+    updateStats();
+    updateFilters();
+    renderList();
+    toast('✅ تم استيراد ' + added + ' سؤال', 'ok');
+  } catch (err) {
+    toast('❌ خطأ JSON: ' + err.message, 'err');
+  }
+}
+
+// =====================
+// RENDER LIST
+// =====================
+function renderList() {
+  const search = document.getElementById('searchQ').value.toLowerCase();
+  const cat = document.getElementById('filterCat').value;
+  const lvl = document.getElementById('filterLvl').value;
+  const src = document.getElementById('filterSrc').value;
+
+  const filtered = questions.filter(q => {
+    if (cat && q.category !== cat) return false;
+    if (lvl && q.level !== lvl) return false;
+    if (src && q.source !== src) return false;
+    if (search) {
+      const text = (q.q + ' ' + q.category + ' ' + q.source + ' ' + q.a.join(' ')).toLowerCase();
+      if (!text.includes(search)) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('listCount').textContent = '(' + filtered.length + ' سؤال)';
+  const list = document.getElementById('qList');
+
+  if (!filtered.length) {
+    list.innerHTML = '<div class="empty"><div class="ic">📭</div><p>لا توجد أسئلة مطابقة</p></div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(q => `
+    <div class="q-item">
+      <input type="checkbox" class="q-chk" ${selected.has(q.id) ? 'checked' : ''} onchange="toggleSelect(${q.id})">
+      <div class="q-body">
+        <div class="q-meta">
+          <span class="q-tag tg-cat">${q.category}</span>
+          <span class="q-tag tg-${q.level === 'سهل' ? 'ez' : q.level === 'متوسط' ? 'md' : 'hd'}">${q.level}</span>
+          <span class="q-tag" style="background:#f3e5f5;color:#6a1b9a;">${q.source}</span>
+          <span style="font-size:10px;color:#999">#${q.id}</span>
+        </div>
+        <div class="q-txt">${esc(q.q)}</div>
+        <div class="q-ans">
+          ${q.a.map((ans, i) => `<div class="${i === q.c ? 'ok' : ''}">${['أ','ب','ج','د'][i]}. ${esc(ans)} ${i === q.c ? '✓' : ''}</div>`).join('')}
+        </div>
+      </div>
+      <div class="q-acts">
+        <button class="ibtn" onclick="editQ(${q.id})" title="تعديل">✏️</button>
+        <button class="ibtn del" onclick="deleteQ(${q.id})" title="حذف">🗑️</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleSelect(id) {
+  selected.has(id) ? selected.delete(id) : selected.add(id);
+  updateStats();
+}
+
+function selectAll() {
+  const search = document.getElementById('searchQ').value.toLowerCase();
+  const cat = document.getElementById('filterCat').value;
+  const lvl = document.getElementById('filterLvl').value;
+  const src = document.getElementById('filterSrc').value;
+  questions.forEach(q => {
+    if (cat && q.category !== cat) return;
+    if (lvl && q.level !== lvl) return;
+    if (src && q.source !== src) return;
+    if (search) {
+      const text = (q.q + ' ' + q.category + ' ' + q.source + ' ' + q.a.join(' ')).toLowerCase();
+      if (!text.includes(search)) return;
+    }
+    selected.add(q.id);
+  });
+  renderList();
+  updateStats();
+}
+
+function deselectAll() {
+  selected.clear();
+  renderList();
+  updateStats();
+}
+
+// =====================
+// EDIT & DELETE
+// =====================
+function editQ(id) {
+  const q = questions.find(x => x.id === id);
+  if (!q) return;
+  document.getElementById('inQ').value = q.q;
+  document.getElementById('inCat').value = q.category;
+  document.getElementById('inLvl').value = q.level;
+  document.getElementById('inSrc').value = q.source;
+  document.getElementById('a0').value = q.a[0];
+  document.getElementById('a1').value = q.a[1];
+  document.getElementById('a2').value = q.a[2];
+  document.getElementById('a3').value = q.a[3];
+  document.getElementById('r' + q.c).checked = true;
+  // Remove old and add new on submit
+  const oldIdx = questions.findIndex(x => x.id === id);
+  if (oldIdx > -1) questions.splice(oldIdx, 1);
+  selected.delete(id);
+  toast('✏️ تم تحميل السؤال للتعديل، اضغط "إضافة السؤال" بعد التعديل', 'inf');
+  window.scrollTo(0, 0);
+}
+
+function deleteQ(id) {
+  if (!confirm('حذف السؤال #' + id + '؟')) return;
+  questions = questions.filter(q => q.id !== id);
+  selected.delete(id);
+  updateStats();
+  updateFilters();
+  renderList();
+  toast('🗑️ تم الحذف', 'inf');
+}
+
+function deleteSelected() {
+  if (!confirm('حذف ' + selected.size + ' سؤال؟')) return;
+  questions = questions.filter(q => !selected.has(q.id));
+  selected.clear();
+  updateStats();
+  updateFilters();
+  renderList();
+  toast('🗑️ تم حذف المحدد', 'inf');
+}
+
+// =====================
+// EXPORT
+// =====================
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(questions, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'fiqh-questions.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📥 تم التصدير', 'ok');
+}
+
+// =====================
+// GITHUB PUSH (Optional)
+// =====================
+function checkToken() {
+  const t = document.getElementById('githubToken').value.trim();
+  githubToken = t;
+  localStorage.setItem('githubToken', t);
+  const s = document.getElementById('tokenStatus');
+  if (t.length > 10) { s.textContent = '🟢 جاهز'; s.className = 'token-badge tb-ok'; }
+  else { s.textContent = 'غير متصل'; s.className = 'token-badge tb-off'; }
+  updateStats();
+}
+
+
+async function createFile() {
+  const jsonStr = JSON.stringify(questions, null, 2);
+  const content = btoa(unescape(encodeURIComponent(jsonStr)));
+  const createRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+    method: 'PUT',
+    headers: { 'Authorization': 'token ' + githubToken, 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message: 'Create fiqh-questions.json via admin panel',
+      content: content,
+      branch: BRANCH
+    })
+  });
+  if (createRes.ok) {
+    toast('✅ تم إنشاء الملف بنجاح!', 'ok');
+  } else {
+    const err = await createRes.json();
+    throw new Error(err.message || 'فشل إنشاء الملف');
+  }
+}
+
+async function pushToGitHub() {
+  if (!githubToken || githubToken.length < 10) {
+    toast('❌ أدخل GitHub Token أولاُ', 'err');
+    return;
+  }
+
+  // Validate all questions before push
+  const bad = questions.filter(q => !q || !q.q || !q.a || !Array.isArray(q.a) || q.a.length !== 4 || typeof q.c !== 'number' || q.c < 0 || q.c > 3);
+  if (bad.length > 0) {
+    toast('❌ يوجد ' + bad.length + ' سؤال غير صالح. راجع الأسئلة أولاُ.', 'err');
+    console.error('Invalid questions:', bad);
+    return;
+  }
+
+  if (!confirm('هل أنت متأكد من رفع ' + questions.length + ' سؤال إلى GitHub؟
+
+سيتم استبدال fiqh-questions.json في المستودع.')) {
+    return;
+  }
+
+  toast('🔄 جاري الرفع...', 'inf');
+  try {
+    // Get current file SHA
+    const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}?ref=${BRANCH}`, {
+      headers: { 'Authorization': 'token ' + githubToken, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if (!getRes.ok) {
+      if (getRes.status === 404) {
+        toast('📄 الملف غير موجود، سيتم إنشاؤه...', 'inf');
+        await createFile();
         return;
+      }
+      throw new Error('فشل في الوصول للمستودع');
     }
+    const fileData = await getRes.json();
 
-    const url = "https://api.github.com/repos/ieashehata1965-netizen/Shariah-Training/contents/questions.json";
-
-    const updatedContent = btoa(JSON.stringify(questions, null, 2));
-
-    const res = await fetch(url, {
-        method: "PUT",
-        headers: {
-            "Authorization": "token " + token,
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            message: "Update questions",
-            content: updatedContent,
-            sha: window.fileSha
-        })
+    // Update file
+    const jsonStr = JSON.stringify(questions, null, 2);
+    const content = btoa(unescape(encodeURIComponent(jsonStr)));
+    const updateRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+      method: 'PUT',
+      headers: { 'Authorization': 'token ' + githubToken, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: 'Update fiqh-questions.json via admin panel - ' + new Date().toLocaleString('ar-SA'),
+        content: content,
+        sha: fileData.sha,
+        branch: BRANCH
+      })
     });
 
-    if (!res.ok) {
-        alert("فشل الحفظ — تأكد من صلاحيات التوكن");
-        return;
+    if (updateRes.ok) {
+      const result = await updateRes.json();
+      toast('✅ تم الرفع بنجاح! رابط: ' + result.content.html_url, 'ok');
+      document.getElementById('tokenStatus').textContent = '🟢 تم الرفع ' + new Date().toLocaleTimeString('ar-SA');
+    } else {
+      const err = await updateRes.json();
+      throw new Error(err.message || 'فشل الرفع');
     }
-
-    alert("تم حفظ التعديلات بنجاح");
-    loadQuestions();
+  } catch (err) {
+    toast('❌ ' + err.message, 'err');
+    console.error('GitHub Push Error:', err);
+  }
 }
 
-// تطبيق الفلاتر
-function applyFilters() {
-    let filtered = questions;
-
-    const text = document.getElementById("searchText").value.trim();
-    const cat = document.getElementById("filterCategory").value;
-    const lvl = document.getElementById("filterLevel").value;
-
-    if (text) filtered = filtered.filter(q => q.q.includes(text));
-    if (cat) filtered = filtered.filter(q => q.category === cat);
-    if (lvl) filtered = filtered.filter(q => q.level === lvl);
-
-    renderQuestions(filtered);
+// =====================
+// UTILS
+// =====================
+function toast(msg, type) {
+  const c = document.getElementById('toastWrap');
+  const d = document.createElement('div');
+  d.className = 'toast ' + type;
+  d.textContent = msg;
+  c.appendChild(d);
+  setTimeout(() => d.remove(), 3500);
 }
 
+function esc(t) {
+  const d = document.createElement('div');
+  d.textContent = t;
+  return d.innerHTML;
+}
+
+// =====================
+// INIT
+// =====================
+// Auto-load saved token
+if (githubToken) {
+  document.getElementById('githubToken').value = '••••••••••••••••••••';
+  updateTokenUI();
+}
+loadQuestions();
 </script>
-
 </body>
 </html>
