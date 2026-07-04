@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام بنك الأسئلة المحسن - v1.3</title>
+    <title>نظام بنك الأسئلة المحسن - v2.0</title>
     <style>
         * {
             margin: 0;
@@ -12,65 +12,82 @@
         }
 
         body {
-            font-family: Tahoma, sans-serif;
-            background: #f0fdf4;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
             padding: 20px;
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            color: #333;
+            color: #1f2937;
+            min-height: 100vh;
         }
 
         .card {
             background: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            transition: box-shadow 0.3s;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
         }
 
         .card h2 {
-            margin-bottom: 15px;
-            color: #16a34a;
-            font-size: 18px;
+            margin-bottom: 16px;
+            color: #059669;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        input, textarea {
+        input, textarea, select {
             width: 100%;
-            padding: 10px;
-            margin: 6px 0;
-            font-size: 14px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            padding: 12px;
+            margin: 8px 0;
+            font-size: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
             font-family: inherit;
+            transition: all 0.2s;
         }
 
-        input:focus, textarea:focus {
+        input:focus, textarea:focus, select:focus {
             outline: none;
-            border-color: #16a34a;
-            box-shadow: 0 0 5px rgba(22, 163, 74, 0.3);
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
         }
 
         button {
             width: 100%;
-            padding: 10px;
-            margin: 6px 0;
-            font-size: 14px;
+            padding: 12px;
+            margin: 8px 0;
+            font-size: 15px;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
-            background: #16a34a;
+            background: #059669;
             color: #fff;
-            transition: background 0.3s;
+            transition: all 0.2s;
+            font-weight: 600;
         }
 
         button:hover {
-            background: #15803d;
+            background: #047857;
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
         }
 
         button:disabled {
             background: #9ca3af;
             cursor: not-allowed;
+            transform: none;
         }
 
         button.danger {
@@ -81,71 +98,105 @@
             background: #b91c1c;
         }
 
-        button.small {
+        button.secondary {
             background: #6b7280;
         }
 
-        button.small:hover {
+        button.secondary:hover {
             background: #4b5563;
+        }
+
+        button.info {
+            background: #0284c7;
+        }
+
+        button.info:hover {
+            background: #0369a1;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
+            margin-top: 12px;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
         th {
-            background: #f3f4f6;
-            padding: 12px;
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            padding: 14px;
             text-align: right;
-            border: 1px solid #ddd;
-            font-weight: bold;
-            color: #16a34a;
+            border: 1px solid #d1d5db;
+            font-weight: 700;
+            color: #059669;
+            font-size: 14px;
         }
 
         td {
-            border: 1px solid #ddd;
-            padding: 10px;
+            border: 1px solid #e5e7eb;
+            padding: 12px;
             text-align: right;
+            font-size: 14px;
+        }
+
+        tr:nth-child(even) {
+            background: #f9fafb;
         }
 
         tr:hover {
-            background: #f9fafb;
+            background: #f0fdf4;
+            transition: background 0.2s;
         }
 
         .button-group {
             display: flex;
-            gap: 6px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .button-group button {
             flex: 1;
             margin: 0;
+            min-width: 80px;
+            font-size: 13px;
+            padding: 8px;
         }
 
         .form-section {
             display: none;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #ddd;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+            animation: fadeIn 0.3s ease;
         }
 
         .form-section.active {
             display: block;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .alert {
-            padding: 12px;
-            margin: 10px 0;
-            border-radius: 6px;
-            border-left: 4px solid;
+            padding: 14px;
+            margin: 12px 0;
+            border-radius: 8px;
+            border-right: 4px solid;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         .alert.success {
             background: #dcfce7;
-            border-color: #16a34a;
-            color: #166534;
+            border-color: #059669;
+            color: #065f46;
         }
 
         .alert.error {
@@ -160,64 +211,343 @@
             color: #0c4a6e;
         }
 
+        .alert.warning {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #92400e;
+        }
+
         .status-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 12px;
+            border-radius: 20px;
             font-size: 12px;
-            margin-left: 10px;
+            font-weight: 600;
+            margin-right: 10px;
         }
 
         .status-badge.synced {
             background: #dcfce7;
-            color: #166534;
+            color: #065f46;
         }
 
         .status-badge.syncing {
-            background: #fef08a;
-            color: #78350f;
+            background: #fef3c7;
+            color: #92400e;
             animation: pulse 1.5s infinite;
+        }
+
+        .status-badge.offline {
+            background: #fee2e2;
+            color: #991b1b;
         }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
+            50% { opacity: 0.6; }
         }
 
         .info-box {
-            background: #eff6ff;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
             border: 1px solid #bfdbfe;
-            border-radius: 6px;
-            padding: 10px;
-            margin-top: 10px;
-            font-size: 12px;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 12px;
+            font-size: 13px;
             color: #1e40af;
+            line-height: 1.8;
+        }
+
+        .info-box strong {
+            color: #1e3a8a;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .pagination button {
+            width: auto;
+            min-width: 40px;
+            padding: 8px 14px;
+            margin: 0;
+        }
+
+        .pagination button.active {
+            background: #059669;
+            color: white;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #bbf7d0;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #059669;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #065f46;
+            margin-top: 4px;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal h3 {
+            margin-bottom: 16px;
+            color: #059669;
+        }
+
+        .close-modal {
+            background: #6b7280;
+            margin-top: 16px;
+        }
+
+        .question-preview {
+            background: #f9fafb;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 12px 0;
+            border-right: 3px solid #059669;
+        }
+
+        .answer-option {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 6px;
+            background: #f3f4f6;
+        }
+
+        .answer-option.correct {
+            background: #dcfce7;
+            border: 1px solid #86efac;
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #fff;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #9ca3af;
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px;
+            }
+            
+            .card {
+                padding: 16px;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .button-group button {
+                width: 100%;
+            }
+            
+            table {
+                font-size: 13px;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .toast {
+            padding: 14px 20px;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            animation: toastIn 0.3s ease, toastOut 0.3s ease 3.5s forwards;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-width: 400px;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes toastOut {
+            to { opacity: 0; transform: translateX(-100%); }
+        }
+
+        .toast.success { background: #059669; }
+        .toast.error { background: #dc2626; }
+        .toast.info { background: #0284c7; }
+        .toast.warning { background: #f59e0b; }
+
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar input, .filter-bar select {
+            flex: 1;
+            min-width: 200px;
+            margin: 0;
         }
     </style>
 </head>
 <body>
 
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
 <!-- 🔐 حماية الدخول -->
 <script>
-    const PASSWORD = "1234";
-    let access = sessionStorage.getItem("admin_access");
+    (function() {
+        const CORRECT_HASH = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
+        
+        function sha256(str) {
+            const buffer = new TextEncoder().encode(str);
+            return crypto.subtle.digest("SHA-256", buffer).then(hash => {
+                return Array.from(new Uint8Array(hash))
+                    .map(b => b.toString(16).padStart(2, "0"))
+                    .join("");
+            });
+        }
 
-    if (access !== "granted") {
-        let input = prompt("أدخل كلمة مرور المدير:");
-        if (input === PASSWORD) {
-            sessionStorage.setItem("admin_access", "granted");
-        } else {
-            document.body.innerHTML = "<h2 style='text-align:center; color:#dc2626; padding:40px;'>❌ غير مصرح بالدخول</h2>";
+        async function checkAccess() {
+            let access = sessionStorage.getItem("admin_access");
+            
+            if (access !== "granted") {
+                let input = prompt("أدخل كلمة مرور المدير:");
+                if (!input) {
+                    showAccessDenied();
+                    return;
+                }
+                
+                const hash = await sha256(input);
+                if (hash === CORRECT_HASH) {
+                    sessionStorage.setItem("admin_access", "granted");
+                } else {
+                    showAccessDenied();
+                    return;
+                }
+            }
+        }
+
+        function showAccessDenied() {
+            document.body.innerHTML = `
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;text-align:center;">
+                    <div style="font-size:80px;margin-bottom:20px;">🔒</div>
+                    <h2 style="color:#dc2626;font-size:28px;margin-bottom:12px;">غير مصرح بالدخول</h2>
+                    <p style="color:#6b7280;">تم رفض الوصول. يرجى إعادة تحميل الصفحة والمحاولة مرة أخرى.</p>
+                </div>
+            `;
             throw new Error("Access Denied");
         }
-    }
+
+        checkAccess();
+    })();
 </script>
 
-<!-- البحث -->
+<!-- البحث والفلاتر -->
 <div class="card">
-    <h2>🔍 بحث عن سؤال <span id="searchStatus" class="status-badge synced">✓ جاهز</span></h2>
-    <input id="searchBox" placeholder="ابحث عن سؤال..." oninput="render()">
-    <small style="color: #666; margin-top: 5px; display: block;">البحث يتم على السؤال والخيارات والفئة</small>
+    <h2>🔍 بحث وفلترة <span id="searchStatus" class="status-badge synced">✓ جاهز</span></h2>
+    <div class="filter-bar">
+        <input id="searchBox" placeholder="ابحث في السؤال والخيارات..." oninput="render()">
+        <select id="categoryFilter" onchange="render()">
+            <option value="">جميع الفئات</option>
+            <option value="عام">عام</option>
+            <option value="فقه">فقه</option>
+            <option value="عقيدة">عقيدة</option>
+            <option value="حديث">حديث</option>
+            <option value="تفسير">تفسير</option>
+        </select>
+    </div>
 </div>
 
 <!-- إضافة / تعديل سؤال -->
@@ -225,25 +555,43 @@
     <button onclick="toggleForm()">➕ إضافة / تعديل سؤال</button>
     
     <div id="formBox" class="form-section">
-        <h2>إدخال البيانات</h2>
+        <h2>📝 إدخال البيانات</h2>
         
         <input id="q" placeholder="السؤال" type="text">
         
-        <div style="margin-top: 10px;">
-            <label style="font-size: 12px; color: #666;">الخيارات:</label>
+        <div style="margin-top: 12px;">
+            <label style="font-size: 13px; color: #666; font-weight: 600;">الخيارات:</label>
             <input id="a1" placeholder="الخيار 1" type="text">
             <input id="a2" placeholder="الخيار 2" type="text">
             <input id="a3" placeholder="الخيار 3" type="text">
             <input id="a4" placeholder="الخيار 4" type="text">
         </div>
         
-        <div style="margin-top: 10px;">
-            <input id="c" type="number" placeholder="الإجابة الصحيحة (0-3)" min="0" max="3">
+        <div style="margin-top: 12px;">
+            <label style="font-size: 13px; color: #666; font-weight: 600;">الإجابة الصحيحة:</label>
+            <select id="c">
+                <option value="">اختر الإجابة الصحيحة</option>
+                <option value="0">الخيار الأول (أ)</option>
+                <option value="1">الخيار الثاني (ب)</option>
+                <option value="2">الخيار الثالث (ج)</option>
+                <option value="3">الخيار الرابع (د)</option>
+            </select>
         </div>
         
-        <div class="button-group">
+        <div style="margin-top: 12px;">
+            <label style="font-size: 13px; color: #666; font-weight: 600;">الفئة:</label>
+            <select id="category">
+                <option value="عام">عام</option>
+                <option value="فقه">فقه</option>
+                <option value="عقيدة">عقيدة</option>
+                <option value="حديث">حديث</option>
+                <option value="تفسير">تفسير</option>
+            </select>
+        </div>
+        
+        <div class="button-group" style="margin-top: 16px;">
             <button onclick="saveQuestion()" id="saveBtn">💾 حفظ</button>
-            <button class="small" onclick="clearForm()">🗑️ تفريغ</button>
+            <button class="secondary" onclick="clearForm()">🗑️ تفريغ</button>
         </div>
         <div id="saveStatus"></div>
     </div>
@@ -252,37 +600,64 @@
 <!-- إضافة جماعية -->
 <div class="card">
     <h2>📥 إضافة جماعية</h2>
-    <textarea id="bulk" rows="6" placeholder="أدخل عدة أسئلة مفصولة بأسطر فارغة"></textarea>
+    <textarea id="bulk" rows="8" placeholder="أدخل عدة أسئلة مفصولة بأسطر فارغة..."></textarea>
     <div class="info-box">
         <strong>📋 صيغة إدخال الأسئلة:</strong><br>
         السؤال هنا؟<br>
-        أ الخيار الأول<br>
-        ب الخيار الثاني<br>
-        ج الخيار الثالث<br>
-        د الخيار الرابع<br>
-        الإجابة:2
+        أ) الخيار الأول<br>
+        ب) الخيار الثاني<br>
+        ج) الخيار الثالث<br>
+        د) الخيار الرابع<br>
+        الإجابة: 2
     </div>
     <button onclick="addBulk()" id="bulkBtn">📤 تحويل وإضافة</button>
 </div>
 
 <!-- قائمة الأسئلة -->
 <div class="card">
-    <h2>📋 قائمة الأسئلة (<span id="questionCount">0</span>)</h2>
+    <h2>📋 قائمة الأسئلة</h2>
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-number" id="questionCount">0</div>
+            <div class="stat-label">إجمالي الأسئلة</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number" id="filteredCount">0</div>
+            <div class="stat-label">الأسئلة المعروضة</div>
+        </div>
+    </div>
     <table>
         <thead>
             <tr>
-                <th>السؤال</th>
-                <th>الإجراء</th>
+                <th style="width: 60%;">السؤال</th>
+                <th style="width: 15%;">الفئة</th>
+                <th style="width: 25%;">الإجراء</th>
             </tr>
         </thead>
         <tbody id="list"></tbody>
     </table>
+    <div class="pagination" id="pagination"></div>
 </div>
 
 <!-- التصدير والمزامنة -->
 <div class="card">
-    <button onclick="exportJSON()">⬇️ تصدير JSON</button>
-    <button onclick="syncWithGitHub()" id="syncBtn" style="background: #0284c7; margin-top: 6px;">🔄 مزامنة مع GitHub</button>
+    <div class="button-group">
+        <button onclick="exportJSON()">⬇️ تصدير JSON</button>
+        <button onclick="exportCSV()">📊 تصدير CSV</button>
+        <button class="info" onclick="syncWithGitHub()" id="syncBtn">🔄 مزامنة مع GitHub</button>
+    </div>
+    <div class="info-box" style="margin-top: 12px;">
+        <strong>💡 نصيحة:</strong> يتم حفظ نسخة احتياطية محلية تلقائياً. إذا فشلت المزامنة مع GitHub، يمكنك تصدير الملف يدوياً.
+    </div>
+</div>
+
+<!-- Modal لعرض تفاصيل السؤال -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+    <div class="modal" onclick="event.stopPropagation()">
+        <h3>🔍 تفاصيل السؤال</h3>
+        <div id="modalContent"></div>
+        <button class="close-modal" onclick="closeModal()">إغلاق</button>
+    </div>
 </div>
 
 <script>
@@ -290,43 +665,85 @@
     let data = [];
     let nextId = 1;
     let editId = null;
-    const GITHUB_TOKEN = ""; // سيتم طلبه من المستخدم عند الحفظ
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 10;
+    
     const GITHUB_REPO = "ieashehata1965-netizen/Shariah-Training";
     const FILE_PATH = "fiqh-questions.json";
+    const BACKUP_KEY = "fiqh_questions_backup";
 
     // ===================== تحميل البيانات =====================
-    function loadData() {
-        fetch("https://raw.githubusercontent.com/ieashehata1965-netizen/Shariah-Training/main/fiqh-questions.json")
-            .then(r => {
-                if (!r.ok) throw new Error("HTTP Error: " + r.status);
-                return r.json();
-            })
-            .then(loadedData => {
-                console.log("✅ تم تحميل:", loadedData.length, "سؤال");
-                data = loadedData;
+    async function loadData() {
+        updateSearchStatus("syncing", "⏳ جاري التحميل...");
+        
+        try {
+            const response = await fetchWithTimeout(
+                `https://raw.githubusercontent.com/${GITHUB_REPO}/main/${FILE_PATH}`,
+                { method: "GET" },
+                10000
+            );
+            
+            if (!response.ok) throw new Error("HTTP " + response.status);
+            
+            const loadedData = await response.json();
+            
+            if (!Array.isArray(loadedData)) {
+                throw new Error("تنسيق البيانات غير صحيح");
+            }
+            
+            data = loadedData;
+            window.data = data;
+            nextId = data.length ? Math.max(...data.map(x => x.id || 0)) + 1 : 1;
+            
+            saveLocalBackup();
+            
+            updateSearchStatus("synced", "✓ متصل");
+            showToast(`✅ تم تحميل ${data.length} سؤال`, "success");
+            
+        } catch (err) {
+            console.error("❌ فشل التحميل من GitHub:", err);
+            
+            const backup = loadLocalBackup();
+            if (backup && backup.length > 0) {
+                data = backup;
                 window.data = data;
-                nextId = loadedData.length
-                    ? Math.max(...loadedData.map(x => x.id || 0)) + 1
-                    : 1;
-                updateQuestionCount();
-                render();
-            })
-            .catch(err => {
-                console.error("❌ فشل التحميل:", err);
-                showAlert("فشل تحميل الأسئلة: " + err.message, "error");
+                nextId = data.length ? Math.max(...data.map(x => x.id || 0)) + 1 : 1;
+                updateSearchStatus("offline", "⚠️ وضع عدم الاتصال");
+                showToast("⚠️ تم تحميل النسخة المحلية", "warning");
+            } else {
                 data = [];
-                render();
-            });
+                updateSearchStatus("offline", "⚠️ لا يوجد اتصال");
+                showToast("❌ فشل التحميل: " + err.message, "error");
+            }
+        }
+        
+        updateQuestionCount();
+        render();
     }
 
     // ===================== دوال مساعدة =====================
+    function fetchWithTimeout(url, options = {}, timeout = 10000) {
+        return Promise.race([
+            fetch(url, options),
+            new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("انتهت مهلة الطلب")), timeout)
+            )
+        ]);
+    }
+
     function normalizeText(text) {
-        return (text || "")
+        if (!text) return "";
+        return text
             .toLowerCase()
             .trim()
             .replace(/\s+/g, " ")
             .replace(/[؟?]/g, "")
-            .replace(/[.,،]/g, "");
+            .replace(/[.,،]/g, "")
+            .replace(/[إأآا]/g, "ا")
+            .replace(/ى/g, "ي")
+            .replace(/ؤ/g, "و")
+            .replace(/ئ/g, "ي")
+            .replace(/ة/g, "ه");
     }
 
     function isDuplicateQuestion(q, excludeId = null) {
@@ -339,21 +756,53 @@
         document.getElementById("questionCount").textContent = data.length;
     }
 
+    function updateSearchStatus(status, text) {
+        const badge = document.getElementById("searchStatus");
+        badge.className = `status-badge ${status}`;
+        badge.textContent = text;
+    }
+
+    function showToast(message, type = "success") {
+        const container = document.getElementById("toastContainer");
+        const toast = document.createElement("div");
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 4000);
+    }
+
     function showAlert(message, type = "success") {
-        const alertDiv = document.getElementById("saveStatus") || createAlert();
+        const alertDiv = document.getElementById("saveStatus");
         alertDiv.className = `alert ${type}`;
         alertDiv.textContent = message;
         alertDiv.style.display = "block";
+        
         setTimeout(() => {
             alertDiv.style.display = "none";
         }, 4000);
     }
 
-    function createAlert() {
-        let div = document.createElement("div");
-        div.id = "saveStatus";
-        document.querySelector(".card:nth-child(2)").appendChild(div);
-        return div;
+    // ===================== النسخ الاحتياطي المحلي =====================
+    function saveLocalBackup() {
+        try {
+            localStorage.setItem(BACKUP_KEY, JSON.stringify(data));
+            localStorage.setItem(BACKUP_KEY + "_time", new Date().toISOString());
+        } catch (e) {
+            console.warn("⚠️ لا يمكن الحفظ في localStorage:", e);
+        }
+    }
+
+    function loadLocalBackup() {
+        try {
+            const backup = localStorage.getItem(BACKUP_KEY);
+            return backup ? JSON.parse(backup) : null;
+        } catch (e) {
+            console.warn("⚠️ خطأ في قراءة النسخة الاحتياطية:", e);
+            return null;
+        }
     }
 
     // ===================== حفظ السؤال =====================
@@ -363,20 +812,21 @@
         const a2 = document.getElementById("a2").value.trim();
         const a3 = document.getElementById("a3").value.trim();
         const a4 = document.getElementById("a4").value.trim();
-        const c = parseInt(document.getElementById("c").value);
+        const c = document.getElementById("c").value;
+        const category = document.getElementById("category").value;
 
-        // التحقق من البيانات
         if (!q || !a1 || !a2 || !a3 || !a4) {
             showAlert("❌ أكمل جميع البيانات المطلوبة", "error");
             return;
         }
 
-        if (isNaN(c) || c < 0 || c > 3) {
-            showAlert("❌ الإجابة الصحيحة يجب أن تكون بين 0 و 3", "error");
+        if (c === "") {
+            showAlert("❌ اختر الإجابة الصحيحة", "error");
             return;
         }
 
-        // منع التكرار
+        const correctIndex = parseInt(c);
+
         if (isDuplicateQuestion(q, editId)) {
             showAlert("⚠️ هذا السؤال موجود مسبقاً", "error");
             return;
@@ -384,56 +834,85 @@
 
         const obj = {
             id: editId ? editId : nextId++,
-            category: "عام",
+            category: category || "عام",
             level: "متوسط",
             source: "غير محدد",
             q,
             a: [a1, a2, a3, a4],
-            c
+            c: correctIndex
         };
 
         if (editId) {
             let idx = data.findIndex(x => x.id === editId);
             if (idx !== -1) {
                 data[idx] = obj;
-                console.log("✏️ تم تحديث السؤال:", editId);
             }
             editId = null;
+            showToast("✅ تم تحديث السؤال", "success");
         } else {
             data.push(obj);
-            console.log("✅ تم إضافة سؤال جديد");
+            showToast("✅ تم إضافة سؤال جديد", "success");
         }
 
         clearForm();
         updateQuestionCount();
         render();
-        
-        // محاولة الحفظ على GitHub تلقائياً
+        saveLocalBackup();
         saveToGitHub();
-        showAlert("✅ تم الحفظ محلياً. جاري الرفع إلى GitHub...", "success");
     }
 
     // ===================== عرض القائمة =====================
     function render() {
         let keyword = (document.getElementById("searchBox").value || "").toLowerCase();
+        let categoryFilter = document.getElementById("categoryFilter").value;
+        
         let filtered = data.filter(x => {
             let searchFields = (
                 (x.q || "") + " " +
                 (x.a ? x.a.join(" ") : "") + " " +
                 (x.category || "")
             ).toLowerCase();
-            return searchFields.includes(keyword);
+            
+            let matchesSearch = !keyword || searchFields.includes(keyword);
+            let matchesCategory = !categoryFilter || x.category === categoryFilter;
+            
+            return matchesSearch && matchesCategory;
         });
 
+        document.getElementById("filteredCount").textContent = filtered.length;
+
+        const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+        
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        const paginated = filtered.slice(start, start + ITEMS_PER_PAGE);
+
         let html = "";
-        if (filtered.length === 0) {
-            html = `<tr><td colspan="2" style="text-align:center; color:#999;">لا توجد أسئلة</td></tr>`;
-        } else {
-            html = filtered.map(x => `
+        if (paginated.length === 0) {
+            html = `
                 <tr>
-                    <td>${x.q}</td>
+                    <td colspan="3" class="empty-state">
+                        <div style="font-size:48px;margin-bottom:12px;">📭</div>
+                        <div>لا توجد أسئلة</div>
+                    </td>
+                </tr>
+            `;
+        } else {
+            html = paginated.map(x => `
+                <tr>
+                    <td>
+                        <div style="font-weight: 600; margin-bottom: 4px;">${escapeHtml(x.q)}</div>
+                        <small style="color: #9ca3af;">${x.a ? x.a.join(" | ") : ""}</small>
+                    </td>
+                    <td>
+                        <span style="background: #f3f4f6; padding: 4px 10px; border-radius: 12px; font-size: 12px;">
+                            ${escapeHtml(x.category || "عام")}
+                        </span>
+                    </td>
                     <td>
                         <div class="button-group">
+                            <button onclick="viewQuestion(${x.id})" style="background:#8b5cf6;">👁️ عرض</button>
                             <button onclick="editQuestion(${x.id})" style="background:#0284c7;">✏️ تعديل</button>
                             <button class="danger" onclick="deleteQ(${x.id})">🗑️ حذف</button>
                         </div>
@@ -443,7 +922,68 @@
         }
 
         document.getElementById("list").innerHTML = html;
-        console.log(`📊 عرض ${filtered.length} من ${data.length} سؤال`);
+        renderPagination(totalPages);
+    }
+
+    function renderPagination(totalPages) {
+        if (totalPages <= 1) {
+            document.getElementById("pagination").innerHTML = "";
+            return;
+        }
+        
+        let html = "";
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+        }
+        document.getElementById("pagination").innerHTML = html;
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        render();
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement("div");
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // ===================== عرض تفاصيل السؤال =====================
+    function viewQuestion(id) {
+        let item = data.find(x => x.id === id);
+        if (!item) return;
+
+        const letters = ["أ", "ب", "ج", "د"];
+        let html = `
+            <div class="question-preview">
+                <strong>السؤال:</strong><br>
+                ${escapeHtml(item.q)}
+            </div>
+            <div style="margin-top: 12px;">
+                <strong>الخيارات:</strong>
+                ${item.a.map((ans, i) => `
+                    <div class="answer-option ${i === item.c ? 'correct' : ''}">
+                        ${letters[i]}) ${escapeHtml(ans)} ${i === item.c ? '✅ (الإجابة الصحيحة)' : ''}
+                    </div>
+                `).join("")}
+            </div>
+            <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e5e7eb;">
+                <small style="color: #6b7280;">
+                    📁 الفئة: ${escapeHtml(item.category || "عام")} | 
+                    🆔 الرقم: ${item.id}
+                </small>
+            </div>
+        `;
+        
+        document.getElementById("modalContent").innerHTML = html;
+        document.getElementById("modalOverlay").classList.add("active");
+    }
+
+    function closeModal(event) {
+        if (!event || event.target === document.getElementById("modalOverlay")) {
+            document.getElementById("modalOverlay").classList.remove("active");
+        }
     }
 
     // ===================== تعديل السؤال =====================
@@ -454,37 +994,44 @@
         editId = id;
 
         document.getElementById("q").value = item.q;
-        document.getElementById("a1").value = item.a[0];
-        document.getElementById("a2").value = item.a[1];
-        document.getElementById("a3").value = item.a[2];
-        document.getElementById("a4").value = item.a[3];
-        document.getElementById("c").value = item.c;
+        document.getElementById("a1").value = item.a[0] || "";
+        document.getElementById("a2").value = item.a[1] || "";
+        document.getElementById("a3").value = item.a[2] || "";
+        document.getElementById("a4").value = item.a[3] || "";
+        document.getElementById("c").value = item.c !== undefined ? item.c : "";
+        document.getElementById("category").value = item.category || "عام";
 
         document.getElementById("formBox").classList.add("active");
-        console.log("📝 تحرير السؤال:", id);
+        document.getElementById("q").scrollIntoView({ behavior: "smooth" });
     }
 
     // ===================== حذف السؤال =====================
     function deleteQ(id) {
-        if (!confirm("هل تريد حذف هذا السؤال؟")) return;
+        let item = data.find(x => x.id === id);
+        if (!item) return;
+        
+        if (!confirm(`هل تريد حذف هذا السؤال؟\n\n"${item.q}"`)) return;
+        
         data = data.filter(x => x.id !== id);
-        console.log("🗑️ تم حذف السؤال:", id);
         updateQuestionCount();
         render();
+        saveLocalBackup();
         saveToGitHub();
+        showToast("🗑️ تم حذف السؤال", "info");
     }
 
-    // ===================== إضافة جماعية - محسّنة =====================
+    // ===================== إضافة جماعية =====================
     function addBulk() {
         let text = document.getElementById("bulk").value.trim();
         if (!text) {
-            alert("❌ أدخل نصاً");
+            showToast("❌ أدخل نصاً", "error");
             return;
         }
 
         let blocks = text.split(/\n\s*\n+/).filter(b => b.trim());
         let added = 0;
         let failed = [];
+        let duplicates = 0;
 
         blocks.forEach((block, blockIndex) => {
             let lines = block.split("\n").map(l => l.trim()).filter(l => l);
@@ -492,39 +1039,27 @@
             let qText = "";
             let a = ["", "", "", ""];
             let c = null;
-            let answerIndex = -1;
 
-            // البحث عن السؤال - أول سطر طويل أو يحتوي على علامة استفهام
             for (let i = 0; i < lines.length; i++) {
-                if (!qText && (lines[i].includes("؟") || lines[i].includes("?") || lines[i].length > 15)) {
+                if (!qText && (lines[i].includes("؟") || lines[i].includes("?") || lines[i].length > 10)) {
                     qText = lines[i];
                     break;
                 }
             }
 
-            // البحث عن الخيارات
             lines.forEach(line => {
-                // البحث عن الخيار أ
-                if (line.match(/^[أa][\s\-:\.]/i)) {
-                    a[0] = line.replace(/^[أa][\s\-:\.]/i, "").trim();
-                }
-                // البحث عن الخيار ب
-                else if (line.match(/^[بb][\s\-:\.]/i)) {
-                    a[1] = line.replace(/^[بb][\s\-:\.]/i, "").trim();
-                }
-                // البحث عن الخيار ج
-                else if (line.match(/^[جg][\s\-:\.]/i)) {
-                    a[2] = line.replace(/^[جg][\s\-:\.]/i, "").trim();
-                }
-                // البحث عن الخيار د
-                else if (line.match(/^[د*][\s\-:\.]/i)) {
-                    a[3] = line.replace(/^[د*][\s\-:\.]/i, "").trim();
-                }
-                // البحث عن الإجابة الصحيحة
-                else if (line.includes("الإجابة") || line.includes("الجواب") || line.includes("الاجابة")) {
-                    let parts = line.split(/[:=]/);
-                    if (parts.length > 1) {
-                        let num = parseInt(parts[1].trim());
+                if (line.match(/^[أa][\s\-\.:)\]]/i)) {
+                    a[0] = line.replace(/^[أa][\s\-\.:)\]]/i, "").trim();
+                } else if (line.match(/^[بb][\s\-\.:)\]]/i)) {
+                    a[1] = line.replace(/^[بb][\s\-\.:)\]]/i, "").trim();
+                } else if (line.match(/^[جjc][\s\-\.:)\]]/i)) {
+                    a[2] = line.replace(/^[جjc][\s\-\.:)\]]/i, "").trim();
+                } else if (line.match(/^[دd\*][\s\-\.:)\]]/i)) {
+                    a[3] = line.replace(/^[دd\*][\s\-\.:)\]]/i, "").trim();
+                } else if (line.match(/الإجابة|الجواب|الاجابة|الصحيحة/i)) {
+                    let match = line.match(/[:\-=]\s*([٠١٢٣٤٥٦٧٨٩0-3])/);
+                    if (match) {
+                        let num = parseInt(match[1].replace(/[٠١٢٣٤٥٦٧٨٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d)));
                         if (!isNaN(num) && num >= 0 && num <= 3) {
                             c = num;
                         }
@@ -532,12 +1067,9 @@
                 }
             });
 
-            // التحقق من صحة السؤال
             if (qText && a[0] && a[1] && a[2] && a[3]) {
-                // إذا لم يتم العثور على إجابة، استخدم 0 كافتراضي
                 if (c === null) c = 0;
 
-                // التحقق من عدم التكرار
                 if (!isDuplicateQuestion(qText)) {
                     data.push({
                         id: nextId++,
@@ -549,47 +1081,72 @@
                         c
                     });
                     added++;
-                    console.log("✅ تم إضافة سؤال:", qText);
                 } else {
-                    failed.push(`السؤال #${blockIndex + 1}: موجود مسبقاً`);
+                    duplicates++;
                 }
             } else {
-                failed.push(`السؤال #${blockIndex + 1}: صيغة غير صحيحة`);
+                failed.push(`سؤال #${blockIndex + 1}`);
             }
         });
 
         if (added > 0) {
             updateQuestionCount();
             render();
+            saveLocalBackup();
             saveToGitHub();
             document.getElementById("bulk").value = "";
             
             let msg = `✅ تمت إضافة ${added} سؤال`;
-            if (failed.length > 0) {
-                msg += `\n⚠️ فشل: ${failed.length} أسئلة\n${failed.slice(0, 3).join("\n")}`;
-                if (failed.length > 3) msg += `\n... و${failed.length - 3} آخرين`;
-            }
-            alert(msg);
+            if (duplicates > 0) msg += ` | ⚠️ ${duplicates} مكرر`;
+            if (failed.length > 0) msg += ` | ❌ ${failed.length} فاشل`;
+            
+            showToast(msg, added > 0 ? "success" : "warning");
         } else {
-            alert("❌ لم يتم إضافة أي أسئلة\n" + failed.slice(0, 3).join("\n"));
+            showToast(`❌ لم يتم إضافة أي أسئلة. فاشل: ${failed.length}, مكرر: ${duplicates}`, "error");
         }
-        
-        console.log(`📊 النتيجة: تم إضافة ${added}, فشل ${failed.length}`);
     }
 
     // ===================== تصدير JSON =====================
     function exportJSON() {
         if (data.length === 0) {
-            alert("❌ لا توجد أسئلة للتصدير");
+            showToast("❌ لا توجد أسئلة للتصدير", "error");
             return;
         }
 
-        let blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-        let a = document.createElement("a");
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
         a.href = URL.createObjectURL(blob);
-        a.download = "fiqh-questions.json";
+        a.download = `fiqh-questions-${new Date().toISOString().split("T")[0]}.json`;
         a.click();
-        console.log("📥 تم تصدير", data.length, "سؤال");
+        showToast(`📥 تم تصدير ${data.length} سؤال`, "success");
+    }
+
+    // ===================== تصدير CSV =====================
+    function exportCSV() {
+        if (data.length === 0) {
+            showToast("❌ لا توجد أسئلة للتصدير", "error");
+            return;
+        }
+
+        const headers = ["الرقم", "السؤال", "الخيار1", "الخيار2", "الخيار3", "الخيار4", "الإجابة", "الفئة"];
+        const rows = data.map(x => [
+            x.id,
+            `"${(x.q || "").replace(/"/g, '""')}"`,
+            `"${(x.a[0] || "").replace(/"/g, '""')}"`,
+            `"${(x.a[1] || "").replace(/"/g, '""')}"`,
+            `"${(x.a[2] || "").replace(/"/g, '""')}"`,
+            `"${(x.a[3] || "").replace(/"/g, '""')}"`,
+            x.c,
+            x.category || "عام"
+        ]);
+
+        const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+        const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `fiqh-questions-${new Date().toISOString().split("T")[0]}.csv`;
+        a.click();
+        showToast(`📊 تم تصدير ${data.length} سؤال كـ CSV`, "success");
     }
 
     // ===================== الحفظ على GitHub =====================
@@ -601,21 +1158,22 @@
                 token = prompt("🔑 أدخل GitHub Personal Access Token (اتركه فارغاً لتخطي الحفظ على GitHub):");
                 if (!token) {
                     console.log("⏭️ تم تخطي الحفظ على GitHub");
-                    return;
+                    return false;
                 }
                 sessionStorage.setItem("github_token", token);
             }
 
             const [owner, repo] = GITHUB_REPO.split("/");
             
-            const getFileResponse = await fetch(
+            const getFileResponse = await fetchWithTimeout(
                 `https://api.github.com/repos/${owner}/${repo}/contents/${FILE_PATH}`,
                 {
                     headers: {
                         "Authorization": `token ${token}`,
                         "Accept": "application/vnd.github.v3+json"
                     }
-                }
+                },
+                10000
             );
 
             let sha = null;
@@ -624,7 +1182,10 @@
                 sha = fileData.sha;
             }
 
-            const uploadResponse = await fetch(
+            const content = JSON.stringify(data, null, 2);
+            const encodedContent = btoa(unescape(encodeURIComponent(content)));
+            
+            const uploadResponse = await fetchWithTimeout(
                 `https://api.github.com/repos/${owner}/${repo}/contents/${FILE_PATH}`,
                 {
                     method: "PUT",
@@ -634,71 +1195,83 @@
                         "Accept": "application/vnd.github.v3+json"
                     },
                     body: JSON.stringify({
-                        message: `تحديث الأسئلة - ${new Date().toLocaleString('ar-SA')}`,
-                        content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
+                        message: `تحديث الأسئلة - ${new Date().toLocaleString("ar-SA")}`,
+                        content: encodedContent,
                         sha: sha,
                         branch: "main"
                     })
-                }
+                },
+                15000
             );
 
             if (uploadResponse.ok) {
-                console.log("✅ تم الحفظ على GitHub بنجاح");
-                showAlert("✅ تم الحفظ على GitHub بنجاح!", "success");
+                showToast("✅ تم الحفظ على GitHub بنجاح!", "success");
+                updateSearchStatus("synced", "✓ متزامن");
+                return true;
             } else {
                 const error = await uploadResponse.json();
-                console.error("❌ خطأ في الحفظ:", error);
-                showAlert("❌ خطأ في الحفظ على GitHub: " + (error.message || "خطأ غير معروف"), "error");
+                throw new Error(error.message || "خطأ غير معروف");
             }
         } catch (err) {
-            console.error("❌ خطأ في الاتصال:", err);
-            showAlert("❌ فشل الاتصال بـ GitHub: " + err.message, "error");
+            console.error("❌ خطأ في الحفظ على GitHub:", err);
+            showToast("⚠️ فشل الحفظ على GitHub: " + err.message, "warning");
+            updateSearchStatus("offline", "⚠️ غير متزامن");
+            return false;
         }
     }
 
     async function syncWithGitHub() {
         if (data.length === 0) {
-            alert("❌ لا توجد أسئلة للمزامنة");
+            showToast("❌ لا توجد أسئلة للمزامنة", "error");
             return;
         }
 
         const btn = document.getElementById("syncBtn");
+        const originalText = btn.textContent;
         btn.disabled = true;
-        btn.textContent = "⏳ جاري المزامنة...";
+        btn.innerHTML = `<span class="loading-spinner"></span> جاري المزامنة...`;
 
         try {
-            await saveToGitHub();
+            const success = await saveToGitHub();
+            if (!success) {
+                showToast("💡 يمكنك تصدير الملف يدوياً", "info");
+            }
+        } catch (err) {
+            showToast("خطأ في المزامنة: " + err.message, "error");
+        } finally {
             setTimeout(() => {
                 btn.disabled = false;
-                btn.textContent = "🔄 مزامنة مع GitHub";
+                btn.textContent = originalText;
             }, 2000);
-        } catch (err) {
-            btn.disabled = false;
-            btn.textContent = "🔄 مزامنة مع GitHub";
-            alert("خطأ في المزامنة: " + err.message);
         }
     }
 
     // ===================== تنظيف النموذج =====================
     function clearForm() {
-        ["q", "a1", "a2", "a3", "a4", "c"].forEach(id => {
+        ["q", "a1", "a2", "a3", "a4"].forEach(id => {
             document.getElementById(id).value = "";
         });
+        document.getElementById("c").value = "";
+        document.getElementById("category").value = "عام";
         editId = null;
         document.getElementById("formBox").classList.remove("active");
-        document.getElementById("saveStatus").textContent = "";
-        console.log("🧹 تم تنظيف النموذج");
+        document.getElementById("saveStatus").style.display = "none";
     }
 
     // ===================== تبديل النموذج =====================
     function toggleForm() {
         let box = document.getElementById("formBox");
         box.classList.toggle("active");
-        console.log("🔄 النموذج:", box.classList.contains("active") ? "مفتوح" : "مغلق");
     }
 
     // ===================== التهيئة =====================
     loadData();
+    
+    setInterval(() => {
+        if (data.length > 0) {
+            saveLocalBackup();
+        }
+    }, 30000);
 </script>
 
 </body>
